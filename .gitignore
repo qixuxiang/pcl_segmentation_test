@@ -1,0 +1,10 @@
+.catkin_workspace
+devel/
+build/
+
+# qcreator stuff
+CMakeLists.txt.user
+
+*~
+.#*
+
