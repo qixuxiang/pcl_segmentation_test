@@ -1,4 +1,0 @@
-<launch>
-  <node name="dmotion" pkg="dmotion" type="dmotion_node" output="screen" respawn="false" args=""/>
-  <!-- param -->
-</launch>
