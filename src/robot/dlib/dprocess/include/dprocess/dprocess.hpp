@@ -4,11 +4,9 @@
 
 #include <pthread.h>
 #include <thread>
+#include <ros/ros.h>
 
 namespace dprocess {
-
-static const int RT_PRIORITY = 1;
-static const int RT_POLICY = SCHED_FIFO;
 
 template<typename T>
 class DProcess {
@@ -23,12 +21,29 @@ public:
         static_cast<T *>(this)->tick();
       }
     });
+
+    set_policy();
   }
 
+  void set_policy() {
+    if(m_rt) {
+      sched_param param;
+      param.sched_priority = 99;
+      // todo, needs sudo
+      if(pthread_setschedparam(m_thread.native_handle(), SCHED_FIFO, &param)) {
+        ROS_INFO("Set REAL TIME policy success.");
+      } else {
+        ROS_WARN("I can't run in REAL TIME.");
+      }
+    }
+  }
+
+  // only for test
   void spinOnce() {
     m_thread = std::thread([=] {
       static_cast<T *>(this)->tick();
     });
+    set_policy();
   }
 
   void join() {

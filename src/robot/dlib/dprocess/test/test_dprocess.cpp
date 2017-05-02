@@ -8,12 +8,13 @@ using namespace std;
 TEST(dprocess, main) {
   class Foo: public DProcess<Foo> {
   public:
+    Foo(bool r) : DProcess(r){}
     void tick() override {
-      std::cout << "bar" << std::endl;
+      usleep(1000);
     }
   };
 
-  Foo f;
+  Foo f(true);
   f.spinOnce();
   f.join();
 }
