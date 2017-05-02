@@ -6,8 +6,8 @@ find_package(catkin REQUIRED roscpp)
 
 
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES dprocess
+  INCLUDE_DIRS include
+  LIBRARIES dprocess
 #  CATKIN_DEPENDS other_catkin_pkg
 #  DEPENDS system_lib
 )

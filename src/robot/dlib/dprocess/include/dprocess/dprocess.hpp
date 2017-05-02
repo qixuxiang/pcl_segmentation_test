@@ -11,14 +11,16 @@ namespace dprocess {
 template<typename T>
 class DProcess {
 public:
-  DProcess() : m_rt(false) {}
-  explicit DProcess(bool rt) : m_rt(rt) {}
+  DProcess() : m_rt(false), m_freq(100) {}
+  explicit DProcess(int freq, bool rt = false) : m_freq(freq), m_rt(rt) {}
   void spin() {
     m_thread = std::thread([=] {
       // maybe add some timer
       // todo add watch dog
-      while (true) {
+      ros::Rate r(m_freq);
+      while (ros::ok()) {
         static_cast<T *>(this)->tick();
+        r.sleep();
       }
     });
 
@@ -50,9 +52,12 @@ public:
     m_thread.join();
   }
 
-private:
   virtual void tick() {}
+
+private:
+
   bool m_rt;
+  int m_freq;
   std::thread m_thread;
 };
 
