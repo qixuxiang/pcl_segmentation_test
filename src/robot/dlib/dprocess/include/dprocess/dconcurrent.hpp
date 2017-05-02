@@ -2,7 +2,7 @@
 // Avoid overhead of std::async of always launching new threads
 // Created on: May 2, 2017
 //     Author: Wenxing Mei <mwx36mwx@gmail.com>
-
+#pragma once
 #include <functional>
 #include <array>
 #include <thread>

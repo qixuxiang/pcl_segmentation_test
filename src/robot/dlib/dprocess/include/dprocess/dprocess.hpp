@@ -1,7 +1,7 @@
 // Created on: May 2, 2017
 //     Author: Wenxing Mei <mwx36mwx@gmail.com>
 // Wrapper for std::thread
-
+#pragma once
 #include <pthread.h>
 #include <thread>
 #include <ros/ros.h>
