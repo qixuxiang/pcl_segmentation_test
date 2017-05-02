@@ -1,5 +1,6 @@
 <launch>
   <node name="dmotion" pkg="dmotion" type="dmotion_node" output="screen" respawn="false" args=""/>
+  <node name="config_watchdog" pkg="config_watchdog" type="config_watchdog_node.py" output="screen" respawn="false" args="" cwd="node" />
   <rosparam command="load" file="$(find dmotion)/config/motion.yml" />
   <rosparam command="load" file="$(find dmotion)/config/motor.yml" />
 </launch>
