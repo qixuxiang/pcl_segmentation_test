@@ -28,7 +28,7 @@ class Handler(FileSystemEventHandler):
         super(Handler, self).__init__()
         self.pub = rospy.Publisher('/dmotion/reload_config', String, queue_size=1)
         rospy.init_node('config_watchdog')
-        rospy.loginfo("%s" % os.getcwd())
+        rospy.loginfo("CWD: %s" % os.getcwd())
 
     def on_modified(self, event):
         if not event.is_directory:
@@ -44,18 +44,12 @@ class Handler(FileSystemEventHandler):
                 rospy.logwarn('%s not yaml file' % event.src_path)
 
 
-class ConfigServer(object):
-    def start_watch(self):
+if __name__ == '__main__':
+    try:
         event_handler = Handler()
         observer = Observer()
         observer.schedule(event_handler, path=PATH, recursive=True)
         observer.start()
         rospy.spin()
-
-
-if __name__ == '__main__':
-    try:
-        server = ConfigServer()
-        server.start_watch()
     except rospy.ROSInterruptException:
         pass

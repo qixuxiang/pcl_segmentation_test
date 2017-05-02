@@ -14,5 +14,10 @@ catkin_package(
 )
 
 include_directories(include ${catkin_INCLUDE_DIRS})
-add_executable(dmotion_node src/main.cpp)
+
+add_executable(dmotion_node
+  src/main.cpp
+  src/dmotion.cpp
+  )
+
 target_link_libraries(dmotion_node ${catkin_LIBRARIES})
