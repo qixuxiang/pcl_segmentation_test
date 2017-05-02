@@ -8,6 +8,7 @@ For more information please visit our [Github](https://github.com/ZJUDancer/huma
 Todo:
   - [x] process wrapper
   - [ ] dmotion
+    - [x] config watchdog
   - [ ] dvision
   - [ ] dbehavior
   - [ ] dgamecontroller
