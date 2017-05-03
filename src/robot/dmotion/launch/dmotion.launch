@@ -1,0 +1,21 @@
+<launch>
+  <node
+    pkg="dmotion"
+    name="dmotion_node"
+    type="dmotion_node"
+    output="screen"
+    respawn="false"
+    args=""/>
+
+  <node
+    pkg="dmotion"
+    name="config_watchdog_node"
+    type="config_watchdog.py"
+    output="screen"
+    respawn="false"
+    args=""
+    cwd="node" />
+
+  <rosparam command="load" file="$(find dmotion)/config/motion.yml" />
+  <rosparam command="load" file="$(find dmotion)/config/motor.yml" />
+</launch>

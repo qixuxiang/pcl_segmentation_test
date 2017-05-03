@@ -1,0 +1,15 @@
+#pragma once
+
+#include "GaitStateCrouch.hpp"
+#include "GaitStateStandup.hpp"
+#include "GaitStateKick.hpp"
+#include "GaitStateGoalieleft.hpp"
+#include "GaitStateGoalieright.hpp"
+#include "GaitStateGoaliemid.hpp"
+#include "GaitStateSetupFrontDown.hpp"
+#include "GaitStateSetupBackDown.hpp"
+#include "GaitStateSetupLeftDown.hpp"
+#include "GaitStateSetupRightDown.hpp"
+#include "GaitStateWalkLeftkick.hpp"
+#include "GaitStateWalkRightkick.hpp"
+#include "GaitStateWenxi.hpp"

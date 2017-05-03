@@ -1,3 +1,11 @@
 <launch>
-  <!-- <node name="dbehavior" pkg="dbehavior_node" type="dbehavior_node.py"/> -->
+  <node
+    pkg="dbehavior"
+    name="dbehavior_node"
+    type="dbehavior.py"
+    output="screen"
+    respawn="false"
+    cwd="node"
+    args=""
+    />
 </launch>
