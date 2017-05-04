@@ -17,6 +17,7 @@ public:
   ~GaitStateManager();
   void tick();
   void checkNewCommand(ActionCmd::ConstPtr& request);
+  void platControl(float& yaw, float& pitch);
 
 };
 }
