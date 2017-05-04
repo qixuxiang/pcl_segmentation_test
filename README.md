@@ -15,6 +15,10 @@ Todo:
   - [ ] dmotion
     - [x] config
     - [x] config watchdog
+    - [ ] all param in YAML
+    - [ ] HumanRobot
+    - [ ] TransitHub
+    - [ ] GaitStateManager
   - [ ] dvision
   - [ ] dbehavior
   - [ ] dgamecontroller
