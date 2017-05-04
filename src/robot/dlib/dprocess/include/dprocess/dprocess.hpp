@@ -11,7 +11,6 @@ namespace dprocess {
 template<typename T>
 class DProcess {
 public:
-  DProcess() : m_rt(false), m_freq(100) {}
   explicit DProcess(int freq, bool rt = false) : m_freq(freq), m_rt(rt) {}
   void spin() {
     m_thread = std::thread([=] {
@@ -20,6 +19,7 @@ public:
       ros::Rate r(m_freq);
       while (ros::ok()) {
         static_cast<T *>(this)->tick();
+        ros::spinOnce();
         r.sleep();
       }
     });

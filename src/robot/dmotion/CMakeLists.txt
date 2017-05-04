@@ -8,7 +8,7 @@ find_package(catkin REQUIRED
                message_generation
                dprocess)
 
-# find_package(Boost REQUIRED COMPONENTS system)
+find_package(Boost REQUIRED COMPONENTS system)
 
 add_message_files(
   FILES
@@ -22,19 +22,45 @@ generate_messages(
 
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES dmotion
-  CATKIN_DEPENDS dprocess
+#  LIBRARIES dmotion
+#  CATKIN_DEPENDS dprocess
 #  DEPENDS system_lib
 )
 
-include_directories(include ${catkin_INCLUDE_DIRS})
+include_directories(include ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
 
-add_library(dmotion
-  src/dmotion.cpp include/dmotion/dmotion.hpp
-  src/GaitStateManager.cpp include/dmotion/GaitStateManager.hpp)
-add_dependencies(dmotion ${PROJECT_NAME}_generate_messages_cpp)
+add_library(dmotionlib
+#  src/dmotion.cpp
+#  src/transitHub.cpp
+  src/RobotStatus.cpp
+#  src/GaitStateManager.cpp
+#  include/dmotion/GaitStateManager.hpp
 
-add_executable(dmotion_node src/main.cpp)
-target_link_libraries(dmotion_node dmotion ${catkin_LIBRARIES})
-add_dependencies(dmotion_node ${PROJECT_NAME}_generate_messages_cpp)
+  src/GaitStateLib/GaitStateBase.cpp
+  src/GaitStateLib/GaitStateWenxi.cpp
+  src/GaitStateLib/GaitStateCrouch.cpp
+  src/GaitStateLib/GaitStateStandup.cpp
+  src/GaitStateLib/GaitStateKick.cpp
+  src/GaitStateLib/GaitStateGoalie.cpp
+  src/GaitStateLib/GaitStateSetupFrontDown.cpp
+  src/GaitStateLib/GaitStateSetupBackDown.cpp
 
+#  src/GaitStateSupportLib/HumanRobot.cpp
+#  include/dmotion/GaitStateSupportLib/HumanRobot.hpp
+
+  src/GaitStateSupportLib/HumanRobotInterface.cpp
+
+  src/VecPos.cpp
+  src/MotionData.cpp
+  src/One_D_Filter.cpp
+  src/GaitStateSupportLib/comEstimator.cpp
+  src/GaitStateSupportLib/SplineThree.cpp
+  src/GaitStateSupportLib/kalman_filter.cpp
+  src/GaitStateSupportLib/onedCtrl.cpp
+  )
+target_link_libraries(dmotionlib ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+add_dependencies(dmotionlib ${PROJECT_NAME}_generate_messages_cpp)
+
+#add_executable(dmotion_node src/main.cpp)
+#target_link_libraries(dmotion_node dmotionlib ${catkin_LIBRARIES})
+#add_dependencies(dmotion_node ${PROJECT_NAME}_generate_messages_cpp)

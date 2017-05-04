@@ -6,28 +6,29 @@ Created on: May 3, 2017
 A service called by Vision
 """
 
+import random
 import rospy
 from geometry_msgs.msg import Twist, Vector3
+from dmotion.msg import ActionCmd
 
 
 def main():
     rospy.init_node('dbehavior_node', anonymous=True)
-    body_pub = rospy.Publisher('/humanoid/dbehavior/cmd_vel', Twist, queue_size=1)
-    head_pub = rospy.Publisher('/humanoid/dbehavior/cmd_head', Vector3, queue_size=1)
+    pub = rospy.Publisher('/humanoid/ActionCommand', ActionCmd, queue_size=1)
 
-    rate = rospy.Rate(10)
+    rate = rospy.Rate(1)
     rospy.loginfo('Start dbehavior node')
     while not rospy.is_shutdown():
-        body = Twist()
-        body.linear = [3, 0, 0]
-        body.angular = [0, 0, 3]
-        body_pub.publish(body)
+        cmd = ActionCmd()
 
-        head = Vector3()
-        head.x = 0  # roll
-        head.y = 15  # pitch
-        head.z = 15  # yaw
-        head_pub.publish(head)
+        cmd.gait_type = ActionCmd.WENXI
+        cmd.cmd_head = Vector3(0, 0, 0)
+
+        cmd.cmd_vel.linear = Vector3(random.randint(-3, 6), 0, 0)
+        cmd.cmd_vel.angular = Vector3(0, 0, 0)
+
+        pub.publish(cmd)
+        rospy.loginfo("Pub new cmd")
 
         rate.sleep()
 
