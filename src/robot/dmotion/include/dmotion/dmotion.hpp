@@ -7,7 +7,7 @@ namespace dmotion {
 class DMotion: public DProcess<DMotion> {
 public:
   explicit DMotion(ros::NodeHandle* n);
-  ~DMotion();
+  virtual ~DMotion();
   void tick() override;
 
 private:

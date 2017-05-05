@@ -49,49 +49,33 @@ void GaitStateManager::tick() {
 }
 
 void GaitStateManager::init() {
+  ROS_INFO("GaitState Manager INIT");
   rstatus = new RobotStatus();
   port = new transitHub(rstatus);
   robot = new HumanRobot(port, rstatus, this);
 }
 
 void GaitStateManager::init_allstates() {
-  LOG(INFO, "            Initializing all gait states");
-
   walk = new GaitStateWenxi(robot);
   crouch = new GaitStateCrouch(robot);
   standup = new GaitStateStandup(robot);
   kick = new GaitStateKick(robot, this);
-  goalieleft = new GaitStateGoalieleft(robot);
-  goalieright = new GaitStateGoalieright(robot);
-  goaliemid = new GaitStateGoaliemid(robot);
-
+  goalie = new GaitStateGoalie(robot);
   setupfrontdown = new GaitStateSetupFrontDown(robot, this);
   setupbackdown = new GaitStateSetupBackDown(robot, this);
-  setupleftdown = new GaitStateSetupLeftDown(robot, this);
-  setuprightdown = new GaitStateSetupRightDown(robot, this);
-
-  walkleftkick = new GaitStateWalkLeftkick(robot);
-  walkrightkick = new GaitStateWalkRightkick(robot);
-  LOG(INFO, "            All gait states initialized");
+  ROS_INFO("All gait state initialised");
 }
 
 void GaitStateManager::reload_gaitdata() {
   rstatus->initMotor();
   port->update_initdata();
-
   walk->loadGaitFile();
   crouch->loadGaitFile();
   standup->loadGaitFile();
   kick->loadGaitFile();
-  goalieleft->loadGaitFile();
-  goalieright->loadGaitFile();
-  goaliemid->loadGaitFile();
+  goalie->loadGaitFile();
   setupfrontdown->loadGaitFile();
   setupbackdown->loadGaitFile();
-  setupleftdown->loadGaitFile();
-  setuprightdown->loadGaitFile();
-  walkleftkick->loadGaitFile();
-  walkrightkick->loadGaitFile();
 }
 
 /************************************************
@@ -102,175 +86,155 @@ void GaitStateManager::reload_gaitdata() {
 // called in HumanRobot ... Motion Code's dependency is Horrible and Vulnerable.
 
 void GaitStateManager::platCtrl(double &targetYaw, double &targetPitch) {
+  ROS_ERROR("Not implemented");
   // this function get called 20*30 times ps
   // ActionCommand::Head head = readFrom(behaviour, actions.head);
-  ActionCommand::Head head = behave_req.head;
-  // LOG(DEBUG, head);
 
-  desYaw = head.yaw;
-  desPitch = head.pitch;
+//  ActionCommand::Head head = behave_req.head;
+//  dmotion::ActionCmd::_cmd_head_type head =
 
-  desYaw = min(desYaw, MAX_PLAT_YAW);
-  desYaw = max(desYaw, -MAX_PLAT_YAW);
-
-  desPitch = max(desPitch, MIN_PLAT_PITCH);
-  desPitch = min(desPitch, MAX_PLAT_PITCH);
-
-  double yawSpeed = head.yawSpeed;
-  double pitchSpeed = head.pitchSpeed;
-
-  // set desYaw
-  if (fabs(desYaw - targetYaw) < yawSpeed) {
-    targetYaw = desYaw;
-  } else {
-    if (desYaw > targetYaw) {
-      targetYaw += yawSpeed;
-    } else {
-      targetYaw -= yawSpeed;
-    }
-  }
-
-  // set despitch
-  if (fabs(desPitch - targetPitch) < pitchSpeed || targetPitch < 0) {
-    targetPitch = desPitch;
-  } else {
-    if (desPitch > targetPitch) {
-      targetPitch += pitchSpeed;
-    } else {
-      targetPitch -= pitchSpeed;
-    }
-  }
-
-  auto eular_angle = rstatus->getEularAngle() * 180 / M_PI;
-
-  auto timestamp = getCurrentTime();
-
-  // head protect
-  auto angle = angle_pitch;
-
-  auto current_gait = behave_req.body.gaitType;
-
-  if (current_gait == ActionCommand::standup ||
-      current_gait == ActionCommand::kick) {
-    angle = 10;
-  }
-
-  if ((eular_angle.m_y - angle) < -35) {
-    last_unstable_timestamp = timestamp;
-    targetYaw = 0;
-    targetPitch = 70;
-  } else if ((eular_angle.m_y - angle) > 35) {
-    last_unstable_timestamp = timestamp;
-    targetYaw = 0;
-    targetPitch = -70;
-  } else {
-    // is stable, keep for 1 second
-    // int64_t diff = timestamp - last_unstable_timestamp;
-    // if(diff < 500000) {
-    //   VecPos last_plat = readFrom(motion, curPlat);
-    //   targetYaw = last_plat.m_x;
-    //   targetPitch = last_plat.m_y;
-    // }
-  }
-
-  //  head.yaw = targetYaw;
-  //  head.pitch = targetPitch;
-  // todo, magic number , maybe different with different type of dynamixel servo
-  // double K = head_k;
-  //  K = K * pitchSpeed;
-  // estimated_plat.m_x += K * (desYaw - estimated_plat.m_x);
-  // estimated_plat.m_y += K * (desPitch - estimated_plat.m_y);
-//  cout << estimated_plat << endl;
-
-//  VecPos tmpPlat(targetYaw, targetPitch);  // todo, check delay
-
-// TODO(mwx): add this if required by behaviour
-
-  //!?!?!?!!?!?!??!?!?!?!?!?
-  // index v=123 h
-#if 1
-    Vector2 plat(targetYaw, targetPitch);
-
-    mynode.publish("plat", plat);
-
-    // writeTo(motion, curPlat, estimated_plat);
-    // rstatus->curYaw = targetYaw;
-
-    // writeTo(motion, gyro, rstatus->getGdata());
-
-    // mynode.publish("gyro", rstatus->getGdata());
-
-    // deltadataDebug tmpDelta = rstatus->checkDeltaDist();
-
-    // // deltadataDebug tmpD = readFrom(motion, deltaData);
-    // tmpD.m_x += tmpDelta.m_x;
-    // tmpD.m_y += tmpDelta.m_y;
-    // tmpD.m_angle += tmpDelta.m_angle;
-
-    // writeTo(motion, deltaData, tmpD);
-
-    // writeTo(motion, stable, rstatus->m_bStable);
-
-    // writeTo(motion, eular, rstatus->getEularAngle());
-    // writeTo(motion, robotCtrl, robot->m_robotCtrl);
-    // writeTo(motion, vy, robot->m_robotCtrl.getWalkVelY());
-
-#endif
+//  desYaw = head.yaw;
+//  desPitch = head.pitch;
+//
+//  desYaw = min(desYaw, MAX_PLAT_YAW);
+//  desYaw = max(desYaw, -MAX_PLAT_YAW);
+//
+//  desPitch = max(desPitch, MIN_PLAT_PITCH);
+//  desPitch = min(desPitch, MAX_PLAT_PITCH);
+//
+//  double yawSpeed = head.yawSpeed;
+//  double pitchSpeed = head.pitchSpeed;
+//
+//  // set desYaw
+//  if (fabs(desYaw - targetYaw) < yawSpeed) {
+//    targetYaw = desYaw;
+//  } else {
+//    if (desYaw > targetYaw) {
+//      targetYaw += yawSpeed;
+//    } else {
+//      targetYaw -= yawSpeed;
+//    }
+//  }
+//
+//  // set despitch
+//  if (fabs(desPitch - targetPitch) < pitchSpeed || targetPitch < 0) {
+//    targetPitch = desPitch;
+//  } else {
+//    if (desPitch > targetPitch) {
+//      targetPitch += pitchSpeed;
+//    } else {
+//      targetPitch -= pitchSpeed;
+//    }
+//  }
+//
+//  auto eular_angle = rstatus->getEularAngle() * 180 / M_PI;
+//
+//  auto timestamp = getCurrentTime();
+//
+//  // head protect
+//  auto angle = angle_pitch;
+//
+//  auto current_gait = behave_req.body.gaitType;
+//
+//  if (current_gait == ActionCommand::standup ||
+//      current_gait == ActionCommand::kick) {
+//    angle = 10;
+//  }
+//
+//  if ((eular_angle.m_y - angle) < -35) {
+//    last_unstable_timestamp = timestamp;
+//    targetYaw = 0;
+//    targetPitch = 70;
+//  } else if ((eular_angle.m_y - angle) > 35) {
+//    last_unstable_timestamp = timestamp;
+//    targetYaw = 0;
+//    targetPitch = -70;
+//  } else {
+//    // is stable, keep for 1 second
+//    // int64_t diff = timestamp - last_unstable_timestamp;
+//    // if(diff < 500000) {
+//    //   VecPos last_plat = readFrom(motion, curPlat);
+//    //   targetYaw = last_plat.m_x;
+//    //   targetPitch = last_plat.m_y;
+//    // }
+//  }
+//
+//  //  head.yaw = targetYaw;
+//  //  head.pitch = targetPitch;
+//  // todo, magic number , maybe different with different type of dynamixel servo
+//  // double K = head_k;
+//  //  K = K * pitchSpeed;
+//  // estimated_plat.m_x += K * (desYaw - estimated_plat.m_x);
+//  // estimated_plat.m_y += K * (desPitch - estimated_plat.m_y);
+////  cout << estimated_plat << endl;
+//
+////  VecPos tmpPlat(targetYaw, targetPitch);  // todo, check delay
+//
+//// TODO(mwx): add this if required by behaviour
+//
+//  //!?!?!?!!?!?!??!?!?!?!?!?
+//  // index v=123 h
+//#if 1
+//    Vector2 plat(targetYaw, targetPitch);
+//
+//    mynode.publish("plat", plat);
+//
+//    // writeTo(motion, curPlat, estimated_plat);
+//    // rstatus->curYaw = targetYaw;
+//
+//    // writeTo(motion, gyro, rstatus->getGdata());
+//
+//    // mynode.publish("gyro", rstatus->getGdata());
+//
+//    // deltadataDebug tmpDelta = rstatus->checkDeltaDist();
+//
+//    // // deltadataDebug tmpD = readFrom(motion, deltaData);
+//    // tmpD.m_x += tmpDelta.m_x;
+//    // tmpD.m_y += tmpDelta.m_y;
+//    // tmpD.m_angle += tmpDelta.m_angle;
+//
+//    // writeTo(motion, deltaData, tmpD);
+//
+//    // writeTo(motion, stable, rstatus->m_bStable);
+//
+//    // writeTo(motion, eular, rstatus->getEularAngle());
+//    // writeTo(motion, robotCtrl, robot->m_robotCtrl);
+//    // writeTo(motion, vy, robot->m_robotCtrl.getWalkVelY());
+//
+//#endif
 }
 
 void GaitStateManager::checkNewCommand(const dmotion::ActionCmd &request) {
-  switch (request.body.gaitType) {
-    case AC::wenxi_gait:
+  using dmotion::ActionCmd;
+  switch (request.gait_type) {
+    case ActionCmd::WENXI:
       goal_gaitState = walk;
-      goal_gaitState->m_gait_sx = request.body.m_gait_sx;
-      goal_gaitState->m_gait_sy = request.body.m_gait_sy;
-      goal_gaitState->m_gait_st = request.body.m_gait_st;
-
+      goal_gaitState->m_gait_sx = request.cmd_vel.linear.x;
+      goal_gaitState->m_gait_sy = request.cmd_vel.linear.y;
+      goal_gaitState->m_gait_st = request.cmd_vel.angular.z;
       break;
-    case AC::wenxi_gaits:
-      goal_gaitState = walk;
-      // goal_gaitState->m_gait_vs = request.body.gait_vs_;
-      break;
-    case AC::crouch:
+    case ActionCmd::CROUCH:
       goal_gaitState = crouch;
       break;
-    case AC::standup:
-      // std::cout << "checkNewCommand stand " << std::endl;
+    case ActionCmd::STANDUP:
       goal_gaitState = standup;
       break;
-
-    case AC::kick:
+    case ActionCmd::KICK:
       goal_gaitState = kick;
-      goal_gaitState->m_right_kick = request.body.rightKick_;
+      goal_gaitState->m_kick_side = request.kick_side;
       break;
-    case AC::goalieLeft:
-      goal_gaitState = goalieleft;
+    case ActionCmd::GOALIE:
+      goal_gaitState = goalie;
       break;
-    case AC::goalieRight:
-      goal_gaitState = goalieright;
-      break;
-    case AC::goalieMid:
-      goal_gaitState = goaliemid;
-      break;
-    case AC::getup_for:
+    case ActionCmd::SETUPFRONT:
       goal_gaitState = setupfrontdown;
       break;
-    case AC::getup_back:
+    case ActionCmd::SETUPBACK:
       goal_gaitState = setupbackdown;
       break;
-    case AC::leftdownMove:
-      goal_gaitState = setupleftdown;
-      break;
-    case AC::rightdownMove:
-      goal_gaitState = setuprightdown;
-      break;
-    case AC::walkleftkick:
-      goal_gaitState = walkleftkick;
-      break;
-    case AC::walkrightkick:
-      goal_gaitState = walkrightkick;
-      break;
     default:
-      LOG(FATAL, "GaitStateManager checkNewCommand Unknown state");
+      // would never happen
+      ROS_FATAL("WRONG gait type, going to stand up");
+      goal_gaitState = standup;
   }
 }

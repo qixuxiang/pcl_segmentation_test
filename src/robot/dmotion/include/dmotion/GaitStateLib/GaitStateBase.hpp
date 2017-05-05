@@ -21,7 +21,9 @@ class GaitStateBase {
   double m_gait_sy;
   double m_gait_st;
   double m_gait_angle;
-  bool   m_right_kick;
+//  bool   m_right_kick;
+  dmotion::ActionCmd::_kick_side_type m_kick_side;
+
 
   int stepNum;
   int m_robot_number;
@@ -39,7 +41,7 @@ class GaitStateBase {
         m_gait_sy(0),
         m_gait_st(0),
         m_gait_angle(0),
-        m_right_kick(true),
+        m_kick_side(dmotion::ActionCmd::LEFT_KICK),
         type(type),
         robot(robot) {
           readOptions();

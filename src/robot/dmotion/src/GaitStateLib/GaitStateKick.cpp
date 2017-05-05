@@ -26,7 +26,7 @@ void GaitStateKick::entry() {
 
 
   double cm_advance;
-  if (m_right_kick) {
+  if (m_kick_side == dmotion::ActionCmd::RIGHT_KICK) {
     length_ = lengthR_;
     RobotCtrl ori_robotCtrl;
     cm_advance = robot->m_robotCtrl.la[1] - ori_robotCtrl.la[1];
@@ -43,7 +43,7 @@ void GaitStateKick::entry() {
       usleep(1000000);
       std::cout << "sleep end" << std::endl;
     }
-    if (m_right_kick) {
+    if (m_kick_side == dmotion::ActionCmd::RIGHT_KICK) {
       step = dataR_[0][i];
       target_robotCtrl.cm[0] = dataR_[1][i];  // 17;
       target_robotCtrl.cm[2] = dataR_[2][i];  // 6;
@@ -93,7 +93,7 @@ void GaitStateKick::entry() {
       robot->getAngle_serial(target_robotCtrl, dataArray, 1);
 #if 1  // start kick in stage 3
       if (i == 2 && j == 0) {
-        if (m_right_kick) {
+        if (m_kick_side == dmotion::ActionCmd::RIGHT_KICK) {
           dataBig = robot->curveCreate(
               dataArray[2 - 1], 0,
               dataArray[2 - 1] + (dataR_[15][i] / 360 * 4096), step);
@@ -110,7 +110,7 @@ void GaitStateKick::entry() {
         }
       }
       if (i == 3 && j == 0) {
-        if (m_right_kick) {
+        if (m_kick_side == dmotion::ActionCmd::RIGHT_KICK) {
           dataBigb = robot->curveCreate(dataR_[15][i] / 360 * 4096, 0, 0, step);
           dataSmallb =
               robot->curveCreate(dataR_[14][i] / 360 * 4096, 0, 0, step / 2);
@@ -121,7 +121,7 @@ void GaitStateKick::entry() {
         }
       }
       if (i == 2) {
-        if (m_right_kick) {
+        if (m_kick_side == dmotion::ActionCmd::RIGHT_KICK) {
           dataArray[2 - 1] = dataBig[j];  // dataArray[9-1] +
                                           // int(dataL_[15][i]*j/step/360*4096);
           dataArray[6 - 1] =
@@ -134,7 +134,7 @@ void GaitStateKick::entry() {
         }
       }
       if (i == 2 && j > step / 2) {
-        if (m_right_kick)
+        if (m_kick_side == dmotion::ActionCmd::RIGHT_KICK)
           dataArray[5 - 1] =
               dataSmall[j - step / 2 -
                         1];  // dataArray[12-1] +
@@ -148,7 +148,7 @@ void GaitStateKick::entry() {
         // std::cout<< data12[j-step/2-1]<<std::endl;
       }
       if (i == 3 && j < step / 2) {
-        if (m_right_kick)
+        if (m_kick_side == dmotion::ActionCmd::RIGHT_KICK)
           dataArray[5 - 1] =
               dataArray[5 - 1] +
               dataSmallb[j];  // dataArray[12-1] +
@@ -160,7 +160,7 @@ void GaitStateKick::entry() {
                               // int(dataL_[14][i]*j/step/360*4096);
       }
       if (i == 3) {
-        if (m_right_kick) {
+        if (m_kick_side == dmotion::ActionCmd::RIGHT_KICK) {
           dataArray[2 - 1] = dataArray[2 - 1] + dataBigb[j];
           dataArray[6 - 1] = dataArray[6 - 1] +
                              int(dataR_[15][i] / 360 * 4096) -

@@ -34,7 +34,7 @@ class HumanRobot : public I_HumanRobot {
   /*walk*/
   void doTxTask(int* motionData);
   void runWalk(double tsx, double tsy, double tst);
-  vector<double> curveCreate(double start, double mid, double last, int num);
+  double* curveCreate(double start, double mid, double last, int num);
   void getAngle_serial(const RobotCtrl targetCtrl, int dataArray[],
                        const bool isExcute);
   double* get_Angle(const double* tChest, const double* tAnkle,
@@ -79,7 +79,7 @@ class HumanRobot : public I_HumanRobot {
   /* for plat control */
   double curYaw, curPitch;
   double desYaw, desPitch;
-  double m_motorTime;
+
   initdataDebug initdata_;
 
   double forward_k;

@@ -1042,7 +1042,7 @@ void HumanRobot::getVxyf0(double tsx, double vxy[]) {
  * \param tsy the width of the robot y direction
  * \param tst the rotation angle of the robot in only one step
  * \return null
- ***********************************************/
+p ***********************************************/
 void HumanRobot::runWalk(double tsx, double tsy, double tst) {
   // cout << tsy << endl;
   double r_sx = tsx;  // real in world
@@ -1992,7 +1992,7 @@ void HumanRobot::staticExit() {
       *m_manager->goal_gaitState == SETUPFRONTDOWN ||
       *m_manager->goal_gaitState == SETUPLEFTDOWN ||
       *m_manager->goal_gaitState == SETUPRIGHTDOWN) {
-    ROS_DEBUG("[Crouch] exit() do nothing. ")
+    ROS_DEBUG("[Crouch] exit() do nothing.");
   } else {
     ROS_DEBUG("Do first step");
     dofirstStep();

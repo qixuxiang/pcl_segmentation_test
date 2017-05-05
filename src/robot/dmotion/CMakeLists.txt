@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(dmotion)
-add_definitions(-std=c++11)
+add_definitions(-std=c++11 -Wall -Wnon-virtual-dtor -pedantic)
 
 find_package(catkin REQUIRED
     COMPONENTS roscpp
@@ -30,11 +30,12 @@ catkin_package(
 include_directories(include ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
 
 add_library(dmotionlib
-#  src/dmotion.cpp
-#  src/transitHub.cpp
+  src/dmotion.cpp
+  src/transitHub.cpp
   src/RobotStatus.cpp
-#  src/GaitStateManager.cpp
-#  include/dmotion/GaitStateManager.hpp
+
+  src/GaitStateManager.cpp
+  include/dmotion/GaitStateManager.hpp
 
   src/GaitStateLib/GaitStateBase.cpp
   src/GaitStateLib/GaitStateWenxi.cpp
@@ -45,9 +46,7 @@ add_library(dmotionlib
   src/GaitStateLib/GaitStateSetupFrontDown.cpp
   src/GaitStateLib/GaitStateSetupBackDown.cpp
 
-#  src/GaitStateSupportLib/HumanRobot.cpp
-#  include/dmotion/GaitStateSupportLib/HumanRobot.hpp
-
+  src/GaitStateSupportLib/HumanRobot.cpp
   src/GaitStateSupportLib/HumanRobotInterface.cpp
 
   src/VecPos.cpp
@@ -61,6 +60,6 @@ add_library(dmotionlib
 target_link_libraries(dmotionlib ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 add_dependencies(dmotionlib ${PROJECT_NAME}_generate_messages_cpp)
 
-#add_executable(dmotion_node src/main.cpp)
-#target_link_libraries(dmotion_node dmotionlib ${catkin_LIBRARIES})
-#add_dependencies(dmotion_node ${PROJECT_NAME}_generate_messages_cpp)
+add_executable(dmotion_node src/main.cpp)
+target_link_libraries(dmotion_node dmotionlib ${catkin_LIBRARIES})
+add_dependencies(dmotion_node ${PROJECT_NAME}_generate_messages_cpp)

@@ -12,6 +12,7 @@ template<typename T>
 class DProcess {
 public:
   explicit DProcess(int freq, bool rt = false) : m_freq(freq), m_rt(rt) {}
+  virtual ~DProcess() {}
   void spin() {
     m_thread = std::thread([=] {
       // maybe add some timer
@@ -55,9 +56,9 @@ public:
   virtual void tick() {}
 
 private:
-
-  bool m_rt;
   int m_freq;
+  bool m_rt;
+
   std::thread m_thread;
 };
 
