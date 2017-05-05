@@ -19,6 +19,10 @@ Todo:
     - [ ] HumanRobot
     - [ ] TransitHub
     - [ ] GaitStateManager
+    - [ ] oth load gait file
+    - [ ] vector !!
+    - [ ] test on bot5
+
   - [ ] dvision
   - [ ] dbehavior
   - [ ] dgamecontroller
