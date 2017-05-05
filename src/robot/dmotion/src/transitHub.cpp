@@ -1,10 +1,9 @@
 #include <fcntl.h>
-#include <sys/ioctl.h>
-#include <sys/stat.h>
-#include <sys/time.h>
-#include <termios.h>
 #include <iomanip>
 #include <ros/ros.h>
+#include <sys/ioctl.h>
+#include <sys/stat.h>
+#include <termios.h>
 
 #include "dmotion/transitHub.hpp"
 
@@ -18,11 +17,9 @@ namespace {
 // const int NONE = 2;
 // const int REPLY   = 3;
 static double __attribute__((unused)) gyro_timeval[2] = {0, 0};
-}  // namespace
+} // namespace
 
-bool transitHub::isOpen() {
-  return m_bOpen;
-}
+bool transitHub::isOpen() { return m_bOpen; }
 
 bool transitHub::portClose() {
   if (isOpen()) {
@@ -32,9 +29,7 @@ bool transitHub::portClose() {
   return true;
 }
 
-void transitHub::updateInitData() {
-  initdata = m_status->getMotorinit();
-}
+void transitHub::updateInitData() { initdata = m_status->getMotorinit(); }
 
 // todo, every 5s test if /dev/ttyUSB0 exist, if not reopen port
 bool transitHub::portOpen() {
@@ -60,7 +55,7 @@ bool transitHub::portOpen() {
         returncode = stat(tmp.c_str(), &buf);
 
         if (returncode == -1) {
-          usleep(10000);  // wait for 0.01s
+          usleep(10000); // wait for 0.01s
           continue;
         } else {
           ROS_INFO("Found an accessible serial port dev: %s", tmp.c_str());
@@ -73,20 +68,20 @@ bool transitHub::portOpen() {
         break;
       } else {
         ROS_FATAL("No serial dev accessible");
-        usleep(10000);
+         usleep(10000);
       }
     }
   }
-  ROS_INFO("\"[Transithub] opened port: %s", comName.c_str());
+  ROS_INFO("Opened port: %s", comName.c_str());
 
   m_ifd = open(comName.c_str(), O_RDWR | O_NOCTTY);
 
   if (m_ifd < 0) {
     m_bOpen = false;
-    ROS_ERROR("[FATAL] transitHub::portOpen failed: %s", comName.c_str());
+    ROS_FATAL("transitHub::portOpen failed: %s", comName.c_str());
     return false;
   } else {
-    ROS_INFO("[INFO] serial port open succeed: %s", comName.c_str());
+    ROS_INFO("Serial port open succeed: %s", comName.c_str());
     m_bOpen = true;
   }
 
@@ -130,7 +125,8 @@ void transitHub::transmit(int *data, packet_types type) {
 
     delete[] tmp;
 
-    ROS_DEBUG("%ld receive buffer left, %d more chars!", m_gaitCycle, leftBytes);
+    ROS_DEBUG("%ld receive buffer left, %d more chars!", m_gaitCycle,
+              leftBytes);
   }
   /* with out this the time will be up to 45ms */
   if (write(m_ifd, str, length) == -1) {
@@ -182,17 +178,17 @@ size_t transitHub::makeStdData(char *str, int *data, packet_types type) {
     str[len++] = (~sum & 0x00ff);
     str[len] = '\0';
     return len;
-  } else if (type == PACKET_PING)  // 2.PACKET_PING
+  } else if (type == PACKET_PING) // 2.PACKET_PING
   {
     str[len] = '\0';
     return len;
-  } else if (type == PACKET_CHECK)  // 3.PACKET_CHECK
+  } else if (type == PACKET_CHECK) // 3.PACKET_CHECK
   {
     str[len++] = data[0] & 0x00ff;
     str[len++] = data[1] & 0x00ff;
     str[len] = '\0';
     return len;
-  } else if (type == PACKET_SET_INIT)  // 4.PACKET_SET_INIT
+  } else if (type == PACKET_SET_INIT) // 4.PACKET_SET_INIT
   {
     int len_ = 45 - 3;
     char msg[42] = "motor init";
@@ -209,13 +205,13 @@ size_t transitHub::makeStdData(char *str, int *data, packet_types type) {
     //    str[len++] = (~sum & 0x00ff);
     //    str[len] = '\0';
     //    return len;
-  } else if (type == PACKET_GYRO_PRESS)  // 5.PACKET_GYRO_PRESS
+  } else if (type == PACKET_GYRO_PRESS) // 5.PACKET_GYRO_PRESS
   {
     str[len++] = data[0] & 0x00ff;
     str[len++] = data[1] & 0x00ff;
     str[len] = '\0';
     return len;
-  } else if (type == PACKET_LOCK)  // 6.PACKET_LOCK
+  } else if (type == PACKET_LOCK) // 6.PACKET_LOCK
   {
     str[len++] = data[0] & 0x00ff;
     str[len++] = data[1] & 0x00ff;
@@ -273,13 +269,13 @@ void transitHub::gypdatatransform(char *temp) {
   }
 
   if (tmp[0] == 0 && tmp[1] == 0 && tmp[2] == 0 && tmp[3] == 0 && tmp[4] == 0 &&
-      tmp[5] == 0)  // if error, just be equal to the former
+      tmp[5] == 0) // if error, just be equal to the former
   {
     ROS_ERROR("*************GYRO ERROR****************");
     return;
   }
 
-  if (m_imu_version == "ADIS16365BMLZ")  //  ADIS 16365BMLZ
+  if (m_imu_version == "ADIS16365BMLZ") //  ADIS 16365BMLZ
   {
     gyroscope.GYPO[0] = tmp[0] * 0.05;
     gyroscope.GYPO[1] = tmp[1] * 0.05;
@@ -287,7 +283,7 @@ void transitHub::gypdatatransform(char *temp) {
     gyroscope.ACCL[0] = tmp[3] * 0.003 * 9.8;
     gyroscope.ACCL[1] = tmp[4] * 0.003 * 9.8;
     gyroscope.ACCL[2] = tmp[5] * 0.003 * 9.8;
-  } else if (m_imu_version == "ADIS16365AMLZ")  // ADIS 16355AMLZ default
+  } else if (m_imu_version == "ADIS16365AMLZ") // ADIS 16355AMLZ default
   {
     gyroscope.GYPO[0] = tmp[0] * 0.07326;
     gyroscope.GYPO[1] = tmp[1] * 0.07326;
@@ -301,9 +297,9 @@ void transitHub::gypdatatransform(char *temp) {
     ROS_DEBUG("GYP 1");
     gyroscope.GYPO[0] = tmp[0] * 0.0304878;
     gyroscope.GYPO[1] = tmp[1] * 0.0304878;
-    if (m_robot_version == "2012") {
+    if (m_robot_version == 2012) {
       gyroscope.GYPO[2] = tmp[2] * 0.0304878 + m_gyroscope_correct;
-    } else  // "2012.5" and "2013"
+    } else // "2012.5" and "2013"
     {
       gyroscope.GYPO[2] = -1.0 * (tmp[2] * 0.0304878);
     }
@@ -326,12 +322,12 @@ void transitHub::gypdatatransform(char *temp) {
     gyro_timeval[1] /= 1000000;
 
     MOTION::sampletime = 0.02;
-  } else  // update the gyro_timeval[2] according to the real condition
+  } else // update the gyro_timeval[2] according to the real condition
   {
     gettimeofday(&time_temp, NULL);
-    gyro_timeval[0] = gyro_timeval[1];  // set past
+    gyro_timeval[0] = gyro_timeval[1]; // set past
     gyro_timeval[1] = 1000000 * time_temp.tv_sec + time_temp.tv_usec;
-    gyro_timeval[1] /= 1000000;  // get new value
+    gyro_timeval[1] /= 1000000; // get new value
 
     MOTION::sampletime = gyro_timeval[1] - gyro_timeval[0];
     if (MOTION::sampletime > 0.03) {
@@ -349,7 +345,8 @@ void transitHub::gypdatatransform(char *temp) {
   m_status->updateEularAngle();
   m_status->checkStableState();
 
-  //  LOG(TRANSITHUB_DEBUG, "GYRO DEBUG: " << m_status->getEularAngle().m_x << " ");
+  //  LOG(TRANSITHUB_DEBUG, "GYRO DEBUG: " << m_status->getEularAngle().m_x << "
+  //  ");
   //  << m_status->getEularAngle().m_y << " " << gyroscope.GYPO[0]
   //  << " " << gyroscope.GYPO[1] << " " << gyroscope.GYPO[2] << " "
   //  << gyroscope.ACCL[0] << " " << gyroscope.ACCL[1] << " "
@@ -370,39 +367,33 @@ void transitHub::doCheckTx(int id, bool pos, bool temp, bool vol, bool load) {
 }
 
 void transitHub::readOptions() {
-  ROS_ERROR("Not implemented");
-//  get_val(hardware["serial_port_name"], comName);
-//  get_val(hardware["serial_port_number"], comNumber);
-//  get_val(hardware["serial_port_baudrate"], baudRate);
-//  get_val(hardware["robot_version"], m_robot_version);
-//  get_val(hardware["imu_version"], m_imu_version);
-//  get_val(hardware["gyroscope_correct"], m_gyroscope_correct);
+  if(!m_nh->getParam("/dmotion/hardware/serial_port_name", comName))  ROS_FATAL("getParam error");
+  if(!m_nh->getParam("/dmotion/hardware/serial_port_number", comNumber))  ROS_FATAL("getParam error");
+  if(!m_nh->getParam("/dmotion/hardware/serial_port_baudrate", baudRate))  ROS_FATAL("getParam error");
+  if(!m_nh->getParam("/dmotion/hardware/robot_version", m_robot_version))  ROS_FATAL("getParam error");
+  if(!m_nh->getParam("/dmotion/hardware/imu_version", m_imu_version))  ROS_FATAL("getParam error");
+  if(!m_nh->getParam("/dmotion/hardware/gyroscope_correct", m_gyroscope_correct))  ROS_FATAL("getParam error");
 }
 
 /*---------------------------------------------------------------------------------
  * Public Member Functions
  *-------------------------------------------------------------------------------*/
-transitHub::transitHub(RobotStatus *rs)
-    : m_status(rs), m_bOpen(false), m_ifd(-1), m_gaitCycle(0) {
+transitHub::transitHub(ros::NodeHandle* nh, RobotStatus *rs)
+    : m_nh(nh), m_status(rs), m_bOpen(false), m_ifd(-1), m_gaitCycle(0) {
   readOptions();
   portOpen();
-
   update_initdata();
 }
 
-void transitHub::update_initdata() {
-  initdata = m_status->getMotorinit();
-}
+void transitHub::update_initdata() { initdata = m_status->getMotorinit(); }
 
-transitHub::~transitHub() {
-  portClose();
-}
+transitHub::~transitHub() { portClose(); }
 
 void transitHub::doRx(char *recv, int failureCount) {
   ROS_DEBUG("Start doRx");
   char recBuffer[200];
   char type;
-  int count = failureCount;  // 0
+  int count = failureCount; // 0
   while (failureCount == 0 ? 1 : count--) {
     /**
      * Step 1 Head
@@ -486,7 +477,8 @@ void transitHub::doRx(char *recv, int failureCount) {
         compass.temperature = temperature;
         compass.corresCycle = m_gaitCycle;
         m_status->setCompassData(compass);
-        ROS_DEBUG("Compass %ld %ld %ld %lf", compass.x, compass.y, compass.z, compass.temperature);
+        ROS_DEBUG("Compass %ld %ld %ld %lf", compass.x, compass.y, compass.z,
+                  compass.temperature);
       }
     }
 
@@ -518,7 +510,8 @@ void transitHub::doLoopTx(int *body, int *camera) {
     else if (i >= MOTORNUM - 2)
       store_data[i] = camera[i - (MOTORNUM - 2)];
 
-//    LOG(TRANSITHUB_DEBUG, __func__ << m_gaitCycle << " " << store_data[i] << " ");
+    //    LOG(TRANSITHUB_DEBUG, __func__ << m_gaitCycle << " " << store_data[i]
+    //    << " ");
   }
   transmit(store_data);
 

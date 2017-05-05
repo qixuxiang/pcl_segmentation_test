@@ -42,6 +42,7 @@ enum packet_types {
 
 class transitHub {
  private:
+  ros::NodeHandle* m_nh;
   RobotStatus* m_status;
   bool m_bOpen;
   int m_ifd;
@@ -54,7 +55,7 @@ class transitHub {
 
   double m_gyroscope_correct;
   string m_imu_version;
-  string m_robot_version;
+  int m_robot_version;
 
   /* the return value refers to the actual number of the transmitted data */
   void transmit(int *data, packet_types type = PACKET_MOTION);
@@ -79,7 +80,7 @@ class transitHub {
 
   // to do: private functions
  public:
-  transitHub(RobotStatus* rs);
+  transitHub(ros::NodeHandle* nh, RobotStatus* rs);
   ~transitHub();
   void readOptions();
   void update_initdata();

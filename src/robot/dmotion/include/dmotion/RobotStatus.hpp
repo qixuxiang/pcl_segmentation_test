@@ -1,4 +1,5 @@
 #pragma once
+#include <ros/ros.h>
 #include <deque>
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/io.hpp>
@@ -10,7 +11,7 @@
 
 class RobotStatus {
  public:
-  RobotStatus();
+  explicit RobotStatus(ros::NodeHandle* nh);
   ~RobotStatus();
   void readOptions();
 
@@ -32,7 +33,7 @@ class RobotStatus {
   comEstimator* m_comInfo;
   std::deque<VecPos> m_eular_deque;
   deltadataDebug checkDeltaDist();
-  bool initMotor();
+  void initMotor();
   double m_last_angle_z;
 
  public:
@@ -42,16 +43,16 @@ class RobotStatus {
   GyroData m_gypdata;
   offsetDebug m_offset;
   CompassData m_compassdata;
+
   initdataDebug m_motorini;
   initdataDebug raw_motorini;
+
   deltadataDebug m_deltaDist;
-  double k_tmp[MOTORNUM];
+  std::vector<double> k_tmp;
   bool m_isRun;
-  void updateMotor(int id, int delta);
 
  private:
-
-
+  ros::NodeHandle* m_nh;
   One_D_Filter compass_filter;
   int robotnumber;
 };

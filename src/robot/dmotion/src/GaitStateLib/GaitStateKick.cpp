@@ -6,8 +6,8 @@ GaitStateKick::GaitStateKick(I_HumanRobot *robot, GaitStateManager *manager)
 
 void GaitStateKick::loadGaitFile() {
   ROS_DEBUG("Kick reload gait file");
-  lengthR_ = robot->loadGaitFile("rightKick.txt", dataR_, 16);
-  lengthL_ = robot->loadGaitFile("leftKick.txt", dataL_, 16);
+  lengthR_ = robot->loadGaitFile("rightKick", dataR_);
+  lengthL_ = robot->loadGaitFile("leftKick", dataL_);
 }
 
 GaitStateKick::~GaitStateKick() = default;

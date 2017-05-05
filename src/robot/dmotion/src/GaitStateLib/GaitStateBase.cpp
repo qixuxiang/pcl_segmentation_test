@@ -1,5 +1,7 @@
 #include "dmotion/GaitStateLib/GaitStateBase.hpp"
 
+ros::NodeHandle* GaitStateBase::m_nh = nullptr;
+
 void GaitStateBase::readOptions() {
 //  auto& config = MotionConfigClient::getinstance()->config();
 //  auto& robot = config.robot;

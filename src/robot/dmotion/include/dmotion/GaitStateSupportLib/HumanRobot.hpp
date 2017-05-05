@@ -1,7 +1,7 @@
 #pragma once
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/io.hpp>
-
+#include <ros/ros.h>
 #include <string>
 #include <vector>
 #include "dmotion/GaitStateSupportLib/HumanRobotInterface.hpp"
@@ -18,7 +18,7 @@ class transitHub;
 
 class HumanRobot : public I_HumanRobot {
  public:
-  HumanRobot(transitHub* port, RobotStatus* rs, GaitStateManager* manager);
+  HumanRobot(ros::NodeHandle* m_nh, transitHub* port, RobotStatus* rs, GaitStateManager* manager);
   ~HumanRobot();
   transitHub* m_port;
   RobotStatus* m_status;
@@ -41,7 +41,7 @@ class HumanRobot : public I_HumanRobot {
                     const double* tHand, const bool whleg);
   void getVxyf0(const double tsx, double vxy[]);
   /*static*/
-  int loadGaitFile(const std::string filename, double* data[], int colomn);
+  int loadGaitFile(const std::string gaitname, double** data);
   void dofirstStep();
   void doCrouchFromStand(const int stepnum_);
   void doCrouchFromStandMotor(const int stepnum_);
@@ -77,6 +77,7 @@ class HumanRobot : public I_HumanRobot {
 
  private:
   /* for plat control */
+  ros::NodeHandle* m_nh;
   double curYaw, curPitch;
   double desYaw, desPitch;
 

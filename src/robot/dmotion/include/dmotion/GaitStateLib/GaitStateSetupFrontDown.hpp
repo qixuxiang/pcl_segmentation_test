@@ -11,12 +11,7 @@ class GaitStateSetupFrontDown : public GaitStateBase {
   void execute() override;
   void exit() override;
   GaitStateBase* setupback;
-  void loadGaitFile() override;
  private:
-
-  bool loadFile(const char* filename, double** t_data);
-  bool loadData(double** t_data);
-
   std::fstream file;
   int length;
   double* data[10];

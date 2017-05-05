@@ -15,54 +15,69 @@ using namespace std;
 
 HumanRobot::~HumanRobot() = default;
 
-HumanRobot::HumanRobot(transitHub *port, RobotStatus *rs,
+HumanRobot::HumanRobot(ros::NodeHandle *nh, transitHub *port, RobotStatus *rs,
                        GaitStateManager *manager)
-    : m_port(port),
+    : m_nh(nh),
+      m_port(port),
       m_status(rs),
       m_manager(manager),
       m_motor_bodyR(boost::numeric::ublas::matrix<double>(3, 3)) {
   readOptions();
   m_robotCtrl = RobotCtrl(0, 0, 0, DOUBLE_BASED);
-  // int* initialdata = new int[MOTORNUM];
-  // for(int i = 0 ; i < MOTORNUM ; i++)
-  // {
-  //   initialdata[i] = m_status->getMotorinit().initial[i];
-  // }
-  // m_robotCtrl.setMotionData(initialdata);
-  curYaw = curPitch = desYaw = desPitch = 0;
+    curYaw = curPitch = desYaw = desPitch = 0;
   m_leftkick_flag = 0;
   m_rightkick_flag = 0;
-  firstStep_length = loadGaitFile("pvhipY.txt", firstStep_data, 5);
+  firstStep_length = loadGaitFile("pvhipY", firstStep_data);
 }
 
 void HumanRobot::readOptions() {
-//  get_val(robot["ah_ml_zero"], m_AnkleH_mid_l);
-//  get_val(robot["ah_fl"], m_AnkleH_last_l);
-//  get_val(robot["ah_mr_zero"], m_AnkleH_mid_r);
-//  get_val(robot["ah_fr"], m_AnkleH_last_r);
-//  get_val(robot["number"], m_robot_number);
-//  get_val(robot["motor_time"], m_motorTime);
-//
-//  stringstream num;
-//  for (int i = 0; i < MOTORNUM; i++) {
-//    num.str("");
-//    num << i + 1;
-//    // LOG(TRANSITHUB_DEBUG, motor[num.str() + ".zf"]);
-//
-//    m_motor_zf[i] = as<int>(motor[num.str() + ".zf"]);
-//    int k_tmp = as<int>(motor[num.str() + ".k"]);
-//    m_motor_lb[i] = as<int>(motor[num.str() + ".lb"]);
-//    m_motor_ub[i] = as<int>(motor[num.str() + ".ub"]);
-//
-//    if (k_tmp == 4096) {
-//      m_motor_k[i] = k_tmp * 180.0 / M_PI / 360;
-//    } else if (k_tmp == 1024) {
-//      m_motor_k[i] = k_tmp * 180.0 / M_PI / 300;
-//    } else {
-//      throw runtime_error("mx? rx? or other fu** dynamixel motor? ");
-//    }
-//  }
-  ROS_INFO("HumanRobot read options succeed");
+  if (!m_nh->getParam("/dmotion/robot/ah_ml_zero", m_AnkleH_mid_l)) ROS_FATAL("HumanRobot get param error");
+  if (!m_nh->getParam("/dmotion/robot/ah_fl", m_AnkleH_last_l)) ROS_FATAL("HumanRobot get param error");
+  if (!m_nh->getParam("/dmotion/robot/ah_mr_zero", m_AnkleH_mid_r)) ROS_FATAL("HumanRobot get param error");
+  if (!m_nh->getParam("/dmotion/robot/ah_fr", m_AnkleH_last_r)) ROS_FATAL("HumanRobot get param error");
+  if (!m_nh->getParam("/dmotion/robot/number", m_robot_number)) ROS_FATAL("HumanRobot get param error");
+
+  vector<double> zf;
+  vector<double> k;
+  vector<double> lb;
+  vector<double> ub;
+  if (!m_nh->getParam("/dmotion/motor/zf", zf)) ROS_FATAL("HumanRobot get param error");
+  if (!m_nh->getParam("/dmotion/motor/k", k)) ROS_FATAL("HumanRobot get param error");
+  if (!m_nh->getParam("/dmotion/motor/lb", lb)) ROS_FATAL("HumanRobot get param error");
+  if (!m_nh->getParam("/dmotion/motor/ub", ub)) ROS_FATAL("HumanRobot get param error");
+
+  for (int i = 0; i < MOTORNUM; i++) {
+    m_motor_zf[i] = zf[i];
+    int k_tmp = k[i];
+    m_motor_lb[i] = lb[i];
+    m_motor_ub[i] = ub[i];
+    if (k_tmp == 4096 || k_tmp == 1024) {
+      m_motor_k[i] = k_tmp * 180.0 / M_PI / 300;
+    } else {
+      throw runtime_error("mx? rx? or other fu** dynamixel motor? ");
+    }
+  }
+  ROS_INFO("Human Robot readOptions success");
+}
+
+int HumanRobot::loadGaitFile(const std::string gaitname, double **data) {
+  ROS_INFO("Loading gait: %s", gaitname.c_str());
+  vector<double> tmp;
+  int row;
+  if (!m_nh->getParam("/dmotion/"+gaitname+"/data", tmp)) ROS_FATAL("HumanRobot get param error");
+  if (!m_nh->getParam("/dmotion/"+gaitname+"/row", row)) ROS_FATAL("HumanRobot get param error");
+
+  int len = tmp.size() / row;
+  ROS_WARN("TODO(motion group) do not use raw array!!!!!!!!!!! why kick dataR_[i]'s addr is weird??");
+  for(int i = 0; i < row; ++i) {
+    data[i] = new double[len];
+    ROS_WARN("MEMORY LEEEEEEEEEEEEAK!");
+    for(int j = 0; j < len; ++j) {
+//      ROS_INFO("%d %d %lf", i, j, tmp[i * len + j]);
+      data[i][j] = tmp[i * len + j];
+    }
+  }
+  return len;
 }
 
 boost_matrix HumanRobot::rotx(double roll) {
@@ -1728,52 +1743,6 @@ void HumanRobot::getAngle_serial(const RobotCtrl targetCtrl, int dataArray[],
   // dataArray[11-1] = 0;
 }
 
-int HumanRobot::loadGaitFile(const string filename, double *data[],
-                             int colomn) {
-  stringstream tempRobotNumber;
-  string tempString;
-  tempRobotNumber << m_robot_number;
-  tempRobotNumber >> tempString;
-
-  const char *file_char;
-  string fullname = "./config/gaitData" + tempString + "/" + filename;
-  file_char = fullname.c_str();
-  /*load file*/
-  fstream file;
-  file.clear();
-  file.open(file_char, ios_base::in);
-  if (file.fail()) {
-    ROS_ERROR("%s not found.", fullname.c_str());
-    throw runtime_error(" file not found.");
-  }
-
-  /*load data*/
-  double temp;
-  int length = 0;
-  while (file >> temp) {
-    length++;
-  }
-  file.clear();
-  length = length / colomn;  // bug
-
-  file.seekg(ios_base::beg);
-
-  for (int i = 0; i < colomn; i++) {
-    if (data[i]) {
-      data[i] = NULL;
-    }
-    data[i] = new double[length];
-  }
-
-  for (int i = 0; i < colomn; i++) {
-    for (int j = 0; j < length; j++) {
-      file >> temp;
-
-      data[i][j] = temp;
-    }
-  }
-  return length;
-}
 /*TODO*/
 /*Static motion may can be One Class to easy coding*/
 //机器人的第一步，一种tricky 的实现方法，使机器人身体摆动起来后进入踏步状态。

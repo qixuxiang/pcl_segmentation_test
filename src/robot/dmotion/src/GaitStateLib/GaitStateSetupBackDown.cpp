@@ -5,7 +5,7 @@ using namespace std;
 GaitStateSetupBackDown::GaitStateSetupBackDown(I_HumanRobot* robot,
                                                GaitStateManager* manager)
     : GaitStateBase(SETUPBACKDOWN, robot), manager(manager) {
-  loadGaitFile();
+  ROS_WARN("TODO load gait file");
 }
 
 GaitStateSetupBackDown::~GaitStateSetupBackDown() = default;
@@ -71,60 +71,4 @@ void GaitStateSetupBackDown::exit() {
     robot->runWalk(0, 0, 0);
     robot->runWalk(0, 0, 0);
   }
-}
-
-void GaitStateSetupBackDown::loadGaitFile() {
-  string fileAddress = "./config/gaitData";
-  stringstream tempRobotNumber;
-  string tempString;
-  tempRobotNumber << m_robot_number;
-  tempRobotNumber >> tempString;
-  auto jiangyin = fileAddress + tempString + "/BackDown.txt";
-
-  if (!loadFile(jiangyin.c_str(), data)) {
-    ROS_FATAL("Failed to load gait file: %s", jiangyin.c_str());
-  }
-}
-
-bool GaitStateSetupBackDown::loadFile(const char* filename, double** t_data) {
-  file.clear();
-  file.open(filename, ios_base::in);
-
-  if (file.fail()) {
-    return false;
-  }
-  if (!loadData(t_data))
-    return false;
-  if (file.is_open()) {
-    file.close();
-  }
-  return true;
-}
-
-bool GaitStateSetupBackDown::loadData(double** t_data) {
-  double temp;
-
-  length = 0;
-  while (file >> temp) {
-    length++;
-  }
-
-  file.clear();
-  length = length / 10;  // bug
-  for (int i = 0; i < 10; i++) {
-    if (data[i]) {
-      data[i] = NULL;
-    }
-    data[i] = new double[length];
-  }
-
-  file.seekg(ios_base::beg);
-
-  for (int i = 0; i < 10; i++) {
-    for (int j = 0; j < length; j++) {
-      file >> temp;
-      data[i][j] = temp;
-    }
-  }
-  return true;
 }

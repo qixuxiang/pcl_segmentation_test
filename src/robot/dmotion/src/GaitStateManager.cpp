@@ -4,7 +4,7 @@
 
 using namespace std;
 
-GaitStateManager::GaitStateManager() {
+GaitStateManager::GaitStateManager(ros::NodeHandle* nh) : m_nh(nh) {
   init();
   init_allstates();
   gaitState = crouch;
@@ -50,12 +50,13 @@ void GaitStateManager::tick() {
 
 void GaitStateManager::init() {
   ROS_INFO("GaitState Manager INIT");
-  rstatus = new RobotStatus();
-  port = new transitHub(rstatus);
-  robot = new HumanRobot(port, rstatus, this);
+  rstatus = new RobotStatus(m_nh);
+  port = new transitHub(m_nh, rstatus);
+  robot = new HumanRobot(m_nh, port, rstatus, this);
 }
 
 void GaitStateManager::init_allstates() {
+  GaitStateBase::set_nh(m_nh);
   walk = new GaitStateWenxi(robot);
   crouch = new GaitStateCrouch(robot);
   standup = new GaitStateStandup(robot);

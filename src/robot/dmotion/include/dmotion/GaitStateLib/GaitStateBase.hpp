@@ -31,6 +31,7 @@ class GaitStateBase {
   double m_setupside_arm_theta;
   double m_goalie_theta;
   bool m_goalie_bool;
+  static inline void set_nh(ros::NodeHandle* nh) { m_nh = nh; }
 
   void readOptions();
   virtual void loadGaitFile();
@@ -54,6 +55,7 @@ class GaitStateBase {
 
   const GaitStateType type;
   I_HumanRobot* robot;
+  static ros::NodeHandle* m_nh;
 
   double length_max_l;
   double length_max_r;

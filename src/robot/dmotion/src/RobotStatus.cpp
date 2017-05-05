@@ -1,9 +1,9 @@
 #include "dmotion/RobotStatus.hpp"
-#include <ros/ros.h>
 #include <fstream>
+#include <ros/ros.h>
 
 using namespace std;
-RobotStatus::RobotStatus() {
+RobotStatus::RobotStatus(ros::NodeHandle *nh) : m_nh(nh) {
   readOptions();
   initMotor();
   m_last_angle_z = 0;
@@ -46,7 +46,7 @@ void RobotStatus::updateEularAngle() {
   eular.m_x = m_comInfo->m_filter->eular[0];
   eular.m_y = m_comInfo->m_filter->eular[1];
   m_eular_deque.push_front(eular);
-  if (m_eular_deque.size() > 50)  // 1s
+  if (m_eular_deque.size() > 50) // 1s
   {
     m_eular_deque.pop_back();
   }
@@ -147,11 +147,10 @@ void RobotStatus::updateDeltaDist(const VecPos &D, double deltaBodyAngle) {
         ry * sin(deltaBodyAngle / 180 * M_PI);
     m_deltaDist.m_angle = deltaBodyAngle;
   } else {
-    VecPos addValue =
-        VecPos(rx * sin(deltaBodyAngle / 180 * M_PI) +
-                   ry * (1 - cos(deltaBodyAngle / 180 * M_PI)),
-               rx * (1 - cos(deltaBodyAngle / 180 * M_PI)) +
-                   ry * sin(deltaBodyAngle / 180 * M_PI));
+    VecPos addValue = VecPos(rx * sin(deltaBodyAngle / 180 * M_PI) +
+                                 ry * (1 - cos(deltaBodyAngle / 180 * M_PI)),
+                             rx * (1 - cos(deltaBodyAngle / 180 * M_PI)) +
+                                 ry * sin(deltaBodyAngle / 180 * M_PI));
     addValue.rotate(m_deltaDist.m_angle);
     m_deltaDist.m_x += addValue.m_x;
     m_deltaDist.m_y += addValue.m_y;
@@ -164,87 +163,35 @@ initdataDebug RobotStatus::getMotorinit() { return m_motorini; }
 initdataDebug RobotStatus::getRawMotorInit() { return raw_motorini; }
 
 void RobotStatus::readOptions() {
-//  std::stringstream num;
-//  for (int i = 0; i < MOTORNUM; i++) {
-//    num.str("");
-//    num << i + 1;
-//
-//    int tmp = as<int>(config.motor[num.str() + ".k"]);
-//
-//    // get_val(, tmp);
-//
-//    if (tmp == 4096) {
-//      k_tmp[i] = tmp / 360.0;
-//    } else if (tmp == 1024) {
-//      k_tmp[i] = tmp / 360.0;
-//    } else {
-//      LOG(ERROR, "RobotStatus read motor config failed" );
-//      throw std::runtime_error("mx? rx? or other fu** dynamixel motor? ");
-//    }
-//  }
-}
-
-void RobotStatus::updateMotor(int id, int value) {
-  id -= 1;
-  if (id > 20 || id < 0) {
-    ROS_ERROR("No such motor id: %d", id);
+  if (!m_nh->getParam("/dmotion/motor/k", k_tmp)) {
+    ROS_FATAL("Get motor k error");
   }
-
-  if (value < 0 || value > 360 - 1) {
-    ROS_WARN("Update Motor out of range id: %d delta: %d", id, value);
-  } else {
-    raw_motorini.initial[id] = value;
-    m_motorini.initial[id] = (int) (k_tmp[id] * raw_motorini.initial[id]);
+  for (auto &k : k_tmp) {
+    if (k != 4096) {
+      ROS_ERROR("mx? rx? or other fucking dynamixel motor? ");
+    }
+    k /= 360.0;
+    ROS_DEBUG("motor k %lf", k);
   }
 }
 
-bool RobotStatus::initMotor() {
-  ROS_INFO("------------------------------- init motor -------------------------------");
-  std::stringstream robotnum;
-  robotnum << robotnumber;
-  std::string init_file = std::string("./config/gaitData") + robotnum.str() + std::string("/initialDataConfig.txt");
-  ifstream initial_file(init_file.c_str());
-
-  char dataGot[200];
-  double initial_tmp[MOTORNUM];
-
-  if (initial_file.fail()) {
-    ROS_ERROR("Can't open %s", init_file.c_str());
-    return false;
+void RobotStatus::initMotor() {
+  ROS_INFO("Init motor");
+  vector<double> initial_tmp;
+  if (!m_nh->getParam("/dmotion/motor/init", initial_tmp)) {
+    ROS_FATAL("Can't get initialData");
+    std::terminate();
   }
+  assert(initial_tmp.size() == MOTORNUM);
 
-  /* 100 lines most */
-  int k = 100;
-  while (k--) {
-    initial_file.getline(dataGot, 200);
-    if (dataGot[0] == '\\' && dataGot[1] == '\\') {
-      stringstream conv;
-      conv << &dataGot[2];
-      for (int i = 0; i < MOTORNUM; i++) {
-        conv >> initial_tmp[i];  // motorini.initial[i];
-//        conv >> raw_motorini.initial[i];
-        raw_motorini.initial[i] = initial_tmp[i];
-        m_motorini.initial[i] = (int) (k_tmp[i] * raw_motorini.initial[i]);
-//         cout << i << ": " << m_motorini.initial[i] << " " << raw_motorini.initial[i] << " " << k_tmp[i] << endl;
-        if (m_motorini.initial[i] < 0 ||
-            m_motorini.initial[i] > k_tmp[i] * 360 - 1) {
-          throw std::runtime_error(
-              "initialFile value error.notice the file is "
-                  "gaitData(robotnumber)/initialDataConfig.txt. the value is in "
-                  "unit angle about 180");
-        }
-      }
-      break;
-    } else if (dataGot[0] == '/' && dataGot[1] == '/' && dataGot[2] == 'r' &&
-        dataGot[3] == 'o' && dataGot[4] == 'b' && dataGot[5] == 'o' &&
-        dataGot[6] == 't') {
-    }
-    if (k == 0) {
-      ROS_ERROR("transitHub::initialData load error!");
-      return false;
+  for (int i = 0; i < MOTORNUM; i++) {
+    raw_motorini.initial[i] = initial_tmp[i];
+    m_motorini.initial[i] = (int) (k_tmp[i] * raw_motorini.initial[i]);
+    ROS_INFO("init[%d]: %lf", i, initial_tmp[i]);
+    if (m_motorini.initial[i] < 0 || m_motorini.initial[i] > k_tmp[i] * 360 - 1) {
+      ROS_FATAL("initial data out of bound %lf", m_motorini.initial[i]);
     }
   }
-  return true;
 }
 
 VecPos RobotStatus::getEularAngle() {
@@ -261,9 +208,7 @@ VecPos RobotStatus::getEularAngle() {
   return retv;
 }
 
-void RobotStatus::setCompassData(CompassData temp) {
-  m_compassdata = temp;
-}
+void RobotStatus::setCompassData(CompassData temp) { m_compassdata = temp; }
 
 deltadataDebug RobotStatus::checkDeltaDist() {
   deltadataDebug deltaDist = m_deltaDist;
@@ -272,17 +217,17 @@ deltadataDebug RobotStatus::checkDeltaDist() {
   m_deltaDist.m_x = 0;
   m_deltaDist.m_y = 0;
 
-//  if (deltaDist.m_x > 0) {
-//    deltaDist.m_x *= forward_k;
-//  } else {
-//    deltaDist.m_x *= back_k;
-//  }
-//
-//  if (deltaDist.m_y > 0) {
-//    deltaDist.m_y *= left_k;
-//  } else {
-//    deltaDist.m_y *= right_k;
-//  }
+  //  if (deltaDist.m_x > 0) {
+  //    deltaDist.m_x *= forward_k;
+  //  } else {
+  //    deltaDist.m_x *= back_k;
+  //  }
+  //
+  //  if (deltaDist.m_y > 0) {
+  //    deltaDist.m_y *= left_k;
+  //  } else {
+  //    deltaDist.m_y *= right_k;
+  //  }
 
   return deltaDist;
 }

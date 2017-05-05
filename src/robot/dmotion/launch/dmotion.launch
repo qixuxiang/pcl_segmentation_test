@@ -5,6 +5,8 @@
     type="dmotion_node"
     output="screen"
     respawn="false"
+	required="true"
+	cwd="node"
     args=""/>
 
   <node
@@ -18,4 +20,6 @@
 
   <rosparam command="load" file="$(find dmotion)/config/motion.yml" />
   <rosparam command="load" file="$(find dmotion)/config/motor.yml" />
+  <rosparam command="load" file="$(find dmotion)/config/pvhipY.yml" />
+  <rosparam command="load" file="$(find dmotion)/config/kick.yml" />
 </launch>

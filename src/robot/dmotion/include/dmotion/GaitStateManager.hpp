@@ -3,6 +3,7 @@
 #include "dmotion/ActionCmd.h"
 #include "dmotion/GaitStateSupportLib/HumanRobotInterface.hpp"
 #include "transitHub.hpp"
+#include <ros/ros.h>
 
 class GaitStateBase;
 class GaitStateCrouch;
@@ -15,7 +16,7 @@ class GaitStateWenxi;
 
 class GaitStateManager {
  public:
-  GaitStateManager();
+  explicit GaitStateManager(ros::NodeHandle* nh);
   ~GaitStateManager();
   void tick();
   void checkNewCommand(const dmotion::ActionCmd& request);
@@ -28,6 +29,7 @@ class GaitStateManager {
   GaitStateBase* prior_gaitState;
 
  private:
+  ros::NodeHandle* m_nh;
   /* init all gait states */
   void init_allstates();
   void init();

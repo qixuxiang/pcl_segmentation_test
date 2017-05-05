@@ -10,7 +10,7 @@ class I_HumanRobot {
   virtual void getAngle_serial(const RobotCtrl targetCtrl, int dataArray[], const bool isExcute) = 0;
   virtual void doTxTask(int* motionData) = 0;
   virtual double* curveCreate(double start, double mid, double last, int num) = 0;
-  virtual int loadGaitFile(const std::string filename, double* data[], int colomn) = 0;
+  virtual int loadGaitFile(const std::string gaitname, double** data) = 0;
   virtual void doCrouchFromStand(const int stepnum_) = 0;
   virtual void doCrouchFromStandMotor(const int stepnum_) = 0;
   virtual void doStandFromCrouch(const int stepnum_) = 0;
