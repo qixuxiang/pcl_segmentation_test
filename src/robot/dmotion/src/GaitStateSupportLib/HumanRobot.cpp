@@ -481,6 +481,7 @@ void HumanRobot::q2data(int data[], const double lq[], const double rq[]) {
  *
  **************************************************/
 void HumanRobot::doTxTask(int *motionData) {
+  // TODO: remove robot status
   initdata_ = m_status->getMotorinit();
   if (motionData != NULL) {
     for (int i = 0; i < MOTORNUM; i++) {
@@ -1885,6 +1886,7 @@ void HumanRobot::doCrouchFromStand(const int stepnum_) {  //
 }
 
 void HumanRobot::doStandFromCrouch(const int stepnum_) {
+  ROS_DEBUG("doStandFromCrouch %d", stepnum_);
   RobotCtrl targetCtrl(m_robotCtrl);
   m_robotCtrl.setAutoMode();
 

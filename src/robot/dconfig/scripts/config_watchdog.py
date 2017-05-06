@@ -4,11 +4,12 @@ Created on: May 2, 2017
     Author: Wenxing Mei <mwx36mwx@gmail.com>
 
 TOPIC: 'reload_config'
-cwd: $HOME/humanoid/src/dmotion/scripts
-Watching directory: ../config
+cwd: $HOME/humanoid/src/dconfig/scripts
+Watching directory: ../dmotion
 Launched by dmotion/launch/dmotion.launch
 Watch config directory, call `rosparam load` and publish msg when file is changed.
 """
+
 import subprocess
 import rospy
 import os
@@ -16,7 +17,7 @@ from std_msgs.msg import String
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
-PATH = '../config/'
+PATH = '../dmotion/'
 CONFIG = [
     'motion.yml',
     'motor.yml'

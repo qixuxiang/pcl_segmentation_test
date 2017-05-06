@@ -39,24 +39,20 @@ class GaitStateManager {
 
   /* all gait state pointers , decouple*/
   GaitStateCrouch* crouch;
-  // GaitStateStep* step;
   GaitStateStandup* standup;
   GaitStateKick* kick;
   GaitStateWenxi* walk;
-
   GaitStateGoalie* goalie;
   GaitStateSetupFrontDown* setupfrontdown;
   GaitStateSetupBackDown* setupbackdown;
 
-  /* for head control, get head request in 100fps */
+
+  dmotion::ActionCmd m_cmd;
   double desYaw;
   double desPitch;
-  int64_t last_unstable_timestamp;
+  ros::Time last_unstable_timestamp;
 
   /* for head plat compensation */
   VecPos estimated_plat;
-
   deltadataDebug tempD;
-
-  double head_k;
 };

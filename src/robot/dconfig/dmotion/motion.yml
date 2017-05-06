@@ -1,11 +1,11 @@
 dmotion:
   hardware:
-    serial_port_name            : /dev/ttyUSB0
-    serial_port_number          : 0
-    serial_port_baudrate        : 115200
-    robot_version               : 2013
-    imu_version                 : ADIS16365AMLZ
-    gyroscope_correct           : 0
+    serial_port_name            :  /dev/ttyUSB0
+    serial_port_number          :  0
+    serial_port_baudrate        :  115200
+    robot_version               :  2013
+    imu_version                 :  ADIS16365AMLZ
+    gyroscope_correct           :  0
 
   robot:
     motor_time                  : 0.012

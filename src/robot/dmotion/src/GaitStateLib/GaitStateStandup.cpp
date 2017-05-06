@@ -1,7 +1,9 @@
 #include "dmotion/GaitStateLib/GaitStateStandup.hpp"
 
 GaitStateStandup::GaitStateStandup(I_HumanRobot* robot)
-    : GaitStateBase(STANDUP, robot) {}
+    : GaitStateBase(STANDUP, robot) {
+
+}
 
 GaitStateStandup::~GaitStateStandup() = default;
 

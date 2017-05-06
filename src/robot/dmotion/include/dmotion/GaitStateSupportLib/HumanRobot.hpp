@@ -20,16 +20,8 @@ class HumanRobot : public I_HumanRobot {
  public:
   HumanRobot(ros::NodeHandle* m_nh, transitHub* port, RobotStatus* rs, GaitStateManager* manager);
   ~HumanRobot();
-  transitHub* m_port;
-  RobotStatus* m_status;
-  GaitStateManager* m_manager;
 
-  double m_imu_lAnkleRpy[3], m_imu_rAnkleRpy[3],
-      m_imu_bodyRpy[3];  // rpy get from imu
-  double m_Lr[3], m_Rr[3];
-  double m_lq[6], m_rq[6], m_motorData[MOTORNUM];  // joint feed back
-  boost_matrix m_motor_bodyR;
-  SUPPORT_STATUS m_supportStatus;
+
 
   /*walk*/
   void doTxTask(int* motionData);
@@ -78,6 +70,12 @@ class HumanRobot : public I_HumanRobot {
  private:
   /* for plat control */
   ros::NodeHandle* m_nh;
+  transitHub* m_port;
+  RobotStatus* m_status;
+  GaitStateManager* m_manager;
+
+  boost_matrix m_motor_bodyR;
+
   double curYaw, curPitch;
   double desYaw, desPitch;
 

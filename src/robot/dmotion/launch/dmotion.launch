@@ -10,7 +10,7 @@
     args=""/>
 
   <node
-    pkg="dmotion"
+    pkg="dconfig"
     name="config_watchdog_node"
     type="config_watchdog.py"
     output="screen"
@@ -18,8 +18,8 @@
     args=""
     cwd="node" />
 
-  <rosparam command="load" file="$(find dmotion)/config/motion.yml" />
-  <rosparam command="load" file="$(find dmotion)/config/motor.yml" />
-  <rosparam command="load" file="$(find dmotion)/config/pvhipY.yml" />
-  <rosparam command="load" file="$(find dmotion)/config/kick.yml" />
+  <rosparam command="load" file="$(find dconfig)/dmotion/motion.yml" />
+  <rosparam command="load" file="$(find dconfig)/dmotion/motor.yml" />
+  <rosparam command="load" file="$(find dconfig)/dmotion/pvhipY.yml" />
+  <rosparam command="load" file="$(find dconfig)/dmotion/kick.yml" />
 </launch>

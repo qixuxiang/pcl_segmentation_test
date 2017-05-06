@@ -1,5 +1,7 @@
 geometry_msgs/Twist cmd_vel
 geometry_msgs/Vector3 cmd_head
+geometry_msgs/Vector3 cmd_head_speed
+
 
 uint8 gait_type
 uint8 kick_side

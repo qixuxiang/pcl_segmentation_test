@@ -3,16 +3,14 @@
 ros::NodeHandle* GaitStateBase::m_nh = nullptr;
 
 void GaitStateBase::readOptions() {
-//  auto& config = MotionConfigClient::getinstance()->config();
-//  auto& robot = config.robot;
-//  get_val(robot["stepnum"], stepNum);
-//  get_val(robot["number"], m_robot_number);
-//  get_val(robot["setupside_ankle_theta"],  m_setupside_ankle_theta);
-//  get_val(robot["setupside_arm_theta"],  m_setupside_arm_theta);
-//
-//  get_val(robot["goalie_theta"], m_goalie_theta);
-//  get_val(robot["goalie_bool"], m_goalie_bool);
-//  get_val(robot["setupside_ankle_theta"], m_setupside_ankle_theta);
+  if(!m_nh->getParam("/dmotion/robot/stepnum", stepNum)) {ROS_FATAL("GaitStateBase get pararm error");}
+  if(!m_nh->getParam("/dmotion/robot/number", m_robot_number)) {ROS_FATAL("GaitStateBase get pararm error");}
+  if(!m_nh->getParam("/dmotion/robot/setupside_ankle_theta",  m_setupside_ankle_theta)) {ROS_FATAL("GaitStateBase get pararm error");}
+  if(!m_nh->getParam("/dmotion/robot/setupside_arm_theta",  m_setupside_arm_theta)) {ROS_FATAL("GaitStateBase get pararm error");}
+
+  if(!m_nh->getParam("/dmotion/robot/goalie_theta", m_goalie_theta)) {ROS_FATAL("GaitStateBase get pararm error");}
+  if(!m_nh->getParam("/dmotion/robot/goalie_bool", m_goalie_bool)) {ROS_FATAL("GaitStateBase get pararm error");}
+  if(!m_nh->getParam("/dmotion/robot/setupside_ankle_theta", m_setupside_ankle_theta)) {ROS_FATAL("GaitStateBase get pararm error");}
 }
 
 void GaitStateBase::loadGaitFile() {}

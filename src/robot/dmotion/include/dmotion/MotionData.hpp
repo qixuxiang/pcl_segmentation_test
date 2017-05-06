@@ -3,6 +3,7 @@
 #include <cstring>
 #include <boost/program_options.hpp>
 #include "fast_math.hpp"
+#include <ros/ros.h>
 
 namespace {
   const int MOTORNUM = 20;
@@ -72,6 +73,7 @@ public:
 class RobotPara {
   // const params
 public:
+  static void update(ros::NodeHandle* nh);
   static double hip_distance;
   static double upper_leg;
   static double lower_leg;
