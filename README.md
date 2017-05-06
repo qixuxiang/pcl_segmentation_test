@@ -11,19 +11,24 @@ $ roslaunch dlaunch game.launch
 ```
 
 Todo:
+- [ ] MOTION
   - [x] process wrapper
   - [ ] dmotion
     - [x] config
     - [x] config watchdog
-    - [ ] all param in YAML
-    - [ ] HumanRobot
-    - [ ] TransitHub
-    - [ ] GaitStateManager
-    - [ ] oth load gait file
+    - [x] all param in YAML
+    - [x] HumanRobot
+    - [x] TransitHub
+    - [x] GaitStateManager
+    - [x] oth load gait file
+    - [ ] head ctrl
     - [ ] vector !!
     - [ ] test on bot5
 
-  - [ ] dvision
-  - [ ] dbehavior
-  - [ ] dgamecontroller
-  - [ ] dmessenger
+- [ ] HARDWARE
+  - [ ] bot5 wifi
+
+- [ ] VISION
+- [ ] BEHAVIOR
+- [ ] GAMECONTROLLER
+- [ ] MESSAENGER

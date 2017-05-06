@@ -10,9 +10,7 @@ class GaitStateSetupFrontDown : public GaitStateBase {
   void entry() override;
   void execute() override;
   void exit() override;
-  GaitStateBase* setupback;
  private:
-  std::fstream file;
   int length;
   double* data[10];
   GaitStateManager* manager;

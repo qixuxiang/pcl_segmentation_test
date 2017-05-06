@@ -5,13 +5,12 @@ using namespace std;
 GaitStateSetupBackDown::GaitStateSetupBackDown(I_HumanRobot* robot,
                                                GaitStateManager* manager)
     : GaitStateBase(SETUPBACKDOWN, robot), manager(manager) {
-  ROS_FATAL("TODO load gait file");
+  length = robot->loadGaitFile("backDown", data);
 }
 
 GaitStateSetupBackDown::~GaitStateSetupBackDown() = default;
 
 void GaitStateSetupBackDown::entry() {
-  ROS_FATAL("TODO load gait file");
   robot->doCrouchFromStand(20);
   robot->m_robotCtrl.supportStatus = DOUBLE_BASED;
   robot->m_robotCtrl.setAutoMode();  // add by mwx 2017.4.2

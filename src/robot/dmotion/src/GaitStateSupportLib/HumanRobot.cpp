@@ -62,18 +62,15 @@ void HumanRobot::readOptions() {
 
 int HumanRobot::loadGaitFile(const std::string gaitname, double **data) {
   ROS_INFO("Loading gait: %s", gaitname.c_str());
+  ROS_WARN("TODO(motion group) do not use raw array!!!!!!!!!!! why kick dataR_[i]'s addr is weird??");
   vector<double> tmp;
   int row;
   if (!m_nh->getParam("/dmotion/"+gaitname+"/data", tmp)) ROS_FATAL("HumanRobot get param error");
   if (!m_nh->getParam("/dmotion/"+gaitname+"/row", row)) ROS_FATAL("HumanRobot get param error");
-
   int len = tmp.size() / row;
-  ROS_WARN("TODO(motion group) do not use raw array!!!!!!!!!!! why kick dataR_[i]'s addr is weird??");
   for(int i = 0; i < row; ++i) {
     data[i] = new double[len];
-    ROS_WARN("MEMORY LEEEEEEEEEEEEAK!");
     for(int j = 0; j < len; ++j) {
-//      ROS_INFO("%d %d %lf", i, j, tmp[i * len + j]);
       data[i][j] = tmp[i * len + j];
     }
   }

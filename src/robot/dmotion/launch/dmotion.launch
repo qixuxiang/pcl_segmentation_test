@@ -22,4 +22,5 @@
   <rosparam command="load" file="$(find dconfig)/dmotion/motor.yml" />
   <rosparam command="load" file="$(find dconfig)/dmotion/pvhipY.yml" />
   <rosparam command="load" file="$(find dconfig)/dmotion/kick.yml" />
+  <rosparam command="load" file="$(find dconfig)/dmotion/setup.yml" />
 </launch>
