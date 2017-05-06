@@ -52,10 +52,10 @@ void GaitStateManager::tick() {
 
 void GaitStateManager::init() {
   ROS_INFO("GaitState Manager INIT");
+
   rstatus = new RobotStatus(m_nh);
   port = new transitHub(m_nh, rstatus);
   robot = new HumanRobot(m_nh, port, rstatus, this);
-  RobotPara::update(m_nh);
 }
 
 void GaitStateManager::init_allstates() {
@@ -194,6 +194,7 @@ void GaitStateManager::checkNewCommand(const dmotion::ActionCmd &request) {
       goal_gaitState->m_gait_sx = request.cmd_vel.linear.x;
       goal_gaitState->m_gait_sy = request.cmd_vel.linear.y;
       goal_gaitState->m_gait_st = request.cmd_vel.angular.z;
+      ROS_DEBUG("WENXI (%lf, %lf, %dlf)", goal_gaitState->m_gait_sx, goal_gaitState->m_gait_sy, goal_gaitState->m_gait_st);
       break;
     case ActionCmd::CROUCH:
       goal_gaitState = crouch;

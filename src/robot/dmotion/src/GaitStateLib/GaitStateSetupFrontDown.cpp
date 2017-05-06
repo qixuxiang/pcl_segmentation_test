@@ -5,12 +5,13 @@ using namespace std;
 GaitStateSetupFrontDown::GaitStateSetupFrontDown(I_HumanRobot* robot,
                                                  GaitStateManager* manager)
     : GaitStateBase(SETUPFRONTDOWN, robot), manager(manager) {
-  ROS_WARN("TODO load gait file");
+  ROS_FATAL("TODO load gait file");
 }
 
 GaitStateSetupFrontDown::~GaitStateSetupFrontDown() = default;
 
 void GaitStateSetupFrontDown::entry() {
+  ROS_FATAL("TODO load gait file");
   robot->doCrouchFromStand(20);
   robot->m_robotCtrl.supportStatus = DOUBLE_BASED;
   robot->m_robotCtrl.setAutoMode();

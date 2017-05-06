@@ -2,7 +2,6 @@
 
 GaitStateStandup::GaitStateStandup(I_HumanRobot* robot)
     : GaitStateBase(STANDUP, robot) {
-
 }
 
 GaitStateStandup::~GaitStateStandup() = default;
@@ -12,7 +11,8 @@ void GaitStateStandup::entry() {
 }
 
 void GaitStateStandup::execute() {
-  robot->doStandFromCrouch(stepNum * 4);
+  ROS_DEBUG("Standup execute");
+  robot->doStandFromCrouch(RobotPara::stepnum * 4);
 }
 
 void GaitStateStandup::exit() {

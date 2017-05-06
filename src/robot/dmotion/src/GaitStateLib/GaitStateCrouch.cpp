@@ -11,7 +11,7 @@ void GaitStateCrouch::entry() {
 }
 
 void GaitStateCrouch::execute() {
-  ROS_DEBUG( "stand2crouch_stepnum is %d", RobotPara::stand2crouch_stepnum);
+  ROS_DEBUG("Crouch execute");
   robot->doCrouchFromStand(RobotPara::stand2crouch_stepnum);
 }
 

@@ -47,8 +47,8 @@ void RobotPara::update(ros::NodeHandle *nh) {
    if(!nh->getParam("/dmotion/robot/ra_dp_bk", ra_dp_bk)) {ROS_FATAL("RobotPara get param error!");}
   /*walking amend*/
    if(!nh->getParam("/dmotion/robot/step_x_amend", step_x_amend)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/step_x_amend", ad_x_max)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/step_x_amend", ad_theta_max)) {ROS_FATAL("RobotPara get param error!");}
+   if(!nh->getParam("/dmotion/robot/ad_x_max", ad_x_max)) {ROS_FATAL("RobotPara get param error!");}
+   if(!nh->getParam("/dmotion/robot/ad_theta_max", ad_theta_max)) {ROS_FATAL("RobotPara get param error!");}
    if(!nh->getParam("/dmotion/robot/mid_x_max", mid_x_max)) {ROS_FATAL("RobotPara get param error!");}
    if(!nh->getParam("/dmotion/robot/mid_theta_max", mid_theta_max)) {ROS_FATAL("RobotPara get param error!");}
    if(!nh->getParam("/dmotion/robot/top_x_max", top_x_max)) {ROS_FATAL("RobotPara get param error!");}
@@ -91,13 +91,13 @@ void RobotPara::update(ros::NodeHandle *nh) {
   /*important*/
    if(!nh->getParam("/dmotion/robot/stepnum", stepnum)) {ROS_FATAL("RobotPara get param error!");}
    if(!nh->getParam("/dmotion/robot/stand2crouch_stepnum", stand2crouch_stepnum)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/staticexit_num", staticExit_num)) {ROS_FATAL("RobotPara get param error!");}
+   if(!nh->getParam("/dmotion/robot/staticExit_num", staticExit_num)) {ROS_FATAL("RobotPara get param error!");}
    if(!nh->getParam("/dmotion/robot/yzmp", yzmp)) {ROS_FATAL("RobotPara get param error!");}
    if(!nh->getParam("/dmotion/robot/hipheight", hipheight)) {ROS_FATAL("RobotPara get param error!");}
    if(!nh->getParam("/dmotion/robot/kickpercent", kickPercent)) {ROS_FATAL("RobotPara get param error!");}
   /*plat diff*/
-   if(!nh->getParam("/dmotion/robot/diffH", diffH)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/diffV", diffV)) {ROS_FATAL("RobotPara get param error!");}
+   if(!nh->getParam("/dmotion/robot/diffh", diffH)) {ROS_FATAL("RobotPara get param error!");}
+   if(!nh->getParam("/dmotion/robot/diffv", diffV)) {ROS_FATAL("RobotPara get param error!");}
   /*other*/
    if(!nh->getParam("/dmotion/robot/stepk", stepK)) {ROS_FATAL("RobotPara get param error!");}
    if(!nh->getParam("/dmotion/robot/oldturning", oldturning)) {ROS_FATAL("RobotPara get param error!");}
@@ -106,7 +106,6 @@ void RobotPara::update(ros::NodeHandle *nh) {
 
    if(!nh->getParam("/dmotion/robot/other2crouch2step_cm", other2crouch2step_cm)) {ROS_FATAL("RobotPara get param error!");}
    if(!nh->getParam("/dmotion/robot/stand2crouch2step_cm", stand2crouch2step_cm)) {ROS_FATAL("RobotPara get param error!");}
-
    if(!nh->getParam("/dmotion/robot/other2crouch2step", other2crouch2step)) {ROS_FATAL("RobotPara get param error!");}
    if(!nh->getParam("/dmotion/robot/stand2crouch2step", stand2crouch2step)) {ROS_FATAL("RobotPara get param error!");}
    if(!nh->getParam("/dmotion/robot/getup_bool", getup_bool)) {ROS_FATAL("RobotPara get param error!");}

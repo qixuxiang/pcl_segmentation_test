@@ -4,6 +4,7 @@
 
 using namespace std;
 RobotStatus::RobotStatus(ros::NodeHandle *nh) : m_nh(nh) {
+  RobotPara::update(m_nh); // FUCK(MWX): MUST call before everyone
   readOptions();
   initMotor();
   m_last_angle_z = 0;
@@ -167,7 +168,7 @@ void RobotStatus::readOptions() {
     ROS_FATAL("Get motor k error");
   }
   for (auto &k : k_tmp) {
-    if (k != 4096) {
+    if (k != 4096 && k != 1024) {
       ROS_ERROR("mx? rx? or other fucking dynamixel motor? ");
     }
     k /= 360.0;

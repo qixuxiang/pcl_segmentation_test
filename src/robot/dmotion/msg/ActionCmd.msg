@@ -6,8 +6,8 @@ geometry_msgs/Vector3 cmd_head_speed
 uint8 gait_type
 uint8 kick_side
 
-uint8 CROUCH  = 0
-uint8 STANDUP = 1
+uint8 STANDUP = 0
+uint8 CROUCH  = 1
 uint8 WENXI   = 2
 uint8 KICK    = 3
 uint8 GOALIE  = 4

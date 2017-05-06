@@ -487,16 +487,12 @@ void HumanRobot::doTxTask(int *motionData) {
     for (int i = 0; i < MOTORNUM; i++) {
       int sendData = motionData[i] + initdata_.initial[i];
 //      LOG(TRANSITHUB_DEBUG, sendData <<" "<<initdata_.initial[i]);
-//      ROS_DEBUG(...)
-
       if (sendData > m_motor_ub[i]) {
         motionData[i] = m_motor_ub[i] - initdata_.initial[i];
       }
-
       if (sendData < m_motor_lb[i]) {
         motionData[i] = m_motor_lb[i] - initdata_.initial[i];
       }
-
       m_robotCtrl.dataArray[i] = motionData[i];
     }
   }
@@ -504,11 +500,8 @@ void HumanRobot::doTxTask(int *motionData) {
   //直接控制头部的舵机
   int cameraData[2];
   m_manager->platCtrl(curYaw, curPitch);
-  cameraData[0] = static_cast<int>((curPitch + RobotPara::diffV) *
-      m_motor_k[18] * M_PI / 180 * m_motor_zf[18]);
-  cameraData[1] = static_cast<int>((curYaw + RobotPara::diffH) * m_motor_k[19] *
-      M_PI / 180 * m_motor_zf[19]);
-
+  cameraData[0] = static_cast<int>((curPitch + RobotPara::diffV) * m_motor_k[18] * M_PI / 180 * m_motor_zf[18]);
+  cameraData[1] = static_cast<int>((curYaw + RobotPara::diffH) * m_motor_k[19] * M_PI / 180 * m_motor_zf[19]);
   m_port->doLoopTx(motionData, cameraData);
 }
 
@@ -1926,13 +1919,12 @@ void HumanRobot::doStandFromCrouch(const int stepnum_) {
   targetCtrl.rh[0] = RobotPara::upper_arm + RobotPara::lower_arm;
   targetCtrl.lh[1] = 0;
   targetCtrl.rh[1] = 0;
-  int *dataArray = new int[MOTORNUM];  //[MOTORNUM];
-  int crouch_stepnum;
-  crouch_stepnum = stepnum_ * 1;
 
+  int *dataArray = new int[MOTORNUM];  //[MOTORNUM]; // TODO(MWX): MEMORY LEAK
+  int crouch_stepnum;
+  crouch_stepnum = stepnum_;
   for (int i = 0; i < crouch_stepnum; i++) {
     m_robotCtrl.num_left = crouch_stepnum - i;
-
     getAngle_serial(targetCtrl, dataArray, 1);
     doTxTask(dataArray);
   }

@@ -124,9 +124,7 @@ void transitHub::transmit(int *data, packet_types type) {
     receive(tmp, leftBytes);
 
     delete[] tmp;
-
-    ROS_DEBUG("%ld receive buffer left, %d more chars!", m_gaitCycle,
-              leftBytes);
+//    ROS_WARN("%ld receive buffer left, %d more chars!", m_gaitCycle, leftBytes);
   }
   /* with out this the time will be up to 45ms */
   if (write(m_ifd, str, length) == -1) {
@@ -477,8 +475,7 @@ void transitHub::doRx(char *recv, int failureCount) {
         compass.temperature = temperature;
         compass.corresCycle = m_gaitCycle;
         m_status->setCompassData(compass);
-        ROS_DEBUG("Compass %ld %ld %ld %lf", compass.x, compass.y, compass.z,
-                  compass.temperature);
+        ROS_DEBUG("Compass %ld %ld %ld %lf", compass.x, compass.y, compass.z, compass.temperature);
       }
     }
 

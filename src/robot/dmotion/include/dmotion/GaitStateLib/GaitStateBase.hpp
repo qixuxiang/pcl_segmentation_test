@@ -46,11 +46,6 @@ class GaitStateBase {
         type(type),
         robot(robot) {
           readOptions();
-
-    //  get_val(robot["left_y_max"], length_max_l);
-//  get_val(robot["right_y_max"], length_max_r);
-//  get_val(robot["top_x_max"], length_max_f);
-//  get_val(robot["back_x_max"], length_max_b);
         }
 
   const GaitStateType type;

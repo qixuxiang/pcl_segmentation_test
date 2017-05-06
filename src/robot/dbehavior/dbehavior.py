@@ -21,11 +21,11 @@ def main():
     while not rospy.is_shutdown():
         cmd = ActionCmd()
 
-        cmd.gait_type = ActionCmd.CROUCH
+        cmd.gait_type = ActionCmd.STANDUP
         cmd.cmd_head = Vector3(0, 0, 0)
 
-        cmd.cmd_vel.linear = Vector3(6, 0, 0)
-        cmd.cmd_vel.angular = Vector3(0, 0, 0)
+        cmd.cmd_vel.linear = Vector3(random.randint(0, 6), 0, 0)
+        cmd.cmd_vel.angular = Vector3(0, 0, random.randint(0, 10))
 
         pub.publish(cmd)
         rospy.loginfo("Pub new cmd")
