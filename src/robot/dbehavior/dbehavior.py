@@ -6,7 +6,6 @@ Created on: May 3, 2017
 A service called by Vision
 """
 
-import random
 import rospy
 from geometry_msgs.msg import Twist, Vector3
 from dmotion.msg import ActionCmd
