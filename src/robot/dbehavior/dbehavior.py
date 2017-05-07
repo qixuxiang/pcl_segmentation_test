@@ -21,7 +21,7 @@ def main():
     while not rospy.is_shutdown():
         cmd = ActionCmd()
 
-        cmd.gait_type = ActionCmd.STANDUP
+        cmd.gait_type = ActionCmd.CROUCH
         cmd.cmd_head = Vector3(0, 0, 0)
 
         cmd.cmd_vel.linear = Vector3(random.randint(0, 6), 0, 0)

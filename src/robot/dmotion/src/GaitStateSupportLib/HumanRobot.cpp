@@ -35,7 +35,6 @@ void HumanRobot::readOptions() {
   if (!m_nh->getParam("/dmotion/robot/ah_fl", m_AnkleH_last_l)) ROS_FATAL("HumanRobot get param error");
   if (!m_nh->getParam("/dmotion/robot/ah_mr_zero", m_AnkleH_mid_r)) ROS_FATAL("HumanRobot get param error");
   if (!m_nh->getParam("/dmotion/robot/ah_fr", m_AnkleH_last_r)) ROS_FATAL("HumanRobot get param error");
-  if (!m_nh->getParam("/dmotion/robot/number", m_robot_number)) ROS_FATAL("HumanRobot get param error");
 
   vector<double> zf;
   vector<double> k;

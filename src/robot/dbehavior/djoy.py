@@ -59,11 +59,11 @@ PUB = None
 def callback(joy):
     yaw, pitch = joy.axes[3:5]
     yaw = yaw * 120
-    pitch = pitch * 90
+    pitch = pitch * 70
 
     y, x = joy.axes[0:2]
-    x = x * 6
-    y = y * 2
+    x = x * 5
+    y = y * 1
 
     LT, RT = joy.axes[2], joy.axes[5]
     LT = (1.0 - LT) / 2.0
@@ -73,14 +73,14 @@ def callback(joy):
     cmd = ActionCmd()
     if abs(x) > 1 or abs(y) > 1 or abs(t) > 1:
         cmd.gait_type = ActionCmd.WENXI
-        cmd.cmd_head = Vector3(0, pitch, yaw)
-        cmd.cmd_head_speed = Vector3(0, 1, 1)
-
         cmd.cmd_vel.linear = Vector3(x, y, 0)
         cmd.cmd_vel.angular = Vector3(0, 0, t)
         rospy.loginfo("(x: %lf y: %lf t: %lf | pitch: %lf yaw: %lf" %(x, y, t, pitch, yaw))
     else:
         cmd.gait_type = ActionCmd.CROUCH
+
+    cmd.cmd_head = Vector3(0, pitch, yaw)
+    cmd.cmd_head_speed = Vector3(0, 1, 1)
 
     PUB.publish(cmd)
 

@@ -4,7 +4,6 @@ ros::NodeHandle* GaitStateBase::m_nh = nullptr;
 
 void GaitStateBase::readOptions() {
   if(!m_nh->getParam("/dmotion/robot/stepnum", stepNum)) {ROS_FATAL("GaitStateBase get pararm error");}
-  if(!m_nh->getParam("/dmotion/robot/number", m_robot_number)) {ROS_FATAL("GaitStateBase get pararm error");}
   if(!m_nh->getParam("/dmotion/robot/setupside_ankle_theta",  m_setupside_ankle_theta)) {ROS_FATAL("GaitStateBase get pararm error");}
   if(!m_nh->getParam("/dmotion/robot/setupside_arm_theta",  m_setupside_arm_theta)) {ROS_FATAL("GaitStateBase get pararm error");}
 
