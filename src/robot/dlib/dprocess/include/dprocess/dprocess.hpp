@@ -42,11 +42,11 @@ public:
   }
 
   // only for test
+  // TODO(MWX): need boosting
   void spinOnce() {
     m_thread = std::thread([=] {
       static_cast<T *>(this)->tick();
     });
-    set_policy();
   }
 
   void join() {

@@ -1,3 +1,11 @@
 <launch>
-  <!-- <node name="dvision" pkg="dvision_node" type="dvision_node" respawn="false" args="" output="screen" /> -->
+  <node
+          pkg="dvision"
+          name="dvision_node"
+          type="dvision_node"
+          output="screen"
+          respawn="false"
+          required="true"
+          cwd="node"
+          args=""/>
 </launch>

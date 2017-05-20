@@ -1,13 +1,39 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(dvision)
+add_definitions(-std=c++11 -Wall -Wextra -Wfloat-equal -Wno-unused-result) #-Weffc++ -pedantic
 
-add_definitions(-std=c++11)
+find_package(catkin REQUIRED
+  COMPONENTS roscpp
+  geometry_msgs
+  message_generation
+  dprocess)
 
-find_package(catkin REQUIRED)
+#find_package(Boost REQUIRED COMPONENTS system)
+
+#add_message_files(
+#  FILES
+#)
+#
+#generate_messages(
+#  DEPENDENCIES
+#
+#)
 
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES dvision
-#  CATKIN_DEPENDS other_catkin_pkg
-#  DEPENDS system_lib
+  INCLUDE_DIRS include
+  #  LIBRARIES dmotion
+  #  CATKIN_DEPENDS dprocess
+  #  DEPENDS system_lib
 )
+
+include_directories(include ${catkin_INCLUDE_DIRS} ) #${Boost_INCLUDE_DIRS})
+
+add_library(dvisionlib
+  src/dvision.cpp
+  )
+target_link_libraries(dvisionlib ${catkin_LIBRARIES}) # ${Boost_LIBRARIES})
+#add_dependencies(dvisionlib ${PROJECT_NAME}_generate_messages_cpp)
+
+add_executable(dvision_node src/main.cpp)
+target_link_libraries(dvision_node dvisionlib ${catkin_LIBRARIES})
+#add_dependencies(dmotion_node ${PROJECT_NAME}_generate_messages_cpp)

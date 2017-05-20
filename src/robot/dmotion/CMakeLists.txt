@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(dmotion)
-add_definitions(-std=c++11 -Wall -Wextra -Wfloat-equal  -Wno-unused-result) #-Weffc++ -pedantic
+add_definitions(-std=c++11 -Wall -Wextra -Wno-unused-result) #-Weffc++ -pedantic
 
 # TODO(MWX): debug / release options
 
