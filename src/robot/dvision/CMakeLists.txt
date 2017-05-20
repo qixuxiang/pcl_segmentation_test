@@ -30,6 +30,9 @@ include_directories(include ${catkin_INCLUDE_DIRS} ) #${Boost_INCLUDE_DIRS})
 
 add_library(dvisionlib
   src/dvision.cpp
+  src/frame.cpp
+  src/camera/camera.cpp
+  src/camera/calibration.cpp
   )
 target_link_libraries(dvisionlib ${catkin_LIBRARIES}) # ${Boost_LIBRARIES})
 #add_dependencies(dvisionlib ${PROJECT_NAME}_generate_messages_cpp)
