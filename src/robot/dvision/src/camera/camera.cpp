@@ -252,10 +252,15 @@ void Camera::doIO() {
     raw_yuv = buffers[lastDequeued.index].start;
     raw_yuv_size = lastDequeued.bytesused;
 
-    auto ioTime = stop1 - beginTime;
-    auto dequeTime = stop2 - stop1;
+//    auto ioTime = stop1 - beginTime;
+//    auto dequeTime = stop2 - stop1;
+//    ROS_INFO("I/O: %lf ms, dequeue: %lf ms, size: %u", ioTime.toSec() * 1000, dequeTime.toSec() * 1000, raw_yuv_size);
 
-    ROS_INFO("I/O: %lf ms, dequeue: %lf ms, size: %u", ioTime.toSec() * 1000, dequeTime.toSec() * 1000, raw_yuv_size);
+    auto t = (stop2 - beginTime).toSec() * 1000;
+    if(t > 40) {
+      ROS_WARN("Camera I/O is getting slow, %lf.", t);
+    }
+
   } catch (std::exception &e) {
     ROS_ERROR("Camera I/O failed, error: %s, trying to restart.", e.what());
     sleep(1);
