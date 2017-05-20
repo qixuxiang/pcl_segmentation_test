@@ -12,8 +12,6 @@ public:
 
   inline ~Frame() {};
 
-  inline const uint8_t *getYUV() { return m_yuv; }
-
   inline cv::Mat& getRGB() { return m_rgb; }
 
   inline void cvt() {

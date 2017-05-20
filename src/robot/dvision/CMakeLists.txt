@@ -43,3 +43,6 @@ target_link_libraries(dvisionlib ${catkin_LIBRARIES} ${OpenCV_LIBS}) # ${Boost_L
 add_executable(dvision_node src/main.cpp)
 target_link_libraries(dvision_node dvisionlib ${catkin_LIBRARIES})
 #add_dependencies(dmotion_node ${PROJECT_NAME}_generate_messages_cpp)
+
+add_executable(calib src/camera/calibration.cpp)
+target_link_libraries(calib ${OpenCV_LIBS})
