@@ -15,9 +15,13 @@ public:
 
   Frame capture();
 
-  void set_control(V4L2CID id, const uint32_t value);
+  void setControl(V4L2CID id, const uint32_t value);
 
-  void set_control(const uint32_t cid, const uint32_t value);
+  void setControl(const uint32_t cid, const uint32_t value);
+
+  v4l2_queryctrl getControl(V4L2CID cid);
+
+  v4l2_queryctrl getControl(uint32_t cid);
 
   // TODO(MWX): able to init all parameters
 
@@ -38,6 +42,7 @@ private:
   void stopIO();
   void doIO();
   void setCameraControl();
+  void resetControl();
   void initMmap();
 
 private:

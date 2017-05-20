@@ -2,6 +2,7 @@
 //     Author: Wenxing Mei <mwx36mwx@gmail.com>
 #pragma once
 #include "dprocess/dprocess.hpp"
+#include "dprocess/dconcurrent.hpp"
 #include "dvision/camera.hpp"
 
 using dprocess::DProcess;
@@ -15,5 +16,6 @@ public:
 private:
   ros::NodeHandle* m_nh;
   Camera m_camera;
+  dprocess::DConcurrent m_concurrent;
 };
 }

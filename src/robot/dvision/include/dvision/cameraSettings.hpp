@@ -2,6 +2,8 @@
 #include <linux/videodev2.h>
 #include <string>
 #include <cstdint>
+#include <ros/ros.h>
+
 namespace dvision {
 struct CameraSettings {
   inline explicit CameraSettings()
@@ -23,23 +25,43 @@ struct CameraSettings {
         focus_auto(1),
         focus_absolute(0) {}
 
-  std::string device;
-  std::uint32_t width, height;
-  std::uint32_t frameRate;
-  std::uint32_t brightness;
-  std::uint32_t contrast;
-  std::uint32_t saturation;
-  std::uint32_t hue;
-  std::uint32_t sharpness;
-  std::uint32_t gain;
-  std::uint32_t gamma;
+  inline explicit CameraSettings(ros::NodeHandle *nh) {
+    if (!nh->getParam("/dvision/camera/device", device)) { ROS_FATAL("CameraSettings get pararm error"); }
+    if (!nh->getParam("/dvision/camera/width", width)) { ROS_FATAL("CameraSettings get pararm error"); }
+    if (!nh->getParam("/dvision/camera/height", height)) { ROS_FATAL("CameraSettings get pararm error"); }
+    if (!nh->getParam("/dvision/camera/frameRate", frameRate)) { ROS_FATAL("CameraSettings get pararm error"); }
+    if (!nh->getParam("/dvision/camera/brightness", brightness)) { ROS_FATAL("CameraSettings get pararm error"); }
+    if (!nh->getParam("/dvision/camera/contrast", contrast)) { ROS_FATAL("CameraSettings get pararm error"); }
+    if (!nh->getParam("/dvision/camera/saturation", saturation)) { ROS_FATAL("CameraSettings get pararm error"); }
+    if (!nh->getParam("/dvision/camera/hue", hue)) { ROS_FATAL("CameraSettings get pararm error"); }
+    if (!nh->getParam("/dvision/camera/sharpness", sharpness)) { ROS_FATAL("CameraSettings get pararm error"); }
+    if (!nh->getParam("/dvision/camera/gain", gain)) { ROS_FATAL("CameraSettings get pararm error"); }
+    if (!nh->getParam("/dvision/camera/gamma", gamma)) { ROS_FATAL("CameraSettings get pararm error"); }
+    if (!nh->getParam("/dvision/camera/whitebalance_auto", whitebalance_auto)) { ROS_FATAL("CameraSettings get pararm error"); }
+    if (!nh->getParam("/dvision/camera/whitebalance_absolute", whitebalance_absolute)) { ROS_FATAL("CameraSettings get pararm error"); }
+    if (!nh->getParam("/dvision/camera/exposure_auto", exposure_auto)) { ROS_FATAL("CameraSettings get pararm error"); }
+    if (!nh->getParam("/dvision/camera/exposure_absolute", exposure_absolute)) { ROS_FATAL("CameraSettings get pararm error"); }
+    if (!nh->getParam("/dvision/camera/focus_auto", focus_auto)) { ROS_FATAL("CameraSettings get pararm error"); }
+    if (!nh->getParam("/dvision/camera/focus_absolute", focus_absolute)) { ROS_FATAL("CameraSettings get pararm error"); }
+  }
 
-  std::uint32_t whitebalance_auto;
-  std::uint32_t whitebalance_absolute;
-  std::uint32_t exposure_auto;
-  std::uint32_t exposure_absolute;
-  std::uint32_t focus_auto;
-  std::uint32_t focus_absolute;
+  std::string device;
+  int width, height;
+  int frameRate;
+  int brightness;
+  int contrast;
+  int saturation;
+  int hue;
+  int sharpness;
+  int gain;
+  int gamma;
+
+  int whitebalance_auto;
+  int whitebalance_absolute;
+  int exposure_auto;
+  int exposure_absolute;
+  int focus_auto;
+  int focus_absolute;
 };
 
 enum class V4L2CID {

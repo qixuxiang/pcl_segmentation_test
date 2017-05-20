@@ -1,0 +1,19 @@
+dvision:
+  camera:
+    device: /dev/video0
+    width: 640
+    height: 480
+    frameRate: 30
+    brightness: 128
+    contrast: 128
+    saturation: 128
+    hue: 0
+    sharpness: 128
+    gain: 255
+    gamma: 32533
+    whitebalance_auto: 0
+    whitebalance_absolute: 4500
+    exposure_auto: 1
+    exposure_absolute: 150
+    focus_auto: 1
+    focus_absolute: 0

@@ -20,6 +20,7 @@
 namespace dvision {
 Camera::Camera(std::string device) : m_device(device) {
   init();
+  resetControl();
 }
 
 Camera::Camera(CameraSettings c) : m_device(c.device) {
@@ -40,7 +41,7 @@ void Camera::init() {
     initMmap();
     startIO();
     doIO();
-  } catch (std::exception& e) {
+  } catch (std::exception &e) {
     ROS_ERROR("Init camera error: %s", e.what());
     sleep(1);
     init();
@@ -172,12 +173,11 @@ void Camera::stopIO() {
     throw std::runtime_error("Failed stop capturing.");
 }
 
-void Camera::set_control(V4L2CID id, const uint32_t value) {
-  set_control(static_cast<uint32_t>(id), value);
+void Camera::setControl(V4L2CID id, const uint32_t value) {
+  setControl(static_cast<uint32_t>(id), value);
 }
 
-void Camera::set_control(const uint32_t controlId,
-                         const uint32_t controlValue) {
+void Camera::setControl(const uint32_t controlId, const uint32_t controlValue) {
   v4l2_queryctrl queryctrl;
   CLEAR(queryctrl);
   queryctrl.id = controlId;
@@ -185,7 +185,7 @@ void Camera::set_control(const uint32_t controlId,
     if (errno != EINVAL)
       ROS_ERROR("query control error");
     else
-      ROS_ERROR("%d not supported", controlId);
+      ROS_WARN("%d not supported", controlId);
   } else if (queryctrl.flags & V4L2_CTRL_FLAG_DISABLED) {
     ROS_WARN("%s not supported", queryctrl.name);
   } else {
@@ -205,118 +205,107 @@ void Camera::set_control(const uint32_t controlId,
 }
 
 void Camera::setCameraControl() {
-  set_control(V4L2CID::white_balance_auto, m_setting.whitebalance_auto);
-  set_control(V4L2CID::white_balance_temperature, m_setting.whitebalance_absolute);
-  set_control(V4L2CID::exposure_auto, m_setting.exposure_auto);
-  set_control(V4L2CID::exposure_absolute, m_setting.exposure_absolute);
-  set_control(V4L2CID::focus_auto, m_setting.focus_auto);
-  set_control(V4L2CID::focus_absolute, m_setting.focus_absolute);
-  set_control(V4L2CID::brightness, m_setting.brightness);
-  set_control(V4L2CID::contrast, m_setting.contrast);
-  set_control(V4L2CID::saturation, m_setting.saturation);
-  set_control(V4L2CID::sharpness, m_setting.sharpness);
-  set_control(V4L2CID::gain, m_setting.gain);
-  set_control(V4L2CID::hue, m_setting.hue);
-  set_control(V4L2CID::gamma, m_setting.gamma);
+  setControl(V4L2CID::white_balance_auto, m_setting.whitebalance_auto);
+  setControl(V4L2CID::white_balance_temperature, m_setting.whitebalance_absolute);
+  setControl(V4L2CID::exposure_auto, m_setting.exposure_auto);
+  setControl(V4L2CID::exposure_absolute, m_setting.exposure_absolute);
+  setControl(V4L2CID::focus_auto, m_setting.focus_auto);
+  setControl(V4L2CID::focus_absolute, m_setting.focus_absolute);
+  setControl(V4L2CID::brightness, m_setting.brightness);
+  setControl(V4L2CID::contrast, m_setting.contrast);
+  setControl(V4L2CID::saturation, m_setting.saturation);
+  setControl(V4L2CID::sharpness, m_setting.sharpness);
+  setControl(V4L2CID::gain, m_setting.gain);
+  setControl(V4L2CID::hue, m_setting.hue);
+  setControl(V4L2CID::gamma, m_setting.gamma);
 }
 
-void Camera::doIO() {
-  try {
-    auto beginTime = ros::Time::now();
-    struct pollfd pollfd = {m_fd, POLLIN | POLLPRI, 0};
-    int polled = poll( &pollfd, 1, 1000.0 / m_setting.frameRate * 6);  // wait for 6 frame for a new frame
+v4l2_queryctrl Camera::getControl(V4L2CID cid) {
+  struct v4l2_queryctrl retv, queryctrl;
+  retv.minimum = 0;
+  retv.maximum = 0;  // min == max means error
 
-    if (polled < 0)
-      throw std::runtime_error("Cannot poll");
-    else if (polled == 0)
-      throw std::runtime_error("Poll timeout");
-    else if (pollfd.revents & (POLLERR | POLLNVAL))
-      throw std::runtime_error("Polling failed");
-
-    auto stop1 = ros::Time::now();
-    // release last buffer
-    if (lastDequeued.index != UINT_MAX)
-      if (-1 == ioctl(m_fd, VIDIOC_QBUF, &lastDequeued))
-        throw std::runtime_error("Release buffer error");
-
-    // dequeue raw camera buffer, we got one new raw frame, yuv
-    CLEAR(lastDequeued);
-    lastDequeued.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-    lastDequeued.memory = V4L2_MEMORY_MMAP;
-
-    if (-1 == ioctl(m_fd, VIDIOC_DQBUF, &lastDequeued))
-      throw std::runtime_error("DQBUFF");
-    auto stop2 = ros::Time::now();
-    assert(lastDequeued.index < n_buffers);
-
-    raw_yuv = buffers[lastDequeued.index].start;
-    raw_yuv_size = lastDequeued.bytesused;
-
-//    auto ioTime = stop1 - beginTime;
-//    auto dequeTime = stop2 - stop1;
-//    ROS_INFO("I/O: %lf ms, dequeue: %lf ms, size: %u", ioTime.toSec() * 1000, dequeTime.toSec() * 1000, raw_yuv_size);
-
-    auto t = (stop2 - beginTime).toSec() * 1000;
-    if(t > 40) {
-      ROS_WARN("Camera I/O is getting slow, %lf.", t);
-    }
-
-  } catch (std::exception &e) {
-    ROS_ERROR("Camera I/O failed, error: %s, trying to restart.", e.what());
-    sleep(1);
-//    stopIO();
-    closeDevice();
-    init();
-  }
-};
-
-void Camera::openDevice() {
-  struct stat buf;
-  if (-1 == stat(m_device.c_str(), &buf)) {
-    ROS_ERROR("Failed to stat %s", m_device.c_str());
-    std::string devname = "/dev/video";
-    int i = 0;
-    while (true) {
-      // try to open video0 up to video50
-      int rc = 0;
-      std::string tmp = devname + std::to_string(i);
-      rc = stat(tmp.c_str(), &buf);
-      if (rc == -1) {
-        usleep(10000);
-      } else {
-        ROS_INFO("Found camera device: %s", tmp.c_str());
-        m_device = tmp;
-        break;
-      }
-      if (++i > 50) {
-        ROS_WARN("No camera device available!");
-        i = 0;
-      }
-    }
-  }
-
-  if (0 == S_ISCHR(buf.st_mode)) {
-    throw std::runtime_error("Not a v4l2 device.");
-  }
-
-  m_fd = open(m_device.c_str(), O_CLOEXEC | O_RDWR);
-  if (m_fd < 0) {
-    throw std::runtime_error("Failed to open camera");
+  memset(&queryctrl, 0, sizeof(queryctrl));
+  queryctrl.id = static_cast<uint32_t >(cid);
+  if (-1 == ioctl(m_fd, VIDIOC_QUERYCTRL, &queryctrl)) {
+    if (errno == EINVAL)
+      return retv;
+    ROS_ERROR("queryctrl error");
   } else {
-    ROS_INFO("Opened camera %s", m_device.c_str());
+    if (queryctrl.flags & V4L2_CTRL_FLAG_DISABLED)
+      return retv;
+    retv = queryctrl;
   }
+  return retv;
 }
 
-void Camera::closeDevice() {
-  if (m_fd > 0) {
-    close(m_fd);
+v4l2_queryctrl Camera::getControl(uint32_t cid) {
+  return getControl((V4L2CID) cid);
+}
+
+void Camera::resetControl() {
+  struct v4l2_queryctrl queryInfo;
+  static const int EXP_AUTO = 3; // 1:manual 3:auto
+  setControl(V4L2_CID_EXPOSURE_AUTO, EXP_AUTO);
+  // auto focus
+  queryInfo = getControl(V4L2_CID_FOCUS_AUTO);
+  if (queryInfo.minimum != queryInfo.maximum)  // support auto-focus
+  {
+    setControl(V4L2_CID_FOCUS_AUTO, 0);
+    queryInfo = getControl(V4L2_CID_FOCUS_ABSOLUTE);
+    setControl(V4L2_CID_FOCUS_ABSOLUTE, queryInfo.default_value);
+  } else {
+    ROS_INFO("auto focus disabled");
   }
-  m_fd = -1;
-}
 
-Frame Camera::capture() {
-  doIO();
-  return Frame(static_cast<const uint8_t*>(raw_yuv));
-}
+  queryInfo = getControl(V4L2_CID_EXPOSURE_ABSOLUTE);
+  if (queryInfo.minimum != queryInfo.maximum) {
+    setControl(V4L2_CID_EXPOSURE_ABSOLUTE, queryInfo.default_value);
+  }
 
+  queryInfo = getControl(V4L2_CID_BRIGHTNESS);
+  if (queryInfo.minimum != queryInfo.maximum) {
+    setControl(V4L2_CID_BRIGHTNESS, queryInfo.default_value);
+  }
+
+  queryInfo = getControl(V4L2_CID_CONTRAST);
+  if (queryInfo.minimum != queryInfo.maximum) {
+    setControl(V4L2_CID_CONTRAST, queryInfo.default_value);
+  }
+
+  queryInfo = getControl(V4L2_CID_SATURATION);
+  if (queryInfo.minimum != queryInfo.maximum) {
+    setControl(V4L2_CID_SATURATION, queryInfo.default_value);
+  }
+
+  queryInfo = getControl(V4L2_CID_GAIN);
+  if (queryInfo.minimum != queryInfo.maximum) {
+    setControl(V4L2_CID_GAIN, queryInfo.default_value);
+  } else {
+    setControl(V4L2_CID_AUTOGAIN, 2);
+  }
+
+  queryInfo = getControl(V4L2_CID_WHITE_BALANCE_TEMPERATURE);
+  if (queryInfo.minimum != queryInfo.maximum) {
+    setControl(V4L2_CID_WHITE_BALANCE_TEMPERATURE, queryInfo.default_value);
+  }
+
+  queryInfo = getControl(V4L2_CID_GAMMA);
+  if (queryInfo.minimum != queryInfo.maximum) {
+    setControl(V4L2_CID_GAMMA, queryInfo.default_value);
+  }
+
+  queryInfo = getControl(V4L2_CID_HUE);
+  if (queryInfo.minimum != queryInfo.maximum) {
+    setControl(V4L2_CID_HUE, queryInfo.default_value);
+  }
+
+  queryInfo = getControl(V4L2_CID_SHARPNESS);
+  if (queryInfo.minimum != queryInfo.maximum) {
+    setControl(V4L2_CID_SHARPNESS, queryInfo.default_value);
+  }
+
+  // set auto white balance
+  setControl(V4L2_CID_AUTO_WHITE_BALANCE, 1);
+}
 }
