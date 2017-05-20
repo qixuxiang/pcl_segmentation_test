@@ -21,6 +21,8 @@ DVision::~DVision() {
 void DVision::tick() {
   ROS_INFO("dvision tick");
   auto frame = m_camera.capture();
+//  frame.show();
+//  frame.save("x.png");
   m_concurrent.spinOnce();
   m_concurrent.join();
 }

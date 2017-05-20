@@ -8,6 +8,9 @@ find_package(catkin REQUIRED
   message_generation
   dprocess)
 
+find_package(OpenCV REQUIRED)
+find_package(Eigen3 REQUIRED)
+
 #find_package(Boost REQUIRED COMPONENTS system)
 
 #add_message_files(
@@ -34,7 +37,7 @@ add_library(dvisionlib
   src/camera/camera.cpp
   src/camera/calibration.cpp
   )
-target_link_libraries(dvisionlib ${catkin_LIBRARIES}) # ${Boost_LIBRARIES})
+target_link_libraries(dvisionlib ${catkin_LIBRARIES} ${OpenCV_LIBS}) # ${Boost_LIBRARIES})
 #add_dependencies(dvisionlib ${PROJECT_NAME}_generate_messages_cpp)
 
 add_executable(dvision_node src/main.cpp)

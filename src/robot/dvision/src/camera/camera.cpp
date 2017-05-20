@@ -406,6 +406,6 @@ void Camera::closeDevice() {
 
 Frame Camera::capture() {
   doIO();
-  return Frame(static_cast<const uint8_t*>(raw_yuv));
+  return Frame(static_cast<uint8_t*>(raw_yuv), m_setting.width, m_setting.height);
 }
 }

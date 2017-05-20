@@ -61,7 +61,7 @@ private:
   v4l2_buffer lastDequeued;
 
   // Pointer to last dequeued buffer
-  const void* raw_yuv;
+  void* raw_yuv;
   uint32_t raw_yuv_size;
 };
 }
