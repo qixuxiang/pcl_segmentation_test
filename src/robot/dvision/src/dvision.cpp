@@ -5,10 +5,13 @@
 
 namespace dvision {
 static const int VISION_FREQ = 30;
-DVision::DVision(ros::NodeHandle *n) : DProcess(VISION_FREQ, false), m_nh(n), m_camera(CameraSettings(n)) {
-   m_concurrent.push([]{
+DVision::DVision(ros::NodeHandle *n)
+    : DProcess(VISION_FREQ, false),
+    // m_camera(CameraSettings(n)),
+      m_nh(n) {
+  m_concurrent.push([] {
 //     ROS_INFO("concurrent");
-   });
+  });
 }
 
 DVision::~DVision() {

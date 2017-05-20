@@ -244,6 +244,7 @@ v4l2_queryctrl Camera::getControl(uint32_t cid) {
 }
 
 void Camera::resetControl() {
+  ROS_WARN("Reset camera control");
   struct v4l2_queryctrl queryInfo;
   static const int EXP_AUTO = 3; // 1:manual 3:auto
   setControl(V4L2_CID_EXPOSURE_AUTO, EXP_AUTO);
@@ -307,5 +308,104 @@ void Camera::resetControl() {
 
   // set auto white balance
   setControl(V4L2_CID_AUTO_WHITE_BALANCE, 1);
+}
+
+void Camera::doIO() {
+  try {
+    auto beginTime = ros::Time::now();
+    struct pollfd pollfd = {m_fd, POLLIN | POLLPRI, 0};
+    int polled = poll( &pollfd, 1, 1000.0 / m_setting.frameRate * 6);  // wait for 6 frame for a new frame
+
+    if (polled < 0)
+      throw std::runtime_error("Cannot poll");
+    else if (polled == 0)
+      throw std::runtime_error("Poll timeout");
+    else if (pollfd.revents & (POLLERR | POLLNVAL))
+      throw std::runtime_error("Polling failed");
+
+    auto stop1 = ros::Time::now();
+    // release last buffer
+    if (lastDequeued.index != UINT_MAX)
+      if (-1 == ioctl(m_fd, VIDIOC_QBUF, &lastDequeued))
+        throw std::runtime_error("Release buffer error");
+
+    // dequeue raw camera buffer, we got one new raw frame, yuv
+    CLEAR(lastDequeued);
+    lastDequeued.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+    lastDequeued.memory = V4L2_MEMORY_MMAP;
+
+    if (-1 == ioctl(m_fd, VIDIOC_DQBUF, &lastDequeued))
+      throw std::runtime_error("DQBUFF");
+    auto stop2 = ros::Time::now();
+    assert(lastDequeued.index < n_buffers);
+
+    raw_yuv = buffers[lastDequeued.index].start;
+    raw_yuv_size = lastDequeued.bytesused;
+
+//    auto ioTime = stop1 - beginTime;
+//    auto dequeTime = stop2 - stop1;
+//    ROS_INFO("I/O: %lf ms, dequeue: %lf ms, size: %u", ioTime.toSec() * 1000, dequeTime.toSec() * 1000, raw_yuv_size);
+
+    auto t = (stop2 - beginTime).toSec() * 1000;
+    if(t > 40) {
+      ROS_WARN("Camera I/O is getting slow, %lf.", t);
+    }
+
+  } catch (std::exception &e) {
+    ROS_ERROR("Camera I/O failed, error: %s, trying to restart.", e.what());
+    sleep(1);
+//    stopIO();
+    closeDevice();
+    init();
+  }
+};
+
+void Camera::openDevice() {
+  struct stat buf;
+  if (-1 == stat(m_device.c_str(), &buf)) {
+    ROS_ERROR("Failed to stat %s", m_device.c_str());
+    std::string devname = "/dev/video";
+    int i = 0;
+    while (true) {
+      // try to open video0 up to video50
+      int rc = 0;
+      std::string tmp = devname + std::to_string(i);
+      rc = stat(tmp.c_str(), &buf);
+      if (rc == -1) {
+        usleep(10000);
+      } else {
+        ROS_INFO("Found camera device: %s", tmp.c_str());
+        m_device = tmp;
+        break;
+      }
+      if (++i > 50) {
+        ROS_WARN("No camera device available!");
+        i = 0;
+      }
+    }
+  }
+
+  if (0 == S_ISCHR(buf.st_mode)) {
+    throw std::runtime_error("Not a v4l2 device.");
+  }
+
+  m_fd = open(m_device.c_str(), O_CLOEXEC | O_RDWR);
+  if (m_fd < 0) {
+    throw std::runtime_error("Failed to open camera");
+  } else {
+    ROS_INFO("Opened camera %s", m_device.c_str());
+  }
+}
+
+void Camera::closeDevice() {
+  if (m_fd > 0) {
+    close(m_fd);
+  }
+  m_fd = -1;
+}
+
+Frame Camera::capture() {
+  doIO();
+  return Frame(static_cast<const uint8_t*>(raw_yuv));
 }
 }
