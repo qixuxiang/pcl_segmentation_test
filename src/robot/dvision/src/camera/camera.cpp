@@ -97,14 +97,16 @@ void Camera::setFrameRate(uint32_t numerator, uint32_t denominator) {
   parm.parm.capture.timeperframe.denominator = denominator;
   parm.parm.capture.capability = V4L2_CAP_TIMEPERFRAME;
   if (0 != ioctl(m_fd, VIDIOC_S_PARM, &parm))
-    throw std::runtime_error("Set fps error");
+    ROS_ERROR("Set fps error!");
+//    throw std::runtime_error("Set fps error");
 
   // confirm
   if (0 != ioctl(m_fd, VIDIOC_G_PARM, &parm))
     throw std::runtime_error("Get fps error");
   if (parm.parm.capture.timeperframe.numerator != numerator ||
       parm.parm.capture.timeperframe.denominator != denominator)
-    throw std::runtime_error("Set fps failed!");
+    ROS_ERROR("Set fps error!");
+//    throw std::runtime_error("Set fps failed!");
   ROS_INFO("Set fps to %d/%d", numerator, denominator);
 }
 
