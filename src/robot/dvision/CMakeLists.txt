@@ -46,3 +46,6 @@ target_link_libraries(dvision_node dvisionlib ${catkin_LIBRARIES})
 
 add_executable(calib src/camera/calibration.cpp)
 target_link_libraries(calib ${OpenCV_LIBS})
+
+add_executable(capture src/tools/capture.cpp)
+target_link_libraries(capture dvisionlib)

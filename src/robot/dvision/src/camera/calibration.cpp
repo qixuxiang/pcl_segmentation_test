@@ -50,8 +50,8 @@ public:
   };
 
 private:
-  int boardWidth = 10;
-  int boardHeight = 10;
+  int boardWidth = 9;
+  int boardHeight = 9;
   float squareSize = 30;
   Pattern calibMode;
 };
@@ -144,7 +144,7 @@ bool runCalibrationAndSave(CalibSettings &s, cv::Size imageSize, cv::Mat &camera
   bool ok = runCalibration(s, imageSize, cameraMatrix, distCoeffs, imagePoints,
                            rvecs, tvecs, reprojErrs, totalAvgErr);
   cout << (ok ? "Calibration succeeded" : "Calibration failed")
-       << ". avg re projection error = " << totalAvgErr;
+       << ". avg re projection error = " << totalAvgErr << endl;
 
   return ok;
 }
@@ -160,7 +160,7 @@ int main() {
   vector<string> imagesName;
   //string pathDirectory = "/home/yyj/ZJUDancer/imageProcess/cv_test2/build/";
   //TODO edit calibrating image's path
-  string pathDirectory = "/home/yyj/xx/calibrationimage/";
+  string pathDirectory = "/home/mwx/Pictures/calibration/";
   DIR *dir;
   struct dirent *ent;
   if ((dir = opendir(pathDirectory.c_str())) != NULL) {
@@ -168,7 +168,7 @@ int main() {
     while ((ent = readdir(dir)) != NULL) {
       string tmpFileName = ent->d_name;
       if (tmpFileName.length() > 4) {
-        auto nPos = tmpFileName.find(".jpg");
+        auto nPos = tmpFileName.find(".png");
         if (nPos != string::npos) {
           imagesName.push_back(tmpFileName);
           imagesNum++;
@@ -186,9 +186,14 @@ int main() {
   for (auto image_name : imagesName) {
     cv::Mat view;
     view = cv::imread((pathDirectory + image_name).c_str());
+//    namedWindow("image", CV_WINDOW_NORMAL);
+//    imshow("image", view);
+//    waitKey(0);
+
     imageSize = view.size();
     vector<cv::Point2f> pointBuf;
     bool found;
+
     found = findChessboardCorners(view, s.getBoardSize(), pointBuf,
                                   cv::CALIB_CB_ADAPTIVE_THRESH |
                                       cv::CALIB_CB_FAST_CHECK |
@@ -203,6 +208,11 @@ int main() {
       imagePoints.push_back(pointBuf);
       drawChessboardCorners(view, s.getBoardSize(), cv::Mat(pointBuf), found);
       foundCornerNum++;
+
+      namedWindow("image", CV_WINDOW_NORMAL);
+      imshow("image", view);
+      waitKey(0);
+
       cout << image_name << " found corner successfully!" << endl;
     } else {
       cout << image_name << " found corner failed! & removed!" << endl;
@@ -211,8 +221,7 @@ int main() {
   }
 
   cout << foundCornerNum << " of " << imagesNum << " found corner successfully!" << endl;
-  runCalibrationAndSave(s, imageSize, cameraMatrix, distCoeffs,
-                        imagePoints);
+  runCalibrationAndSave(s, imageSize, cameraMatrix, distCoeffs, imagePoints);
   cout << "-------------cameraMatrix--------------" << endl;
 
   cout << cameraMatrix.size() << endl;
@@ -225,6 +234,7 @@ int main() {
     cv::Mat view = cv::imread((pathDirectory + image_name).c_str());
     cv::Mat temp = view.clone();
     undistort(temp, view, cameraMatrix, distCoeffs);
+    cv::namedWindow("undistorted", CV_WINDOW_NORMAL);
     cv::imshow("undistorted", view);
     cv::waitKey(0);
   }
