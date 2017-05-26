@@ -5,7 +5,7 @@
 #include <opencv2/opencv.hpp>
 
 namespace dvision {
-class ProjectionModel {
+class Projection {
  public:
   static void Init(cv::InputArray distCoeff, cv::InputArray cameraMatrix);
   static cv::Point2d image2world(Pixel);  // TODO(MWX) robot gesture

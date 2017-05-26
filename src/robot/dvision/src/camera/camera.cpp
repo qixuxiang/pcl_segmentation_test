@@ -1,3 +1,6 @@
+// Created on: May 20, 2017
+//     Author: Wenxing Mei <mwx36mwx@gmail.com>
+
 #include "dvision/camera.hpp"
 #include <poll.h>
 #include <sys/fcntl.h>
@@ -18,9 +21,7 @@ Camera::Camera(CameraSettings c) : m_device(c.device) {
   setCameraControl();
 }
 
-Camera::~Camera() {
-  deInit();
-}
+Camera::~Camera() { deInit(); }
 
 void Camera::init() {
   try {
@@ -67,8 +68,8 @@ void Camera::initFmt() {
   if (0 != ioctl(m_fd, VIDIOC_G_FMT, &fmt))
     throw std::runtime_error("Get format error");
 
-  if (fmt.fmt.pix.width != m_setting.width ||
-      fmt.fmt.pix.height != m_setting.height ||
+  if ((int)fmt.fmt.pix.width != m_setting.width ||
+      (int)fmt.fmt.pix.height != m_setting.height ||
       fmt.fmt.pix.pixelformat != pixfmt)
     throw std::runtime_error("Set format error");
 
@@ -86,9 +87,7 @@ void Camera::setFrameRate(uint32_t numerator, uint32_t denominator) {
   parm.parm.capture.timeperframe.numerator = numerator;
   parm.parm.capture.timeperframe.denominator = denominator;
   parm.parm.capture.capability = V4L2_CAP_TIMEPERFRAME;
-  if (0 != ioctl(m_fd, VIDIOC_S_PARM, &parm))
-    ROS_ERROR("Set fps error!");
-//    throw std::runtime_error("Set fps error");
+  if (0 != ioctl(m_fd, VIDIOC_S_PARM, &parm)) ROS_ERROR("Set fps error!");
 
   // confirm
   if (0 != ioctl(m_fd, VIDIOC_G_PARM, &parm))
@@ -96,7 +95,7 @@ void Camera::setFrameRate(uint32_t numerator, uint32_t denominator) {
   if (parm.parm.capture.timeperframe.numerator != numerator ||
       parm.parm.capture.timeperframe.denominator != denominator)
     ROS_ERROR("Set fps error!");
-//    throw std::runtime_error("Set fps failed!");
+
   ROS_INFO("Set fps to %d/%d", numerator, denominator);
 }
 
@@ -115,8 +114,7 @@ void Camera::initMmap() {
       throw std::runtime_error("REQBUFS");
   }
 
-  if (req.count < 1)
-    throw std::runtime_error("Insufficient buffer memory.");
+  if (req.count < 1) throw std::runtime_error("Insufficient buffer memory.");
 
   CLEAR(buffers);
 
@@ -147,8 +145,7 @@ void Camera::initMmap() {
     buf.memory = V4L2_MEMORY_MMAP;
     buf.index = i;
     buf.timecode.type = 3;
-    if (-1 == ioctl(m_fd, VIDIOC_QBUF, &buf))
-      throw std::runtime_error("QBUF");
+    if (-1 == ioctl(m_fd, VIDIOC_QBUF, &buf)) throw std::runtime_error("QBUF");
   }
   ROS_INFO("Init MMAP success.");
 }
@@ -198,7 +195,8 @@ void Camera::setControl(const uint32_t controlId, const uint32_t controlValue) {
 
 void Camera::setCameraControl() {
   setControl(V4L2CID::white_balance_auto, m_setting.whitebalance_auto);
-  setControl(V4L2CID::white_balance_temperature, m_setting.whitebalance_absolute);
+  setControl(V4L2CID::white_balance_temperature,
+             m_setting.whitebalance_absolute);
   setControl(V4L2CID::exposure_auto, m_setting.exposure_auto);
   setControl(V4L2CID::exposure_absolute, m_setting.exposure_absolute);
   setControl(V4L2CID::focus_auto, m_setting.focus_auto);
@@ -218,27 +216,25 @@ v4l2_queryctrl Camera::getControl(V4L2CID cid) {
   retv.maximum = 0;  // min == max means error
 
   memset(&queryctrl, 0, sizeof(queryctrl));
-  queryctrl.id = static_cast<uint32_t >(cid);
+  queryctrl.id = static_cast<uint32_t>(cid);
   if (-1 == ioctl(m_fd, VIDIOC_QUERYCTRL, &queryctrl)) {
-    if (errno == EINVAL)
-      return retv;
+    if (errno == EINVAL) return retv;
     ROS_ERROR("queryctrl error");
   } else {
-    if (queryctrl.flags & V4L2_CTRL_FLAG_DISABLED)
-      return retv;
+    if (queryctrl.flags & V4L2_CTRL_FLAG_DISABLED) return retv;
     retv = queryctrl;
   }
   return retv;
 }
 
 v4l2_queryctrl Camera::getControl(uint32_t cid) {
-  return getControl((V4L2CID) cid);
+  return getControl((V4L2CID)cid);
 }
 
 void Camera::resetControl() {
   ROS_WARN("Reset camera control");
   struct v4l2_queryctrl queryInfo;
-  static const int EXP_AUTO = 3; // 1:manual 3:auto
+  static const int EXP_AUTO = 3;  // 1:manual 3:auto
   setControl(V4L2_CID_EXPOSURE_AUTO, EXP_AUTO);
   // auto focus
   queryInfo = getControl(V4L2_CID_FOCUS_AUTO);
@@ -306,7 +302,9 @@ void Camera::doIO() {
   try {
     auto beginTime = ros::Time::now();
     struct pollfd pollfd = {m_fd, POLLIN | POLLPRI, 0};
-    int polled = poll( &pollfd, 1, 1000.0 / m_setting.frameRate * 6);  // wait for 6 frame for a new frame
+    int polled = poll(
+        &pollfd, 1,
+        1000.0 / m_setting.frameRate * 6);  // wait for 6 frame for a new frame
 
     if (polled < 0)
       throw std::runtime_error("Cannot poll");
@@ -334,19 +332,20 @@ void Camera::doIO() {
     raw_yuv = buffers[lastDequeued.index].start;
     raw_yuv_size = lastDequeued.bytesused;
 
-//    auto ioTime = stop1 - beginTime;
-//    auto dequeTime = stop2 - stop1;
-//    ROS_INFO("I/O: %lf ms, dequeue: %lf ms, size: %u", ioTime.toSec() * 1000, dequeTime.toSec() * 1000, raw_yuv_size);
+    //    auto ioTime = stop1 - beginTime;
+    //    auto dequeTime = stop2 - stop1;
+    //    ROS_INFO("I/O: %lf ms, dequeue: %lf ms, size: %u", ioTime.toSec() *
+    //    1000, dequeTime.toSec() * 1000, raw_yuv_size);
 
     auto t = (stop2 - beginTime).toSec() * 1000;
-    if(t > 40) {
+    if (t > 40) {
       ROS_WARN("Camera I/O is getting slow, %lf.", t);
     }
 
   } catch (std::exception &e) {
     ROS_ERROR("Camera I/O failed, error: %s, trying to restart.", e.what());
     sleep(1);
-//    stopIO();
+    //    stopIO();
     closeDevice();
     init();
   }
@@ -398,6 +397,7 @@ void Camera::closeDevice() {
 
 Frame Camera::capture() {
   doIO();
-  return Frame(static_cast<uint8_t*>(raw_yuv), m_setting.width, m_setting.height);
+  return Frame(static_cast<uint8_t *>(raw_yuv), m_setting.width,
+               m_setting.height);
 }
-}
+}  // namespace dvision

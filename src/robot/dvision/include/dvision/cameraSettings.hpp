@@ -1,8 +1,11 @@
+// Created on: May 20, 2017
+//     Author: Wenxing Mei <mwx36mwx@gmail.com>
+
 #pragma once
 #include <linux/videodev2.h>
-#include <string>
-#include <cstdint>
 #include <ros/ros.h>
+#include <cstdint>
+#include <string>
 
 namespace dvision {
 struct CameraSettings {
@@ -25,28 +28,37 @@ struct CameraSettings {
         focus_auto(1),
         focus_absolute(0) {}
 
+#define GPARAM(x)                                   \
+  do {                                              \
+    if (!nh->getParam("/dvision/camera/" #x, x)) {  \
+      ROS_FATAL("CameraSettings get pararm error"); \
+    }                                               \
+  } while (0)
+
   inline explicit CameraSettings(ros::NodeHandle *nh) {
-    if (!nh->getParam("/dvision/camera/device", device)) { ROS_FATAL("CameraSettings get pararm error"); }
-    if (!nh->getParam("/dvision/camera/width", width)) { ROS_FATAL("CameraSettings get pararm error"); }
-    if (!nh->getParam("/dvision/camera/height", height)) { ROS_FATAL("CameraSettings get pararm error"); }
-    if (!nh->getParam("/dvision/camera/frameRate", frameRate)) { ROS_FATAL("CameraSettings get pararm error"); }
-    if (!nh->getParam("/dvision/camera/brightness", brightness)) { ROS_FATAL("CameraSettings get pararm error"); }
-    if (!nh->getParam("/dvision/camera/contrast", contrast)) { ROS_FATAL("CameraSettings get pararm error"); }
-    if (!nh->getParam("/dvision/camera/saturation", saturation)) { ROS_FATAL("CameraSettings get pararm error"); }
-    if (!nh->getParam("/dvision/camera/hue", hue)) { ROS_FATAL("CameraSettings get pararm error"); }
-    if (!nh->getParam("/dvision/camera/sharpness", sharpness)) { ROS_FATAL("CameraSettings get pararm error"); }
-    if (!nh->getParam("/dvision/camera/gain", gain)) { ROS_FATAL("CameraSettings get pararm error"); }
-    if (!nh->getParam("/dvision/camera/gamma", gamma)) { ROS_FATAL("CameraSettings get pararm error"); }
-    if (!nh->getParam("/dvision/camera/whitebalance_auto", whitebalance_auto)) { ROS_FATAL("CameraSettings get pararm error"); }
-    if (!nh->getParam("/dvision/camera/whitebalance_absolute", whitebalance_absolute)) { ROS_FATAL("CameraSettings get pararm error"); }
-    if (!nh->getParam("/dvision/camera/exposure_auto", exposure_auto)) { ROS_FATAL("CameraSettings get pararm error"); }
-    if (!nh->getParam("/dvision/camera/exposure_absolute", exposure_absolute)) { ROS_FATAL("CameraSettings get pararm error"); }
-    if (!nh->getParam("/dvision/camera/focus_auto", focus_auto)) { ROS_FATAL("CameraSettings get pararm error"); }
-    if (!nh->getParam("/dvision/camera/focus_absolute", focus_absolute)) { ROS_FATAL("CameraSettings get pararm error"); }
+    GPARAM(device);
+    GPARAM(width);
+    GPARAM(height);
+    GPARAM(frameRate);
+    GPARAM(brightness);
+    GPARAM(contrast);
+    GPARAM(saturation);
+    GPARAM(hue);
+    GPARAM(sharpness);
+    GPARAM(gain);
+    GPARAM(gamma);
+    GPARAM(whitebalance_auto);
+    GPARAM(whitebalance_absolute);
+    GPARAM(exposure_auto);
+    GPARAM(exposure_absolute);
+    GPARAM(focus_auto);
+    GPARAM(focus_absolute);
   }
+#undef GPARAM
 
   std::string device;
-  int width, height;
+  int width;
+  int height;
   int frameRate;
   int brightness;
   int contrast;
@@ -79,4 +91,4 @@ enum class V4L2CID {
   hue = V4L2_CID_HUE,
   gamma = V4L2_CID_GAMMA
 };
-}
+}  // namespace dvision
