@@ -216,7 +216,7 @@ int main() {
       cout << image_name << " found corner successfully!" << endl;
     } else {
       cout << image_name << " found corner failed! & removed!" << endl;
-      remove((pathDirectory + image_name).c_str());
+//      remove((pathDirectory + image_name).c_str());
     }
   }
 
@@ -231,11 +231,14 @@ int main() {
   cout << distCoeffs << endl;
 
   for (auto image_name : imagesName) {
+
+
     cv::Mat view = cv::imread((pathDirectory + image_name).c_str());
     cv::Mat temp = view.clone();
     undistort(temp, view, cameraMatrix, distCoeffs);
-    cv::namedWindow("undistorted", CV_WINDOW_NORMAL);
-    cv::imshow("undistorted", view);
+    cout << image_name << endl;
+    cv::namedWindow("undist", CV_WINDOW_NORMAL);
+    cv::imshow("undist", view);
     cv::waitKey(0);
   }
 

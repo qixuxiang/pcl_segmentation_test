@@ -1,19 +1,9 @@
 #include "dvision/camera.hpp"
-#include <linux/videodev2.h>
 #include <poll.h>
 #include <sys/fcntl.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
-#include <unistd.h>
-#include <cassert>
-#include <cerrno>
-#include <cstring>
-#include <fstream>
-#include <iomanip>
-#include <stdexcept>
-#include <sys/stat.h>
-#include <fcntl.h>
 
 #define CLEAR(x) memset(&(x), 0, sizeof((x)))
 
