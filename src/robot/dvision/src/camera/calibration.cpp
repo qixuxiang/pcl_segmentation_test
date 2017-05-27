@@ -1,87 +1,91 @@
-#include <iostream>
-#include <cstdio>
-#include <opencv2/opencv.hpp>
+// Created on: May 20, 2017
+//     Author: Wenxing Mei <mwx36mwx@gmail.com>
+
 #include <dirent.h>
+#include <algorithm>
+#include <cstdio>
+#include <iostream>
+#include <opencv2/opencv.hpp>
 
 using namespace std;
 using namespace cv;
+
 class CalibSettings {
-public:
+ public:
   enum Pattern {
     NOT_EXISTING,
     CHESSBOARD,
     CIRCLES_GRID,
     ASYMMETRIC_CIRCLES_GRID
   };
-  CalibSettings()
-      :
-      calibMode(CHESSBOARD) {}
+
+  CalibSettings() : calibMode(CHESSBOARD) {}
+
   void init(int boardWidth, int boardHeight, float squareSize) {
     this->boardWidth = boardWidth;
     this->boardHeight = boardHeight;
     this->squareSize = squareSize;
   }
+
   int getFlag() {
     int flag = 0;
-//      		flag |= CV_CALIB_USE_INTRINSIC_GUESS; // keep camera matrix as
-    //zero 		flag |= CV_CALIB_FIX_ASPECT_RATIO; 		flag |=
-    //CV_CALIB_FIX_PRINCIPAL_POINT; 		flag |=
-    //CV_CALIB_ZERO_TANGENT_DIST; 		flag |=
-    //CV_CALIB_FIX_FOCAL_LENGTH; 		flag |= CV_CALIB_FIX_K1;
+    //      		flag |= CV_CALIB_USE_INTRINSIC_GUESS; // keep camera
+    //      matrix as
+    // zero 		flag |= CV_CALIB_FIX_ASPECT_RATIO; 		flag |=
+    // CV_CALIB_FIX_PRINCIPAL_POINT; 		flag |=
+    // CV_CALIB_ZERO_TANGENT_DIST; 		flag |=
+    // CV_CALIB_FIX_FOCAL_LENGTH; 		flag |= CV_CALIB_FIX_K1;
     //		flag |= CV_CALIB_FIX_K2;
-//      flag |= CV_CALIB_FIX_K3;
-//      if (!params.calib->high_dimension()) {
-//        flag |= CV_CALIB_FIX_K4;
-//        flag |= CV_CALIB_FIX_K5;
-//        flag |= CV_CALIB_FIX_K6;
-//      }
+    //      flag |= CV_CALIB_FIX_K3;
+    //      if (!params.calib->high_dimension()) {
+    //        flag |= CV_CALIB_FIX_K4;
+    //        flag |= CV_CALIB_FIX_K5;
+    //        flag |= CV_CALIB_FIX_K6;
+    //      }
     flag |= CV_CALIB_RATIONAL_MODEL;
     flag |= CV_CALIB_THIN_PRISM_MODEL;
     return flag;
   }
-  cv::Size getBoardSize() {
-    return cv::Size(boardWidth, boardHeight);
-  }
-  float getSquareSize() {
-    return squareSize;
-  }
-  Pattern getCalibMode() {
-    return calibMode;
-  };
 
-private:
+  Size getBoardSize() { return Size(boardWidth, boardHeight); }
+
+  float getSquareSize() { return squareSize; }
+
+  Pattern getCalibMode() { return calibMode; };
+
+ private:
   int boardWidth = 9;
   int boardHeight = 9;
   float squareSize = 30;
   Pattern calibMode;
 };
 
-static double computeReprojectionErrors(const vector<vector<cv::Point3f>> &objectPoints,
-                                        const vector<vector<cv::Point2f>> &imagePoints,
-                                        const vector<cv::Mat> &rvecs, const vector<cv::Mat> &tvecs,
-                                        const cv::Mat &cameraMatrix, const cv::Mat &distCoeffs,
-                                        vector<float> &perViewErrors) {
-  vector<cv::Point2f> imagePoints2;
+static double computeReprojectionErrors(
+    const vector<vector<Point3f>> &objectPoints,
+    const vector<vector<Point2f>> &imagePoints, const vector<Mat> &rvecs,
+    const vector<Mat> &tvecs, const Mat &cameraMatrix, const Mat &distCoeffs,
+    vector<float> &perViewErrors) {
+  vector<Point2f> imagePoints2;
   int i, totalPoints = 0;
   double totalErr = 0, err;
   perViewErrors.resize(objectPoints.size());
 
-  for (i = 0; i < (int) objectPoints.size(); ++i) {
-    projectPoints(cv::Mat(objectPoints[i]), rvecs[i], tvecs[i], cameraMatrix,
+  for (i = 0; i < (int)objectPoints.size(); ++i) {
+    projectPoints(Mat(objectPoints[i]), rvecs[i], tvecs[i], cameraMatrix,
                   distCoeffs, imagePoints2);
-    err = norm(cv::Mat(imagePoints[i]), cv::Mat(imagePoints2), cv::NORM_L2);
+    err = norm(Mat(imagePoints[i]), Mat(imagePoints2), NORM_L2);
 
-    int n = (int) objectPoints[i].size();
-    perViewErrors[i] = (float) std::sqrt(err * err / n);
+    int n = (int)objectPoints[i].size();
+    perViewErrors[i] = (float)sqrt(err * err / n);
     totalErr += err * err;
     totalPoints += n;
   }
 
-  return std::sqrt(totalErr / totalPoints);
+  return sqrt(totalErr / totalPoints);
 }
 
-static void calcBoardCornerPositions(cv::Size boardSize, float squareSize,
-                                     vector<cv::Point3f> &corners,
+static void calcBoardCornerPositions(Size boardSize, float squareSize,
+                                     vector<Point3f> &corners,
                                      CalibSettings::Pattern patternType) {
   corners.clear();
 
@@ -90,54 +94,55 @@ static void calcBoardCornerPositions(cv::Size boardSize, float squareSize,
     case CalibSettings::CIRCLES_GRID:
       for (int i = 0; i < boardSize.height; ++i)
         for (int j = 0; j < boardSize.width; ++j)
-          corners.push_back(
-              cv::Point3f(j * squareSize, i * squareSize, 0));
+          corners.push_back(Point3f(j * squareSize, i * squareSize, 0));
       break;
 
     case CalibSettings::ASYMMETRIC_CIRCLES_GRID:
       for (int i = 0; i < boardSize.height; i++)
         for (int j = 0; j < boardSize.width; j++)
-          corners.push_back(cv::Point3f((2 * j + i % 2) * squareSize,
-                                        i * squareSize, 0));
+          corners.push_back(
+              Point3f((2 * j + i % 2) * squareSize, i * squareSize, 0));
       break;
     default:
       break;
   }
 }
 
-static bool runCalibration(CalibSettings &s, cv::Size &imageSize, cv::Mat &cameraMatrix,
-                           cv::Mat &distCoeffs, vector<vector<cv::Point2f>> imagePoints,
-                           vector<cv::Mat> &rvecs, vector<cv::Mat> &tvecs,
+static bool runCalibration(CalibSettings &s, Size &imageSize, Mat &cameraMatrix,
+                           Mat &distCoeffs, vector<vector<Point2f>> imagePoints,
+                           vector<Mat> &rvecs, vector<Mat> &tvecs,
                            vector<float> &reprojErrs, double &totalAvgErr) {
-  cameraMatrix = cv::Mat::eye(3, 3, CV_64F);
-  if (s.getFlag() & cv::CALIB_FIX_ASPECT_RATIO)
-    cameraMatrix.at<double>(0, 0) = 1.0;
+  cameraMatrix = Mat::eye(3, 3, CV_64F);
+  if (s.getFlag() & CALIB_FIX_ASPECT_RATIO) cameraMatrix.at<double>(0, 0) = 1.0;
 
-  distCoeffs = cv::Mat::zeros(8, 1, CV_64F);
+  distCoeffs = Mat::zeros(8, 1, CV_64F);
 
-  vector<vector<cv::Point3f>> objectPoints(1);
-  calcBoardCornerPositions(s.getBoardSize(), s.getSquareSize(), objectPoints[0], s.getCalibMode());
+  vector<vector<Point3f>> objectPoints(1);
+  calcBoardCornerPositions(s.getBoardSize(), s.getSquareSize(), objectPoints[0],
+                           s.getCalibMode());
 
   objectPoints.resize(imagePoints.size(), objectPoints[0]);
 
   // Find intrinsic and extrinsic camera parameters
-  double rms = calibrateCamera(objectPoints, imagePoints, imageSize, cameraMatrix,
-                               distCoeffs, rvecs, tvecs, s.getFlag());
+  double rms =
+      calibrateCamera(objectPoints, imagePoints, imageSize, cameraMatrix,
+                      distCoeffs, rvecs, tvecs, s.getFlag());
 
   cout << "Re-projection error reported by calibrateCamera: " << rms << endl;
 
   bool ok = checkRange(cameraMatrix) && checkRange(distCoeffs);
 
-  totalAvgErr = computeReprojectionErrors(objectPoints, imagePoints, rvecs, tvecs,
-                                          cameraMatrix, distCoeffs, reprojErrs);
+  totalAvgErr =
+      computeReprojectionErrors(objectPoints, imagePoints, rvecs, tvecs,
+                                cameraMatrix, distCoeffs, reprojErrs);
 
   return ok;
 }
 
-bool runCalibrationAndSave(CalibSettings &s, cv::Size imageSize, cv::Mat &cameraMatrix,
-                           cv::Mat &distCoeffs,
-                           vector<vector<cv::Point2f>> imagePoints) {
-  vector<cv::Mat> rvecs, tvecs;
+bool runCalibrationAndSave(CalibSettings &s, Size imageSize, Mat &cameraMatrix,
+                           Mat &distCoeffs,
+                           vector<vector<Point2f>> imagePoints) {
+  vector<Mat> rvecs, tvecs;
   vector<float> reprojErrs;
   double totalAvgErr = 0;
 
@@ -148,18 +153,19 @@ bool runCalibrationAndSave(CalibSettings &s, cv::Size imageSize, cv::Mat &camera
 
   return ok;
 }
+
 int main() {
-  CalibSettings s;                             //Calibration settings
-  vector<vector<cv::Point2f>> imagePoints;
-  cv::Mat cameraMatrix, distCoeffs;
-  cv::Size imageSize;
+  CalibSettings s;  // Calibration settings
+  vector<vector<Point2f>> imagePoints;
+  Mat cameraMatrix, distCoeffs;
+  Size imageSize;
 
   int imagesNum = 0;
   int foundCornerNum = 0;
 
   vector<string> imagesName;
-  //string pathDirectory = "/home/yyj/ZJUDancer/imageProcess/cv_test2/build/";
-  //TODO edit calibrating image's path
+  // string pathDirectory = "/home/yyj/ZJUDancer/imageProcess/cv_test2/build/";
+  // TODO edit calibrating image's path
   string pathDirectory = "/home/mwx/Pictures/calibration/";
   DIR *dir;
   struct dirent *ent;
@@ -184,29 +190,29 @@ int main() {
   sort(imagesName.begin(), imagesName.end());
 
   for (auto image_name : imagesName) {
-    cv::Mat view;
-    view = cv::imread((pathDirectory + image_name).c_str());
-//    namedWindow("image", CV_WINDOW_NORMAL);
-//    imshow("image", view);
-//    waitKey(0);
+    Mat view;
+    view = imread((pathDirectory + image_name).c_str());
+    //    namedWindow("image", CV_WINDOW_NORMAL);
+    //    imshow("image", view);
+    //    waitKey(0);
 
     imageSize = view.size();
-    vector<cv::Point2f> pointBuf;
+    vector<Point2f> pointBuf;
     bool found;
 
-    found = findChessboardCorners(view, s.getBoardSize(), pointBuf,
-                                  cv::CALIB_CB_ADAPTIVE_THRESH |
-                                      cv::CALIB_CB_FAST_CHECK |
-                                      cv::CALIB_CB_NORMALIZE_IMAGE);
+    found =
+        findChessboardCorners(view, s.getBoardSize(), pointBuf,
+                              CALIB_CB_ADAPTIVE_THRESH | CALIB_CB_FAST_CHECK |
+                                  CALIB_CB_NORMALIZE_IMAGE);
     if (found) {
-      cv::Mat viewGray;
-      cvtColor(view, viewGray, cv::COLOR_BGR2GRAY);
+      Mat viewGray;
+      cvtColor(view, viewGray, COLOR_BGR2GRAY);
       cornerSubPix(
-          viewGray, pointBuf, cv::Size(11, 11), cv::Size(-1, -1),
-          cv::TermCriteria(cv::TermCriteria::EPS + cv::TermCriteria::COUNT, 30, 0.1));
+          viewGray, pointBuf, Size(11, 11), Size(-1, -1),
+          TermCriteria(TermCriteria::EPS + TermCriteria::COUNT, 30, 0.1));
 
       imagePoints.push_back(pointBuf);
-      drawChessboardCorners(view, s.getBoardSize(), cv::Mat(pointBuf), found);
+      drawChessboardCorners(view, s.getBoardSize(), Mat(pointBuf), found);
       foundCornerNum++;
 
       namedWindow("image", CV_WINDOW_NORMAL);
@@ -216,11 +222,12 @@ int main() {
       cout << image_name << " found corner successfully!" << endl;
     } else {
       cout << image_name << " found corner failed! & removed!" << endl;
-//      remove((pathDirectory + image_name).c_str());
+      //      remove((pathDirectory + image_name).c_str());
     }
   }
 
-  cout << foundCornerNum << " of " << imagesNum << " found corner successfully!" << endl;
+  cout << foundCornerNum << " of " << imagesNum << " found corner successfully!"
+       << endl;
   runCalibrationAndSave(s, imageSize, cameraMatrix, distCoeffs, imagePoints);
   cout << "-------------cameraMatrix--------------" << endl;
 
@@ -231,15 +238,13 @@ int main() {
   cout << distCoeffs << endl;
 
   for (auto image_name : imagesName) {
-
-
-    cv::Mat view = cv::imread((pathDirectory + image_name).c_str());
-    cv::Mat temp = view.clone();
+    Mat view = imread((pathDirectory + image_name).c_str());
+    Mat temp = view.clone();
     undistort(temp, view, cameraMatrix, distCoeffs);
     cout << image_name << endl;
-    cv::namedWindow("undist", CV_WINDOW_NORMAL);
-    cv::imshow("undist", view);
-    cv::waitKey(0);
+    namedWindow("undist", CV_WINDOW_NORMAL);
+    imshow("undist", view);
+    waitKey(0);
   }
 
   return 0;

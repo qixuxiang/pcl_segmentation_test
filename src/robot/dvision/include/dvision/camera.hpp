@@ -1,10 +1,14 @@
+// Created on: May 20, 2017
+//     Author: Wenxing Mei <mwx36mwx@gmail.com>
+
 #pragma once
 #include <linux/videodev2.h>
 #include "dvision/cameraSettings.hpp"
 #include "dvision/frame.hpp"
+
 namespace dvision {
 class Camera {
-public:
+ public:
   // use default/saved camera parameters
   explicit Camera(std::string device = "/dev/video0");
 
@@ -23,15 +27,13 @@ public:
 
   v4l2_queryctrl getControl(uint32_t cid);
 
-  // TODO(MWX): able to init all parameters
-
   // prohibit copy/move
   Camera(const Camera &) = delete;
-  Camera(Camera&&) = delete;
+  Camera(Camera &&) = delete;
   Camera &operator=(const Camera &) = delete;
-  Camera &operator=(Camera&&) = delete;
+  Camera &operator=(Camera &&) = delete;
 
-private:
+ private:
   void init();
   void deInit();
   void openDevice();
@@ -45,23 +47,22 @@ private:
   void resetControl();
   void initMmap();
 
-private:
+ private:
   std::string m_device;
   int m_fd;
   CameraSettings m_setting;
 
   static const int NUM_FRAME_BUFFERS = 4;
-  struct Buffer {
-    uint8_t* start;
+  struct {
+    uint8_t *start;
     size_t length;
-  };
+  } buffers[NUM_FRAME_BUFFERS];
 
-  Buffer buffers[NUM_FRAME_BUFFERS];
   uint32_t n_buffers;
   v4l2_buffer lastDequeued;
 
   // Pointer to last dequeued buffer
-  void* raw_yuv;
+  void *raw_yuv;
   uint32_t raw_yuv_size;
 };
-}
+}  // namespace dvision
