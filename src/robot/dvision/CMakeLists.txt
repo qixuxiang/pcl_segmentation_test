@@ -8,7 +8,7 @@ find_package(catkin REQUIRED
   message_generation
   dprocess)
 
-find_package(OpenCV REQUIRED)
+find_package(OpenCV 3 REQUIRED)
 find_package(Eigen3 REQUIRED)
 
 
@@ -37,6 +37,8 @@ add_library(dvisionlib
   src/frame.cpp
   src/camera/camera.cpp
   src/camera/calibration.cpp
+  src/camera/distortionModel.cpp
+  # src/camera/projection.cpp
   )
 target_link_libraries(dvisionlib ${catkin_LIBRARIES} ${OpenCV_LIBS}) # ${Boost_LIBRARIES})
 #add_dependencies(dvisionlib ${PROJECT_NAME}_generate_messages_cpp)
@@ -50,3 +52,8 @@ target_link_libraries(calib ${OpenCV_LIBS})
 
 add_executable(capture src/tools/capture.cpp)
 target_link_libraries(capture dvisionlib)
+
+## TEST
+catkin_add_gtest(test_distortionModel test/test_distortionModel.cpp)
+target_link_libraries(test_distortionModel dvisionlib)
+target_link_libraries(test_distortionModel ${catkin_LIBRARIES})

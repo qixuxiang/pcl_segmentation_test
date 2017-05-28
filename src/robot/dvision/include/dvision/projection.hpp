@@ -5,15 +5,16 @@
 #include <opencv2/opencv.hpp>
 
 namespace dvision {
-class Projection {
- public:
-  static void Init(cv::InputArray distCoeff, cv::InputArray cameraMatrix);
-  static cv::Point2d image2world(Pixel);  // TODO(MWX) robot gesture
-  static Pixel world2image(World, RobotGesture);
+class Projection
+{
+    using namespace cv;
 
- private:
-  cv::Mat m_distortionCoefficient;
-  cv::Mat m_cameraMatrix;
-  bool initialised;
+  public:
+    Projection();
+
+  private:
+    Mat m_distCoeff;
+    Mat m_cameraMatrix;
+    bool initialised = false;
 };
-}  // namespace dvision
+} // namespace dvision
