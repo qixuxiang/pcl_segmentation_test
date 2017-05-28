@@ -16,6 +16,8 @@ AllowShortCaseLabelsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: None
 AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
+BinPackArguments: false
+BinPackParameters: false
 
 IndentCaseLabels: true
 MaxEmptyLinesToKeep: 1
