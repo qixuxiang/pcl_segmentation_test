@@ -36,11 +36,13 @@ DistortionModel::init()
 
 //    const int limit = 300;
     for (uint32_t i = 0; i < res.size(); ++i) {
-        cout << res[i] << endl;
 //        if(res[i].x > limit || res[i].x < -limit || res[i].y > limit || res[i].y < -limit) continue;
 
-        maxW = max(maxW, abs(res[i].x - resCenter[0].x));
-        maxH = max(maxH, abs(res[i].y - resCenter[0].y));
+        int tmpW = max(maxW, abs(res[i].x - resCenter[0].x));
+        int tmpH = max(maxH, abs(res[i].y - resCenter[0].y));
+        if(tmpW > 700 || tmpH > 700) continue;
+        maxW = tmpW;
+        maxH = tmpH;
     }
 
     m_undistImageSize = Size(maxW * 2 + 1, maxH * 2 + 1);
@@ -97,7 +99,7 @@ DistortionModel::undistortImage(const Mat& rawImg, Mat& res)
         counter++;
         raw_D += rawChannels;
         if (x < 0 || y < 0 || y >= siY || x >= siX) {
-            printf("Error In Programming %d %d \n", x, y);
+//            printf("Error In Programming %d %d \n", x, y);
             continue;
         }
         uchar* currentP_tmp_D = tmp_D + (((y * siX) + x) * rawChannels);

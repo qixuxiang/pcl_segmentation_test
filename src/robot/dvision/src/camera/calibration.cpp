@@ -7,9 +7,9 @@
 #include <iostream>
 #include <opencv2/opencv.hpp>
 
-const int BOARDWIDTH = 9;
-const int BOARDHEIGHT = 9;
-const int SQUARESIZE = 30; // milimeters
+const int BOARDWIDTH = 8;
+const int BOARDHEIGHT = 6;
+const int SQUARESIZE = 38; // milimeters
 
 using namespace std;
 using namespace cv;
