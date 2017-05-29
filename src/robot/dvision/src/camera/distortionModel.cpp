@@ -52,21 +52,15 @@ DistortionModel::init()
     int offsetX = maxW - resCenter[0].x;
     int offsetY = maxH - resCenter[0].y;
 
-    //    int offsetX = (m_undistImageSize.width - W) / 2.;
-    //    int offsetY = (m_undistImageSize.height - H) / 2.;
-
     m_distortionVector.resize(W * H);
     for (int y = 0; y < H; ++y) {
         for (int x = 0; x < W; ++x) {
             int index = y * W + x;
             m_distortionVector[index] = Point(res[index].x + offsetX, res[index].y + offsetY);
-
-            if (x < 0 || y < 0)
-                cout << Point(x, y) << endl;
         }
     }
 
-    initUndistortRectifyMap(m_cameraMatrix, m_distCoeff, Mat(), getOptimalNewCameraMatrix(m_cameraMatrix, m_distCoeff, m_imageSize, 1, m_imageSize, 0), m_imageSize, CV_16SC2, m_map1, m_map2);
+    initUndistortRectifyMap(m_cameraMatrix, m_distCoeff, Mat(), getOptimalNewCameraMatrix(m_cameraMatrix, m_distCoeff, m_imageSize, 1, m_imageSize, 0, true), m_imageSize, CV_16SC2, m_map1, m_map2);
 }
 
 void
@@ -115,6 +109,48 @@ DistortionModel::undistortImage(const Mat& rawImg, Mat& res)
     //        currentP_tmp_D[1] = raw_D[1];
     //        currentP_tmp_D[2] = raw_D[2];
     //    }
+}
+
+void
+DistortionModel::undistortImage2(const Mat& rawImg, Mat& res)
+{
+    const int W = m_imageSize.width;
+    const int H = m_imageSize.height;
+
+    vector<Point> p(static_cast<unsigned long>(H * W)), resP;
+    int ctmp = 0;
+    for (int y = 0; y < H; y++) {
+        for (int x = 0; x < W; x++) {
+            p[ctmp++] = Point(x, y);
+        }
+    }
+
+    undistort(p, resP);
+
+    const int siX = m_undistImageSize.width;
+    const int siY = m_undistImageSize.height;
+    res = Mat::zeros(Size(siX, siY), CV_8UC3);
+
+    int counter = 0;
+
+    const int rawChannels = rawImg.channels();
+    const int rawSize = rawImg.rows * rawImg.cols;
+    uchar* raw_D = rawImg.data;
+    uchar* tmp_D = res.data;
+
+    for (int i = 0; i < rawSize; i++) {
+        int x = resP[counter].x;
+        int y = resP[counter].y;
+        counter++;
+        raw_D += rawChannels;
+        if (x < 0 || y < 0 || y >= siY || x >= siX) {
+            continue;
+        }
+        uchar* currentP_tmp_D = tmp_D + (((y * siX) + x) * rawChannels);
+        currentP_tmp_D[0] = raw_D[0];
+        currentP_tmp_D[1] = raw_D[1];
+        currentP_tmp_D[2] = raw_D[2];
+    }
 }
 
 void
