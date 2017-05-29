@@ -96,6 +96,7 @@ runCalibration(Size& imageSize, Mat& cameraMatrix, Mat& distCoeffs, vector<vecto
 bool
 runCalibrationAndSave(Size imageSize, Mat& cameraMatrix, Mat& distCoeffs, vector<vector<Point2f>> imagePoints)
 {
+    cout << "Start calibration" << endl;
     vector<Mat> rvecs, tvecs;
     vector<float> reprojErrs;
     double totalAvgErr = 0;
@@ -152,6 +153,7 @@ main(int argc, char** argv)
             cornerSubPix(viewGray, pointBuf, Size(11, 11), Size(-1, -1), TermCriteria(TermCriteria::EPS + TermCriteria::COUNT, 30, 0.1));
             imagePoints.push_back(pointBuf);
             drawChessboardCorners(view, s.getBoardSize(), Mat(pointBuf), found);
+            cout << image_name << endl;
             namedWindow("image", CV_WINDOW_NORMAL);
             imshow("image", view);
             cvWaitKey(0);
