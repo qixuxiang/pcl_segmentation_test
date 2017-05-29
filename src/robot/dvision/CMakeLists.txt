@@ -38,7 +38,7 @@ add_library(dvisionlib
   src/camera/camera.cpp
   src/camera/calibration.cpp
   src/camera/distortionModel.cpp
-  # src/camera/projection.cpp
+   src/camera/projection.cpp
   )
 target_link_libraries(dvisionlib ${catkin_LIBRARIES} ${OpenCV_LIBS}) # ${Boost_LIBRARIES})
 #add_dependencies(dvisionlib ${PROJECT_NAME}_generate_messages_cpp)
