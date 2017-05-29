@@ -60,3 +60,7 @@ target_link_libraries(capture dvisionlib)
 catkin_add_gtest(test_distortionModel test/test_distortionModel.cpp)
 target_link_libraries(test_distortionModel dvisionlib)
 target_link_libraries(test_distortionModel ${catkin_LIBRARIES})
+
+catkin_add_gtest(test_projection test/test_projection.cpp)
+target_link_libraries(test_projection dvisionlib)
+target_link_libraries(test_projection ${catkin_LIBRARIES})

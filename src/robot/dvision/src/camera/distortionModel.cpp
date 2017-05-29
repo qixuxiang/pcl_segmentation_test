@@ -4,17 +4,22 @@ using namespace std;
 using namespace cv;
 
 namespace dvision {
-DistortionModel::DistortionModel(Size imageSize, Mat cameraMatrix, Mat distCoeff)
-  : m_imageSize(imageSize)
-  , m_cameraMatrix(cameraMatrix)
-  , m_distCoeff(distCoeff)
+DistortionModel::DistortionModel()
 {
-    init();
+}
+
+DistortionModel::DistortionModel(Size imageSize, Mat cameraMatrix, Mat distCoeff)
+{
+    init(imageSize, cameraMatrix, distCoeff);
 }
 
 void
-DistortionModel::init()
+DistortionModel::init(Size imageSize, Mat cameraMatrix, Mat distCoeff)
 {
+    m_imageSize = imageSize;
+    m_cameraMatrix = cameraMatrix;
+    m_distCoeff = distCoeff;
+
     int W = m_imageSize.width;
     int H = m_imageSize.height;
 

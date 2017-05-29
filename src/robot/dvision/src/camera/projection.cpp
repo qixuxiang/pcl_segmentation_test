@@ -1,19 +1,26 @@
 #include "dvision/projection.hpp"
 
 namespace dvision {
-void Projection::init()
+Projection::Projection(ros::NodeHandle* nh) : m_nh(nh)
 {
-    //
+    // TODO(MWX): read configurations
+    ROS_ERROR("Unimplemented");
+    m_dist.init(m_imageSize, m_cameraMatrix, m_distCoeff);
 }
 
-void Projection::update()
+Projection::~Projection()
+{
+}
+
+void
+Projection::update()
 {
     // update camera location and orientation
     // calculate homography
 }
 
 void
-Projection::getOnImageCoordinate(const cv::Point& point, cv::Point2f& resPoint)
+Projection::calcHomography()
 {
 }
 
