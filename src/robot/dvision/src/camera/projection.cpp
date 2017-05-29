@@ -1,9 +1,13 @@
 #include "dvision/projection.hpp"
 
 namespace dvision {
-Projection::Init()
+Projection::init()
 {
     //
+}
+
+Projection::update() {
+
 }
 
 } // namespace dvision

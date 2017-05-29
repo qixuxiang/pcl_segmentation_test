@@ -52,6 +52,14 @@ DistortionModel::init()
     int offsetX = maxW - resCenter[0].x;
     int offsetY = maxH - resCenter[0].y;
 
+    // (0, 0) (0, 1) (0, 2)
+    // (1, 0) (1, 1) (1, 2)
+    // (2, 0) (2, 1) (2, 2)
+
+    m_newCameraMatrix = m_cameraMatrix;
+    m_newCameraMatrix.at<double>(0, 2) += offsetX;
+    m_newCameraMatrix.at<double>(1, 2) += offsetY;
+
     m_distortionVector.resize(W * H);
     for (int y = 0; y < H; ++y) {
         for (int x = 0; x < W; ++x) {

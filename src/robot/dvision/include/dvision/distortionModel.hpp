@@ -20,8 +20,11 @@ class DistortionModel
     std::vector<cv::Point> m_distortionVector;
     cv::Size m_imageSize;
     cv::Size m_undistImageSize;
+
     cv::Mat m_cameraMatrix;
+    cv::Mat m_newCameraMatrix; // optical center shifted
     cv::Mat m_distCoeff;
+
     cv::Mat m_map1;
     cv::Mat m_map2;
 };
