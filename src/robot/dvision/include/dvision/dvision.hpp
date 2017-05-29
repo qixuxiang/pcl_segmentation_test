@@ -7,15 +7,16 @@
 #include "dvision/camera.hpp"
 
 namespace dvision {
-class DVision : public dprocess::DProcess<DVision> {
- public:
-  explicit DVision(ros::NodeHandle* n);
-  ~DVision();
-  void tick() override;
+class DVision : public dprocess::DProcess<DVision>
+{
+  public:
+    explicit DVision(ros::NodeHandle* n);
+    ~DVision();
+    void tick() override;
 
- private:
-  ros::NodeHandle* m_nh;
-  Camera m_camera;
-  dprocess::DConcurrent m_concurrent;
+  private:
+    ros::NodeHandle* m_nh;
+    Camera m_camera;
+    dprocess::DConcurrent m_concurrent;
 };
-}  // namespace dvision
+} // namespace dvision

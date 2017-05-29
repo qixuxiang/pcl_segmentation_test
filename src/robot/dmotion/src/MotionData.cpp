@@ -5,110 +5,288 @@ namespace MOTION {
 double sampletime;
 }
 
-void RobotPara::update(ros::NodeHandle *nh) {
-  ROS_INFO("RobotPara reading options");
-   if(!nh->getParam("/dmotion/robot/cm_r", cm_r)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/cm_p", cm_p)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/cm_y", cm_y)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/cm_dx", cm_dx)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/cm_dy", cm_dy)) {ROS_FATAL("RobotPara get param error!");}
-  /*cm_k */
-   if(!nh->getParam("/dmotion/robot/cm_dp_fk", cm_dp_fk)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/cm_dx_fk", cm_dx_fk)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/percent_fx", percent_fx)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/cm_dx_bk", cm_dx_bk)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/percent_bx", percent_bx)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/cm_dy_lk", cm_dy_lk)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/percent_ly", percent_ly)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/cm_dy_rk", cm_dy_rk)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/percent_ry", percent_ry)) {ROS_FATAL("RobotPara get param error!");}
+void
+RobotPara::update(ros::NodeHandle* nh)
+{
+    ROS_INFO("RobotPara reading options");
+    if (!nh->getParam("/dmotion/robot/cm_r", cm_r)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/cm_p", cm_p)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/cm_y", cm_y)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/cm_dx", cm_dx)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/cm_dy", cm_dy)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    /*cm_k */
+    if (!nh->getParam("/dmotion/robot/cm_dp_fk", cm_dp_fk)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/cm_dx_fk", cm_dx_fk)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/percent_fx", percent_fx)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/cm_dx_bk", cm_dx_bk)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/percent_bx", percent_bx)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/cm_dy_lk", cm_dy_lk)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/percent_ly", percent_ly)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/cm_dy_rk", cm_dy_rk)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/percent_ry", percent_ry)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
 
-   if(!nh->getParam("/dmotion/robot/hip_distance", hip_distance)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/upper_leg", upper_leg)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/lower_leg", lower_leg)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/upper_arm", upper_arm)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/lower_arm", lower_arm)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/lbz", lbz)) {ROS_FATAL("RobotPara get param error!");}
-  /* ankle */
-   if(!nh->getParam("/dmotion/robot/ra_r", ra_r)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/ra_p", ra_p)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/ra_y", ra_y)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/la_r", la_r)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/la_p", la_p)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/la_y", la_y)) {ROS_FATAL("RobotPara get param error!");}
-  /*ankle_k */
-   if(!nh->getParam("/dmotion/robot/la_dr_lk", la_dr_lk)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/ra_dr_lk", ra_dr_lk)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/la_dr_rk", la_dr_rk)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/ra_dr_rk", ra_dr_rk)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/la_dp_fk", la_dp_fk)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/ra_dp_fk", ra_dp_fk)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/la_dp_bk", la_dp_bk)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/ra_dp_bk", ra_dp_bk)) {ROS_FATAL("RobotPara get param error!");}
-  /*walking amend*/
-   if(!nh->getParam("/dmotion/robot/step_x_amend", step_x_amend)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/ad_x_max", ad_x_max)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/ad_theta_max", ad_theta_max)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/mid_x_max", mid_x_max)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/mid_theta_max", mid_theta_max)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/top_x_max", top_x_max)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/top_theta_max", top_theta_max)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/back_theta_amend", back_theta_amend)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/step_theta_amend", step_theta_amend)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/mid_theta_amend", mid_theta_amend)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/top_theta_amend", top_theta_amend)) {ROS_FATAL("RobotPara get param error!");}
+    if (!nh->getParam("/dmotion/robot/hip_distance", hip_distance)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/upper_leg", upper_leg)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/lower_leg", lower_leg)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/upper_arm", upper_arm)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/lower_arm", lower_arm)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/lbz", lbz)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    /* ankle */
+    if (!nh->getParam("/dmotion/robot/ra_r", ra_r)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/ra_p", ra_p)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/ra_y", ra_y)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/la_r", la_r)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/la_p", la_p)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/la_y", la_y)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    /*ankle_k */
+    if (!nh->getParam("/dmotion/robot/la_dr_lk", la_dr_lk)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/ra_dr_lk", ra_dr_lk)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/la_dr_rk", la_dr_rk)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/ra_dr_rk", ra_dr_rk)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/la_dp_fk", la_dp_fk)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/ra_dp_fk", ra_dp_fk)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/la_dp_bk", la_dp_bk)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/ra_dp_bk", ra_dp_bk)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    /*walking amend*/
+    if (!nh->getParam("/dmotion/robot/step_x_amend", step_x_amend)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/ad_x_max", ad_x_max)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/ad_theta_max", ad_theta_max)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/mid_x_max", mid_x_max)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/mid_theta_max", mid_theta_max)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/top_x_max", top_x_max)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/top_theta_max", top_theta_max)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/back_theta_amend", back_theta_amend)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/step_theta_amend", step_theta_amend)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/mid_theta_amend", mid_theta_amend)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/top_theta_amend", top_theta_amend)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
 
-  /*walking ability*/
-   if(!nh->getParam("/dmotion/robot/step_theta_max", step_theta_max)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/ad_x_max", ad_x_max)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/ad_theta_max", ad_theta_max)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/mid_x_max", mid_x_max)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/mid_theta_max", mid_theta_max)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/top_x_max", top_x_max)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/top_theta_max", top_theta_max)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/back_x_max", back_x_max)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/back_theta_max", back_theta_max)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/left_y_max", left_y_max)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/right_y_max", right_y_max)) {ROS_FATAL("RobotPara get param error!");}
-  /*foot lifting height*/
-   if(!nh->getParam("/dmotion/robot/ah_ml_zero", ah_ml_zero)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/ah_ml_mid", ah_ml_mid)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/ah_ml_top", ah_ml_top)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/ah_fl", ah_fl)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/ah_mr_zero", ah_mr_zero)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/ah_mr_mid", ah_mr_mid)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/ah_mr_top", ah_mr_top)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/ah_fr", ah_fr)) {ROS_FATAL("RobotPara get param error!");}
-  /*foot placement correct in y direction*/
-   if(!nh->getParam("/dmotion/robot/ankle_distance", ankle_distance)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/ankle_dev_l", Ankle_dev_l)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/ankle_dev_r", Ankle_dev_r)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/ankle_dev_l_tk", Ankle_dev_l_tk)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/ankle_dev_r_tk", Ankle_dev_r_tk)) {ROS_FATAL("RobotPara get param error!");}
-  /*arm*/
-   if(!nh->getParam("/dmotion/robot/arm_crouch_p", arm_crouch_p)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/arm_crouch_theta", arm_crouch_theta)) {ROS_FATAL("RobotPara get param error!");}
-  /*important*/
-   if(!nh->getParam("/dmotion/robot/stepnum", stepnum)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/stand2crouch_stepnum", stand2crouch_stepnum)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/staticExit_num", staticExit_num)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/yzmp", yzmp)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/hipheight", hipheight)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/kickpercent", kickPercent)) {ROS_FATAL("RobotPara get param error!");}
-  /*plat diff*/
-   if(!nh->getParam("/dmotion/robot/diffh", diffH)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/diffv", diffV)) {ROS_FATAL("RobotPara get param error!");}
-  /*other*/
-   if(!nh->getParam("/dmotion/robot/stepk", stepK)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/oldturning", oldturning)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/other2crouch2step_height", other2crouch2step_height)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/stand2crouch2step_height", stand2crouch2step_height)) {ROS_FATAL("RobotPara get param error!");}
+    /*walking ability*/
+    if (!nh->getParam("/dmotion/robot/step_theta_max", step_theta_max)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/ad_x_max", ad_x_max)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/ad_theta_max", ad_theta_max)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/mid_x_max", mid_x_max)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/mid_theta_max", mid_theta_max)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/top_x_max", top_x_max)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/top_theta_max", top_theta_max)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/back_x_max", back_x_max)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/back_theta_max", back_theta_max)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/left_y_max", left_y_max)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/right_y_max", right_y_max)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    /*foot lifting height*/
+    if (!nh->getParam("/dmotion/robot/ah_ml_zero", ah_ml_zero)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/ah_ml_mid", ah_ml_mid)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/ah_ml_top", ah_ml_top)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/ah_fl", ah_fl)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/ah_mr_zero", ah_mr_zero)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/ah_mr_mid", ah_mr_mid)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/ah_mr_top", ah_mr_top)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/ah_fr", ah_fr)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    /*foot placement correct in y direction*/
+    if (!nh->getParam("/dmotion/robot/ankle_distance", ankle_distance)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/ankle_dev_l", Ankle_dev_l)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/ankle_dev_r", Ankle_dev_r)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/ankle_dev_l_tk", Ankle_dev_l_tk)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/ankle_dev_r_tk", Ankle_dev_r_tk)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    /*arm*/
+    if (!nh->getParam("/dmotion/robot/arm_crouch_p", arm_crouch_p)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/arm_crouch_theta", arm_crouch_theta)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    /*important*/
+    if (!nh->getParam("/dmotion/robot/stepnum", stepnum)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/stand2crouch_stepnum", stand2crouch_stepnum)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/staticExit_num", staticExit_num)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/yzmp", yzmp)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/hipheight", hipheight)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/kickpercent", kickPercent)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    /*plat diff*/
+    if (!nh->getParam("/dmotion/robot/diffh", diffH)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/diffv", diffV)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    /*other*/
+    if (!nh->getParam("/dmotion/robot/stepk", stepK)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/oldturning", oldturning)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/other2crouch2step_height", other2crouch2step_height)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/stand2crouch2step_height", stand2crouch2step_height)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
 
-   if(!nh->getParam("/dmotion/robot/other2crouch2step_cm", other2crouch2step_cm)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/stand2crouch2step_cm", stand2crouch2step_cm)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/other2crouch2step", other2crouch2step)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/stand2crouch2step", stand2crouch2step)) {ROS_FATAL("RobotPara get param error!");}
-   if(!nh->getParam("/dmotion/robot/getup_bool", getup_bool)) {ROS_FATAL("RobotPara get param error!");}
+    if (!nh->getParam("/dmotion/robot/other2crouch2step_cm", other2crouch2step_cm)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/stand2crouch2step_cm", stand2crouch2step_cm)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/other2crouch2step", other2crouch2step)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/stand2crouch2step", stand2crouch2step)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
+    if (!nh->getParam("/dmotion/robot/getup_bool", getup_bool)) {
+        ROS_FATAL("RobotPara get param error!");
+    }
 }
 /*avoid error*/
 double RobotPara::hip_distance = 8;

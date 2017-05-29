@@ -21,5 +21,7 @@ class DistortionModel
     cv::Size m_undistImageSize;
     cv::Mat m_cameraMatrix;
     cv::Mat m_distCoeff;
+    cv::Mat m_map1;
+    cv::Mat m_map2;
 };
 } // namespace dvision

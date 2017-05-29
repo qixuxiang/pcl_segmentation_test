@@ -81,7 +81,7 @@ runCalibration(Size& imageSize, Mat& cameraMatrix, Mat& distCoeffs, vector<vecto
     if (s.getFlag() & CALIB_FIX_ASPECT_RATIO) {
         cameraMatrix.at<double>(0, 0) = 1.0;
     }
-    distCoeffs = Mat::zeros(8, 1, CV_64F);
+    distCoeffs = Mat::zeros(14, 1, CV_64F);
     vector<vector<Point3f>> objectPoints(1);
     calcBoardCornerPositions(s.getBoardSize(), s.getSquareSize(), objectPoints[0]);
     objectPoints.resize(imagePoints.size(), objectPoints[0]);
