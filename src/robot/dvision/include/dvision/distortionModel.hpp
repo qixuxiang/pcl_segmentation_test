@@ -16,6 +16,18 @@ class DistortionModel
     void undistortImage(const cv::Mat& src, cv::Mat& dst);
     void undistortImage2(const cv::Mat& src, cv::Mat& dst);
 
+  public:
+
+    inline cv::Size getUndistImageSize()
+    {
+        return m_undistImageSize;
+    }
+
+    inline cv::Mat getUndistCameraMatrix()
+    {
+        return m_undistCameraMatrix;
+    }
+
   private:
     bool undistort_slow(const std::vector<cv::Point>& points, std::vector<cv::Point>& resPoints);
 
@@ -25,7 +37,7 @@ class DistortionModel
     cv::Size m_undistImageSize;
 
     cv::Mat m_cameraMatrix;
-    cv::Mat m_newCameraMatrix; // optical center shifted
+    cv::Mat m_undistCameraMatrix; // optical center shifted
     cv::Mat m_distCoeff;
 
     cv::Mat m_map1;
