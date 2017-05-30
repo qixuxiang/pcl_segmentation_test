@@ -44,7 +44,7 @@ class VecPos
     friend std::ostream& operator<<(std::ostream&, const VecPos&);
 
     // rapidjson serialize
-    template <typename Writer>
+    template<typename Writer>
     void Serialize(Writer& writer) const
     {
         writer.StartObject();

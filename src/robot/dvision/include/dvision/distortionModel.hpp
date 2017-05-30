@@ -16,7 +16,6 @@ class DistortionModel
     void undistortImage2(const cv::Mat& src, cv::Mat& dst);
 
   private:
-
     void undistort_slow(const std::vector<cv::Point>& points, std::vector<cv::Point>& resPoints);
 
   private:

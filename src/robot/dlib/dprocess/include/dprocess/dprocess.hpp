@@ -8,7 +8,7 @@
 
 namespace dprocess {
 
-template <typename T>
+template<typename T>
 class DProcess
 {
   public:

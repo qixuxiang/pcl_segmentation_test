@@ -1,6 +1,5 @@
 #pragma once
 #include "dmotion/ActionCmd.h"
-#include "dmotion/ActionCmd.h"
 #include "dmotion/GaitStateSupportLib/HumanRobotInterface.hpp"
 #include "dmotion/GaitStateType.hpp"
 #include <ros/ros.h>

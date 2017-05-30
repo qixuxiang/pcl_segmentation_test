@@ -215,7 +215,8 @@ HumanRobot::rpy2t(double roll, double pit, double yaw, double x, double y, doubl
     return prod(R_tmp, rot2Tx(roll, 0, 0, 0));
 }
 
-boost_matrix HumanRobot::rpy2r(double roll, double pit, double yaw) /// ypr order in gyroscope
+boost_matrix
+HumanRobot::rpy2r(double roll, double pit, double yaw) /// ypr order in gyroscope
 {
     //旋转的顺序是 yaw , pitch , roll
     boost_matrix R_tmp(3, 3);

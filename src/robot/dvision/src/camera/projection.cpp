@@ -1,7 +1,8 @@
 #include "dvision/projection.hpp"
 
 namespace dvision {
-Projection::Projection(ros::NodeHandle* nh) : m_nh(nh)
+Projection::Projection(ros::NodeHandle* nh)
+  : m_nh(nh)
 {
     // TODO(MWX): read configurations
     ROS_ERROR("Unimplemented");

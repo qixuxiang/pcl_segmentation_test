@@ -1,6 +1,6 @@
 // https://github.com/opencv/opencv/tree/master/samples/cpp/tutorial_code/calib3d/camera_calibration
 // Usage:
-//   0. take some pictures using rosrun dvision capture
+//   0. take some pictures using `rosrun dvision capture`
 //   1. roscd dconfig && cd dvision
 //   2. modify parameters in default.xml
 //   3. rosrun dvision cvcalib
@@ -264,7 +264,8 @@ enum
     CALIBRATED = 2
 };
 
-bool runCalibrationAndSave(Settings& s, Size imageSize, Mat& cameraMatrix, Mat& distCoeffs, vector<vector<Point2f>> imagePoints);
+bool
+runCalibrationAndSave(Settings& s, Size imageSize, Mat& cameraMatrix, Mat& distCoeffs, vector<vector<Point2f>> imagePoints);
 
 int
 main(int argc, char* argv[])
@@ -432,7 +433,7 @@ main(int argc, char* argv[])
             fisheye::estimateNewCameraMatrixForUndistortRectify(cameraMatrix, distCoeffs, imageSize, Matx33d::eye(), newCamMat, 1);
             fisheye::initUndistortRectifyMap(cameraMatrix, distCoeffs, Matx33d::eye(), newCamMat, imageSize, CV_16SC2, map1, map2);
         } else {
-//            initUndistortRectifyMap(cameraMatrix, distCoeffs, Mat(), getOptimalNewCameraMatrix(cameraMatrix, distCoeffs, imageSize, 1, imageSize, 0), imageSize, CV_16SC2, map1, map2);
+            //            initUndistortRectifyMap(cameraMatrix, distCoeffs, Mat(), getOptimalNewCameraMatrix(cameraMatrix, distCoeffs, imageSize, 1, imageSize, 0), imageSize, CV_16SC2, map1, map2);
             initUndistortRectifyMap(cameraMatrix, distCoeffs, Mat(), getOptimalNewCameraMatrix(cameraMatrix, distCoeffs, imageSize, 1, imageSize, 0), imageSize, CV_16SC2, map1, map2);
         }
 
