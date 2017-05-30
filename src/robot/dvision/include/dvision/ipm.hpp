@@ -9,8 +9,10 @@
 namespace dvision {
 class IPM
 {
-private:
+
+  private:
     Eigen::MatrixXd mMat;
+
   public:
     /**
      * We first calculate 4 corner points'(in undistorted image) location at real(in field) coordinate.

@@ -14,6 +14,7 @@ void Projection::init(ros::NodeHandle* nh)
     m_dist.init();
 }
 
+
 Projection::~Projection()
 {
 }
@@ -27,24 +28,35 @@ Projection::updateExtrinsic(double yaw, double pitch)
     return true;
 }
 
-void
+// Single point
+
+bool
 Projection::getOnImageCoordinate(const Point& point, Point2f& resPoint)
 {
+    return true;
 }
 
-void
+bool
 Projection::getOnRealCoordinate(const Point2f& point, Point& resPoint)
 {
+    return true;
 }
 
-void
+// Points
+
+bool
 Projection::getOnImageCoordinate(const vector<Point>& points, vector<Point2f>& resPoints)
 {
+    if (!m_dist.undistort(points, resPoints)) {
+        return false;
+    }
+    return true;
 }
 
-void
+bool
 Projection::getOnRealCoordinate(const vector<Point2f>& points, vector<Point>& resPoints)
 {
+    return true;
 }
 
 } // namespace dvision

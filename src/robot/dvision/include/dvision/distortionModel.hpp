@@ -10,12 +10,13 @@ class DistortionModel
     DistortionModel();
     void init();
 
-    void undistort(const std::vector<cv::Point>& points, std::vector<cv::Point>& res);
+    bool undistort(const std::vector<cv::Point>& points, std::vector<cv::Point>& res);
+    bool undistort(const std::vector<cv::Point>& points, std::vector<cv::Point2f>& res);
     void undistortImage(const cv::Mat& src, cv::Mat& dst);
     void undistortImage2(const cv::Mat& src, cv::Mat& dst);
 
   private:
-    void undistort_slow(const std::vector<cv::Point>& points, std::vector<cv::Point>& resPoints);
+    bool undistort_slow(const std::vector<cv::Point>& points, std::vector<cv::Point>& resPoints);
 
   private:
     std::vector<cv::Point> m_distortionVector;

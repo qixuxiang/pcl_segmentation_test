@@ -27,12 +27,12 @@ class Projection
         return m_ipm.initGetHomography(m_extrinsic, homoImgToReal, homoRealToImg);
     }
 
-    void getOnImageCoordinate(const std::vector<cv::Point>& points, std::vector<cv::Point2f>& resPoints);
-    void getOnRealCoordinate(const std::vector<cv::Point2f>& points, std::vector<cv::Point>& resPoints);
+    bool getOnImageCoordinate(const std::vector<cv::Point>& points, std::vector<cv::Point2f>& resPoints);
+    bool getOnRealCoordinate(const std::vector<cv::Point2f>& points, std::vector<cv::Point>& resPoints);
 
     // single point
-    void getOnImageCoordinate(const cv::Point& point, cv::Point2f& resPoint);
-    void getOnRealCoordinate(const cv::Point2f& point, cv::Point& resPoint);
+    bool getOnImageCoordinate(const cv::Point& point, cv::Point2f& resPoint);
+    bool getOnRealCoordinate(const cv::Point2f& point, cv::Point& resPoint);
 
   private:
     void init();
@@ -40,7 +40,6 @@ class Projection
   private:
     DistortionModel m_dist;
     IPM m_ipm;
-
     // VERSION 1, use only yaw and pitch, 2017/5/29
     double m_yaw;
     double m_pitch;

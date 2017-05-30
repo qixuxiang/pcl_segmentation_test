@@ -12,6 +12,7 @@ using namespace std;
 TEST(Projection, main)
 {
     ros::NodeHandle nh;
+
     Projection p;
     p.init(&nh);
 

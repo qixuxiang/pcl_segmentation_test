@@ -1,12 +1,12 @@
 #include "dvision/ipm.hpp"
 #include "dvision/parameters.hpp"
-
 using namespace cv;
 using namespace std;
 using namespace Eigen;
 
 namespace dvision {
 bool
+
 IPM::initGetHomography(const MatrixXd& extrinsic, Mat& homoFor, Mat& homoBack)
 {
     mMat = extrinsic;
@@ -67,7 +67,6 @@ IPM::initGetHomography(const MatrixXd& extrinsic, Mat& homoFor, Mat& homoBack)
     } else {
         return false;
     }
-
     return true;
 }
 
@@ -97,6 +96,7 @@ IPM::calculatePoints(vector<Point2f>& contour, vector<Point2f>& resContour)
         resContour[i].x = rx;
         resContour[i].y = ry;
     }
+
     return true;
 }
 } // namespace dvision

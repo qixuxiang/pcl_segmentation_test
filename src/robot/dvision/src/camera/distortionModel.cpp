@@ -31,10 +31,7 @@ DistortionModel::init()
     int maxH = -1;
     int maxW = -1;
 
-    //    const int limit = 300;
     for (uint32_t i = 0; i < res.size(); ++i) {
-        //        if(res[i].x > limit || res[i].x < -limit || res[i].y > limit || res[i].y < -limit) continue;
-
         int tmpW = max(maxW, abs(res[i].x - resCenter[0].x));
         int tmpH = max(maxH, abs(res[i].y - resCenter[0].y));
         if (tmpW > 700 || tmpH > 700)
@@ -51,16 +48,14 @@ DistortionModel::init()
     int offsetX = maxW - resCenter[0].x;
     int offsetY = maxH - resCenter[0].y;
 
-    // (0, 0) (0, 1) (0, 2)
-    // (1, 0) (1, 1) (1, 2)
-    // (2, 0) (2, 1) (2, 2)
+    //    int offsetX = (m_undistImageSize.width - W) / 2.;
+    //    int offsetY = (m_undistImageSize.height - H) / 2.;
 
     parameters.camera.undistCameraMatrix = parameters.camera.cameraMatrix.clone();
     parameters.camera.undistCameraMatrix.at<double>(0, 2) += offsetX;
     parameters.camera.undistCameraMatrix.at<double>(1, 2) += offsetY;
     parameters.camera.undistCx = parameters.camera.undistCameraMatrix.at<double>(0, 2);
     parameters.camera.undistCy = parameters.camera.undistCameraMatrix.at<double>(1, 2);
-
     m_distortionVector.resize(W * H);
     for (int y = 0; y < H; ++y) {
         for (int x = 0; x < W; ++x) {
@@ -120,19 +115,44 @@ DistortionModel::undistortImage2(const Mat& rawImg, Mat& res)
     }
 }
 
-void
-DistortionModel::undistort(const vector<Point>& points, vector<Point>& res)
+bool
+DistortionModel::undistort(const vector<Point>& points, vector<Point2f>& res)
 {
     res.resize(points.size());
+    int W = parameters.camera.width;
+    int H = parameters.camera.height;
     for (uint32_t i = 0; i < points.size(); ++i) {
         int x = points[i].x;
         int y = points[i].y;
-
-        res[i] = m_distortionVector[y * parameters.camera.imageSize.width + x];
+        if (x < 0 || x >= W || y < 0 || y >= H) {
+            printf("Error in undistort (%d, %d)\n", x, y);
+            return false;
+        }
+        res[i] = m_distortionVector[y * W + x];
     }
+    return true;
 }
 
-void
+
+bool
+DistortionModel::undistort(const vector<Point>& points, vector<Point>& res)
+{
+    res.resize(points.size());
+    int W = parameters.camera.width;
+    int H = parameters.camera.height;
+    for (uint32_t i = 0; i < points.size(); ++i) {
+        int x = points[i].x;
+        int y = points[i].y;
+        if (x < 0 || x >= W || y < 0 || y >= H) {
+            printf("Error in undistort (%d, %d)\n", x, y);
+            return false;
+        }
+        res[i] = m_distortionVector[y * W + x];
+    }
+    return true;
+}
+
+bool
 DistortionModel::undistort_slow(const vector<Point>& points, vector<Point>& resPoints)
 {
     Mat src = Mat(1, points.size(), CV_32FC2);
@@ -151,6 +171,7 @@ DistortionModel::undistort_slow(const vector<Point>& points, vector<Point>& resP
         int y = res.at<Vec2f>(0, i)[1];
         resPoints[i] = Point(x, y);
     }
+    return true;
 }
 
 } // namespace dvision
