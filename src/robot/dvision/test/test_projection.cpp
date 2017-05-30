@@ -13,6 +13,7 @@ TEST(Projection, main)
 {
     ros::NodeHandle nh;
     Projection p(&nh);
+    p.calcHomography();
     //    while (ros::ok()) {
     //    }
 }

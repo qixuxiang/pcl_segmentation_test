@@ -8,7 +8,7 @@ UseTab: Never
 AlignEscapedNewlinesLeft: false
 AllowShortIfStatementsOnASingleLine: true
 AllowShortLoopsOnASingleLine: false
-AlignTrailingComments: false
+AlignTrailingComments: true
 AlignAfterOpenBracket: Align
 AlwaysBreakTemplateDeclarations: true
 AllowShortBlocksOnASingleLine: false

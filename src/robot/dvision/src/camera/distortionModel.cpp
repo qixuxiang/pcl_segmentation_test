@@ -166,19 +166,43 @@ DistortionModel::undistortImage2(const Mat& rawImg, Mat& res)
     }
 }
 
-void
-DistortionModel::undistort(const vector<Point>& points, vector<Point>& res)
+bool
+DistortionModel::undistort(const vector<Point>& points, vector<Point2f>& res)
 {
     res.resize(points.size());
+    int W = m_imageSize.width;
+    int H = m_imageSize.height;
     for (uint32_t i = 0; i < points.size(); ++i) {
         int x = points[i].x;
         int y = points[i].y;
-
-        res[i] = m_distortionVector[y * m_imageSize.width + x];
+        if(x < 0 || x >= W || y < 0 || y >= H) {
+            printf("Error in undistort (%d, %d)\n", x, y);
+            return false;
+        }
+        res[i] = m_distortionVector[y * W + x];
     }
+    return true;
 }
 
-void
+bool
+DistortionModel::undistort(const vector<Point>& points, vector<Point>& res)
+{
+    res.resize(points.size());
+    int W = m_imageSize.width;
+    int H = m_imageSize.height;
+    for (uint32_t i = 0; i < points.size(); ++i) {
+        int x = points[i].x;
+        int y = points[i].y;
+        if(x < 0 || x >= W || y < 0 || y >= H) {
+            printf("Error in undistort (%d, %d)\n", x, y);
+            return false;
+        }
+        res[i] = m_distortionVector[y * W + x];
+    }
+    return true;
+}
+
+bool
 DistortionModel::undistort_slow(const vector<Point>& points, vector<Point>& resPoints)
 {
     Mat src = Mat(1, points.size(), CV_32FC2);
@@ -197,6 +221,7 @@ DistortionModel::undistort_slow(const vector<Point>& points, vector<Point>& resP
         int y = res.at<Vec2f>(0, i)[1];
         resPoints[i] = Point(x, y);
     }
+    return true;
 }
 
 } // namespace dvision

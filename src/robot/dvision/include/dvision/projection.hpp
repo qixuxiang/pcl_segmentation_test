@@ -5,6 +5,7 @@
 
 #pragma once
 #include "dvision/distortionModel.hpp"
+#include "dvision/ipm.hpp"
 #include <opencv2/opencv.hpp>
 #include <ros/ros.h>
 #include <vector>
@@ -17,24 +18,25 @@ class Projection
     ~Projection();
 
   public:
-    void update();
-    void update(double yaw, double pitch);
+    bool update();
+    bool update(double yaw, double pitch);
+    bool calcHomography();
 
-    void getOnImageCoordinate(const std::vector<cv::Point>& points, std::vector<cv::Point2f>& resPoints);
-    void getOnRealCoordinate(const std::vector<cv::Point2f>& points, std::vector<cv::Point>& resPoints);
+    bool getOnImageCoordinate(const std::vector<cv::Point>& points, std::vector<cv::Point2f>& resPoints);
+    bool getOnRealCoordinate(const std::vector<cv::Point2f>& points, std::vector<cv::Point>& resPoints);
 
     // single point
-    void getOnImageCoordinate(const cv::Point& point, cv::Point2f& resPoint);
-    void getOnRealCoordinate(const cv::Point2f& point, cv::Point& resPoint);
+    bool getOnImageCoordinate(const cv::Point& point, cv::Point2f& resPoint);
+    bool getOnRealCoordinate(const cv::Point2f& point, cv::Point& resPoint);
 
   private:
     void init();
-    void calcHomography();
 
   private:
     ros::NodeHandle* m_nh; // read parameters
 
     DistortionModel m_dist;
+    IPM m_ipm;
     cv::Size m_imageSize;
     cv::Mat m_distCoeff;
     cv::Mat m_cameraMatrix;
@@ -49,6 +51,6 @@ class Projection
     cv::Point3d m_cameraOrientation;
 
     cv::Mat homoImgToReal; // real = homo * img
-    cv::Mat homoReaToImg; // img = homo * real
+    cv::Mat homoReaToImg;  // img = homo * real
 };
 } // namespace dvision

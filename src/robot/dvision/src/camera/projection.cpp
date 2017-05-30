@@ -14,42 +14,55 @@ Projection::~Projection()
 {
 }
 
-void
+bool
 Projection::update()
 {
     // update camera location and orientation
 }
 
-void
+bool
 Projection::update(double yaw, double pitch)
 {
     m_yaw = yaw;
     m_pitch = pitch;
 }
 
-void
+bool
 Projection::calcHomography()
 {
+    m_ipm.initGetHomography(m_cameraLocation, m_cameraOrientation, homoImgToReal, homoReaToImg);
+    return true;
 }
 
-void
+// Single point
+
+bool
 Projection::getOnImageCoordinate(const Point& point, Point2f& resPoint)
 {
+    return true;
 }
 
-void
+bool
 Projection::getOnRealCoordinate(const Point2f& point, Point& resPoint)
 {
+    return true;
 }
 
-void
+// Points
+
+bool
 Projection::getOnImageCoordinate(const vector<Point>& points, vector<Point2f>& resPoints)
 {
+    if (!m_dist.undistort(points, resPoints)) {
+        return false;
+    }
+    return true;
 }
 
-void
+bool
 Projection::getOnRealCoordinate(const vector<Point2f>& points, vector<Point>& resPoints)
 {
+    return true;
 }
 
 #define GPARAM(x, y)                                                                                                                                                                                   \
