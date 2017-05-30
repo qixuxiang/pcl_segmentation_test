@@ -28,6 +28,7 @@ class Projection
     void getOnRealCoordinate(const cv::Point2f& point, cv::Point& resPoint);
 
   private:
+    void init();
     void calcHomography();
 
   private:
@@ -44,8 +45,8 @@ class Projection
 
     // VERSION 2, use TF
 
-    cv::Point3d cameraLocation;
-    cv::Point3d cameraOrientation;
+    cv::Point3d m_cameraLocation;
+    cv::Point3d m_cameraOrientation;
 
     cv::Mat homoImgToReal; // real = homo * img
     cv::Mat homoReaToImg; // img = homo * real
