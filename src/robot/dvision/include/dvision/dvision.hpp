@@ -5,6 +5,7 @@
 #include "dprocess/dconcurrent.hpp"
 #include "dprocess/dprocess.hpp"
 #include "dvision/camera.hpp"
+#include "dvision/projection.hpp"
 
 namespace dvision {
 class DVision : public dprocess::DProcess<DVision>
@@ -17,6 +18,7 @@ class DVision : public dprocess::DProcess<DVision>
   private:
     ros::NodeHandle* m_nh;
     Camera m_camera;
+    Projection m_projection;
     dprocess::DConcurrent m_concurrent;
 };
 } // namespace dvision

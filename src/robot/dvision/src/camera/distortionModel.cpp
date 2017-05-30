@@ -1,4 +1,5 @@
 #include "dvision/distortionModel.hpp"
+#include "dvision/parameters.hpp"
 
 using namespace std;
 using namespace cv;
@@ -8,20 +9,11 @@ DistortionModel::DistortionModel()
 {
 }
 
-DistortionModel::DistortionModel(Size imageSize, Mat cameraMatrix, Mat distCoeff)
-{
-    init(imageSize, cameraMatrix, distCoeff);
-}
-
 void
-DistortionModel::init(Size imageSize, Mat cameraMatrix, Mat distCoeff)
+DistortionModel::init()
 {
-    m_imageSize = imageSize;
-    m_cameraMatrix = cameraMatrix;
-    m_distCoeff = distCoeff;
-
-    int W = m_imageSize.width;
-    int H = m_imageSize.height;
+    int W = parameters.camera.width;
+    int H = parameters.camera.height;
 
     vector<Point> center, resCenter;
     center.push_back(Point(W / 2, H / 2));
@@ -51,8 +43,10 @@ DistortionModel::init(Size imageSize, Mat cameraMatrix, Mat distCoeff)
         maxH = tmpH;
     }
 
-    m_undistImageSize = Size(maxW * 2 + 1, maxH * 2 + 1);
-    cout << "Undistorted image size:" << m_undistImageSize << endl;
+    parameters.camera.undistWidth = maxW * 2 + 1;
+    parameters.camera.undistHeight = maxH * 2 + 1;
+    parameters.camera.undistImageSize = Size(maxW * 2 + 1, maxH * 2 + 1);
+    cout << "Undistorted image size:" << parameters.camera.undistImageSize << endl;
 
     int offsetX = maxW - resCenter[0].x;
     int offsetY = maxH - resCenter[0].y;
@@ -61,9 +55,11 @@ DistortionModel::init(Size imageSize, Mat cameraMatrix, Mat distCoeff)
     // (1, 0) (1, 1) (1, 2)
     // (2, 0) (2, 1) (2, 2)
 
-    m_newCameraMatrix = m_cameraMatrix;
-    m_newCameraMatrix.at<double>(0, 2) += offsetX;
-    m_newCameraMatrix.at<double>(1, 2) += offsetY;
+    parameters.camera.undistCameraMatrix = parameters.camera.cameraMatrix.clone();
+    parameters.camera.undistCameraMatrix.at<double>(0, 2) += offsetX;
+    parameters.camera.undistCameraMatrix.at<double>(1, 2) += offsetY;
+    parameters.camera.undistCx = parameters.camera.undistCameraMatrix.at<double>(0, 2);
+    parameters.camera.undistCy = parameters.camera.undistCameraMatrix.at<double>(1, 2);
 
     m_distortionVector.resize(W * H);
     for (int y = 0; y < H; ++y) {
@@ -73,62 +69,20 @@ DistortionModel::init(Size imageSize, Mat cameraMatrix, Mat distCoeff)
         }
     }
 
-    initUndistortRectifyMap(m_cameraMatrix, m_distCoeff, Mat(), getOptimalNewCameraMatrix(m_cameraMatrix, m_distCoeff, m_imageSize, 1, m_imageSize, 0, true), m_imageSize, CV_16SC2, m_map1, m_map2);
+    initUndistortRectifyMap(parameters.camera.cameraMatrix, parameters.camera.distCoeff, Mat(), parameters.camera.undistCameraMatrix, parameters.camera.undistImageSize, CV_16SC2, m_map1, m_map2);
 }
 
 void
 DistortionModel::undistortImage(const Mat& rawImg, Mat& res)
 {
     remap(rawImg, res, m_map1, m_map2, INTER_LINEAR);
-
-    //  namedWindow("undist", CV_WINDOW_NORMAL);
-    //  imshow("undist", res);
-
-    //    const int W = m_imageSize.width;
-    //    const int H = m_imageSize.height;
-    //
-    //    vector<Point> p(static_cast<unsigned long>(H * W)), resP;
-    //    int ctmp = 0;
-    //    for (int y = 0; y < H; y++) {
-    //        for (int x = 0; x < W; x++) {
-    //            p[ctmp++] = Point(x, y);
-    //        }
-    //    }
-    //
-    //    undistort(p, resP);
-    //
-    //    const int siX = m_undistImageSize.width;
-    //    const int siY = m_undistImageSize.height;
-    //    res = Mat::zeros(Size(siX, siY), CV_8UC3);
-    //
-    //    int counter = 0;
-    //
-    //    const int rawChannels = rawImg.channels();
-    //    const int rawSize = rawImg.rows * rawImg.cols;
-    //    uchar* raw_D = rawImg.data;
-    //    uchar* tmp_D = res.data;
-    //
-    //    for (int i = 0; i < rawSize; i++) {
-    //        int x = resP[counter].x;
-    //        int y = resP[counter].y;
-    //        counter++;
-    //        raw_D += rawChannels;
-    //        if (x < 0 || y < 0 || y >= siY || x >= siX) {
-    ////            printf("Error In Programming %d %d \n", x, y);
-    //            continue;
-    //        }
-    //        uchar* currentP_tmp_D = tmp_D + (((y * siX) + x) * rawChannels);
-    //        currentP_tmp_D[0] = raw_D[0];
-    //        currentP_tmp_D[1] = raw_D[1];
-    //        currentP_tmp_D[2] = raw_D[2];
-    //    }
 }
 
 void
 DistortionModel::undistortImage2(const Mat& rawImg, Mat& res)
 {
-    const int W = m_imageSize.width;
-    const int H = m_imageSize.height;
+    const int W = parameters.camera.imageSize.width;
+    const int H = parameters.camera.imageSize.height;
 
     vector<Point> p(static_cast<unsigned long>(H * W)), resP;
     int ctmp = 0;
@@ -140,8 +94,8 @@ DistortionModel::undistortImage2(const Mat& rawImg, Mat& res)
 
     undistort(p, resP);
 
-    const int siX = m_undistImageSize.width;
-    const int siY = m_undistImageSize.height;
+    const int siX = parameters.camera.undistImageSize.width;
+    const int siY = parameters.camera.undistImageSize.height;
     res = Mat::zeros(Size(siX, siY), CV_8UC3);
 
     int counter = 0;
@@ -174,7 +128,7 @@ DistortionModel::undistort(const vector<Point>& points, vector<Point>& res)
         int x = points[i].x;
         int y = points[i].y;
 
-        res[i] = m_distortionVector[y * m_imageSize.width + x];
+        res[i] = m_distortionVector[y * parameters.camera.imageSize.width + x];
     }
 }
 
@@ -189,7 +143,7 @@ DistortionModel::undistort_slow(const vector<Point>& points, vector<Point>& resP
         src.at<Vec2f>(0, i)[1] = points[i].y;
     }
 
-    undistortPoints(src, res, m_cameraMatrix, m_distCoeff, noArray(), m_cameraMatrix);
+    undistortPoints(src, res, parameters.camera.cameraMatrix, parameters.camera.distCoeff, noArray(), parameters.camera.cameraMatrix);
 
     resPoints.resize(points.size());
     for (uint32_t i = 0; i < points.size(); ++i) {

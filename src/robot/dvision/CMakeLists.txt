@@ -30,15 +30,17 @@ catkin_package(
   #  DEPENDS system_lib
 )
 
-include_directories(include ${catkin_INCLUDE_DIRS} ) #${Boost_INCLUDE_DIRS})
+include_directories(include ${catkin_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIRS}) #${Boost_INCLUDE_DIRS})
 
 add_library(dvisionlib
   src/dvision.cpp
   src/frame.cpp
+  src/parameters.cpp
   src/camera/camera.cpp
   src/camera/calibration.cpp
   src/camera/distortionModel.cpp
-   src/camera/projection.cpp
+  src/camera/ipm.cpp
+  src/camera/projection.cpp
   )
 target_link_libraries(dvisionlib ${catkin_LIBRARIES} ${OpenCV_LIBS}) # ${Boost_LIBRARIES})
 #add_dependencies(dvisionlib ${PROJECT_NAME}_generate_messages_cpp)

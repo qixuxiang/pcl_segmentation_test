@@ -5,6 +5,8 @@
 
 #pragma once
 #include "dvision/distortionModel.hpp"
+#include "dvision/ipm.hpp"
+#include <Eigen/Dense>
 #include <opencv2/opencv.hpp>
 #include <ros/ros.h>
 #include <vector>
@@ -13,12 +15,17 @@ namespace dvision {
 class Projection
 {
   public:
-    explicit Projection(ros::NodeHandle* nh);
+    explicit Projection();
     ~Projection();
+    void init(ros::NodeHandle*);
 
   public:
-    void update();
-    void update(double yaw, double pitch);
+    bool updateExtrinsic(double yaw, double pitch);
+
+    inline bool calcHomography()
+    {
+        return m_ipm.initGetHomography(m_extrinsic, homoImgToReal, homoRealToImg);
+    }
 
     void getOnImageCoordinate(const std::vector<cv::Point>& points, std::vector<cv::Point2f>& resPoints);
     void getOnRealCoordinate(const std::vector<cv::Point2f>& points, std::vector<cv::Point>& resPoints);
@@ -29,26 +36,17 @@ class Projection
 
   private:
     void init();
-    void calcHomography();
 
   private:
-    ros::NodeHandle* m_nh; // read parameters
-
     DistortionModel m_dist;
-    cv::Size m_imageSize;
-    cv::Mat m_distCoeff;
-    cv::Mat m_cameraMatrix;
+    IPM m_ipm;
 
     // VERSION 1, use only yaw and pitch, 2017/5/29
     double m_yaw;
     double m_pitch;
-
-    // VERSION 2, use TF
-
-    cv::Point3d m_cameraLocation;
-    cv::Point3d m_cameraOrientation;
+    Eigen::MatrixXd m_extrinsic;
 
     cv::Mat homoImgToReal; // real = homo * img
-    cv::Mat homoReaToImg; // img = homo * real
+    cv::Mat homoRealToImg; // img = homo * real
 };
 } // namespace dvision
