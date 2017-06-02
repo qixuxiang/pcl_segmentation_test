@@ -10,3 +10,6 @@ CMakeLists.txt.user
 *~
 .#*
 *.png
+
+.ftpconfig
+.tags

@@ -41,6 +41,11 @@ add_library(dvisionlib
   src/camera/distortionModel.cpp
   src/camera/ipm.cpp
   src/camera/projection.cpp
+  src/detector/circle_detector.cpp
+  src/detector/field_detector.cpp
+  src/detector/goal_detector.cpp
+  src/detector/line_detector.cpp
+  src/localization/localization.cpp
   )
 target_link_libraries(dvisionlib ${catkin_LIBRARIES} ${OpenCV_LIBS}) # ${Boost_LIBRARIES})
 #add_dependencies(dvisionlib ${PROJECT_NAME}_generate_messages_cpp)
