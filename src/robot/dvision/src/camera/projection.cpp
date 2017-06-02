@@ -33,12 +33,14 @@ Projection::updateExtrinsic(double yaw, double pitch)
 bool
 Projection::getOnImageCoordinate(const Point& point, Point2f& resPoint)
 {
+    ROS_ERROR("Not implemented");
     return true;
 }
 
 bool
 Projection::getOnRealCoordinate(const Point2f& point, Point& resPoint)
 {
+    ROS_ERROR("Not implemented");
     return true;
 }
 
@@ -56,6 +58,7 @@ Projection::getOnImageCoordinate(const vector<Point>& points, vector<Point2f>& r
 bool
 Projection::getOnRealCoordinate(const vector<Point2f>& points, vector<Point>& resPoints)
 {
+    ROS_ERROR("Not implemented");
     return true;
 }
 
