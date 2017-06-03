@@ -10,9 +10,7 @@ Zw2p = Parameters(3);
 
 RXw2p = Parameters(4);
 RYw2p = Parameters(5);
-RZw2p = Parameters(6);
-
-% plat to camera
+RZw2p = Parameters(6); % plat to camera
 Xp2c = Parameters(7);
 Yp2c = Parameters(8);
 Zp2c = Parameters(9);
@@ -27,8 +25,7 @@ biasYaw = Parameters(15);
 biasPitch = Parameters(16);
 
 fx = evalin('base', 'fx');
-fy = evalin('base', 'fy');
-cx = evalin('base', 'cx');
+fy = evalin('base', 'fy'); cx = evalin('base', 'cx');
 cy = evalin('base', 'cy');
 
 yaw = (yaw + biasYaw) * scaleYaw;
@@ -49,22 +46,22 @@ Mp2c = rotateZ(RZp2c) ...
 
 PC = Mp2c * Mw2p * PointWorld; % PC = PointCamera
 
-PC = [ 0  1  0  0;
-       0  0 -1  0;
-      -1  0  0  0;
+PC = [ 0  0 -1  0;
+       0  1  0  0;
+       1  0  0  0;
        0  0  0  1;] * PC;
-disp(PC);
 
 
 CameraMatrix = [fx 0 cx 0;
                 0 fy cy 0;
                 0  0  1 0];
 
-disp(CameraMatrix);                
 
 % PointImage = CameraMatrix * [ PC(1) / PC(3);
 %                               PC(2) / PC(3);
 %                                           1;];
 
 PointImage = CameraMatrix * PC;
+PointImage = [PointImage(1) / PointImage(3);
+              PointImage(2) / PointImage(3);];
 end
