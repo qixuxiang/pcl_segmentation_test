@@ -10,6 +10,7 @@
  */
 
 #include "dvision/line_detector.hpp"
+#include "dvision/parameters.hpp"
 
 namespace dvision {
 LineDetector::LineDetector()

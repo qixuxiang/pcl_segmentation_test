@@ -10,6 +10,7 @@
  */
 
 #include "dvision/goal_detector.hpp"
+#include "dvision/parameters.hpp"
 
 namespace dvision {
 GoalDetector::GoalDetector()

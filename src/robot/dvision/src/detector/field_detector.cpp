@@ -10,6 +10,7 @@
  */
 
 #include "dvision/field_detector.hpp"
+#include "dvision/parameters.hpp"
 
 namespace dvision {
 FieldDetector::FieldDetector()

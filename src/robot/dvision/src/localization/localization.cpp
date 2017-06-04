@@ -10,6 +10,7 @@
  */
 
 #include "dvision/localization.hpp"
+#include "dvision/parameters.hpp"
 
 namespace dvision {
 Localization::Localization()

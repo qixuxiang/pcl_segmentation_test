@@ -71,3 +71,7 @@ target_link_libraries(test_distortionModel ${catkin_LIBRARIES})
 catkin_add_gtest(test_projection test/test_projection.cpp)
 target_link_libraries(test_projection dvisionlib)
 target_link_libraries(test_projection ${catkin_LIBRARIES})
+
+catkin_add_gtest(test_localization test/test_localization.cpp)
+target_link_libraries(test_localization dvisionlib)
+target_link_libraries(test_localization ${catkin_LIBRARIES})

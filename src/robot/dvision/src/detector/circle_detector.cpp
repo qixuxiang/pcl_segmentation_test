@@ -10,6 +10,7 @@
  */
 
 #include "dvision/circle_detector.hpp"
+#include "dvision/parameters.hpp"
 
 namespace dvision {
 CircleDetector::CircleDetector()
