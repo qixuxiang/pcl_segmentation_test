@@ -46,6 +46,8 @@ add_library(dvisionlib
   src/detector/goal_detector.cpp
   src/detector/line_detector.cpp
   src/localization/localization.cpp
+  src/tools/line_segment.cpp
+  src/tools/utils.cpp
   )
 target_link_libraries(dvisionlib ${catkin_LIBRARIES} ${OpenCV_LIBS}) # ${Boost_LIBRARIES})
 #add_dependencies(dvisionlib ${PROJECT_NAME}_generate_messages_cpp)
