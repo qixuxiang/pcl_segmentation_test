@@ -1,8 +1,8 @@
 #pragma once
 #include <Eigen/Dense>
 #include <opencv2/opencv.hpp>
-#include <vector>
 #include <ros/ros.h>
+#include <vector>
 
 namespace dvision {
 
@@ -32,6 +32,31 @@ struct CameraParameters
 
     // TODO(MWX): Extrinsic parameters
 };
+
+struct CircleDetectorParameters
+{
+
+}
+
+struct FieldDetectorParameters
+{
+
+}
+
+struct GoalDetectorParameters
+{
+
+}
+
+struct LineDetectorParameters
+{
+
+}
+
+struct LocalizationParameters
+{
+
+}
 
 struct Parameters
 {
