@@ -8,4 +8,5 @@
           cwd="node"
           args=""/>
     <rosparam command="load" file="$(find dconfig)/dvision/camera.yml"/>
+    <rosparam command="load" file="$(find dconfig)/dvision/localization.yml"/>
 </launch>

@@ -13,7 +13,6 @@
 #include <gtest/gtest.h>
 
 using namespace dvision;
-using namespace cv;
 using namespace std;
 
 TEST(Localization, locmain)
