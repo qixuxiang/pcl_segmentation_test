@@ -89,7 +89,7 @@ LineSegment::GetLength() const
 cv::Point2f
 LineSegment::GetClosestPointOnLineSegment(cv::Point2f p)
 {
-    // first convert line to normalized unit vector
+    // first convert line to normalized unit std::vector
     double dx = P2.x - P1.x;
     double dy = P2.y - P1.y;
     double mag = std::sqrt(dx * dx + dy * dy);
@@ -207,18 +207,18 @@ LineSegment::GetDegreeFromX()
     return (GetRadianFromX() / M_PI) * (180);
 }
 
-vector<LineSegment>
+std::vector<LineSegment>
 LineSegment::GetMidLineSegments(const int& count)
 {
     // Means that lines count will be 2^count
-    vector<LineSegment> lsList, lsListTmp;
+    std::vector<LineSegment> lsList, lsListTmp;
     lsList.push_back(LineSegment(P1, P2));
 
     for (int counter = 0; counter < count; counter++) {
         lsListTmp.clear();
         for (size_t i = 0; i < lsList.size(); i++) {
             LineSegment tmp = lsList[i];
-            Point2d midPoint = tmp.GetMiddle();
+            cv::Point2d midPoint = tmp.GetMiddle();
             lsListTmp.push_back(LineSegment(tmp.P1, midPoint));
             lsListTmp.push_back(LineSegment(tmp.P2, midPoint));
         }
@@ -227,19 +227,19 @@ LineSegment::GetMidLineSegments(const int& count)
     return lsList;
 }
 
-vector<cv::Point2d>
+std::vector<cv::Point2d>
 LineSegment::GetMidPoints(const int& count, const bool& sortthis)
 {
-    vector<LineSegment> lsList, lsListTmp;
+    std::vector<LineSegment> lsList, lsListTmp;
     lsList.push_back(LineSegment(P1, P2));
-    vector<Point2d> res;
+    std::vector<cv::Point2d> res;
     res.push_back(P1);
     res.push_back(P2);
     for (int counter = 0; counter < count; counter++) {
         lsListTmp.clear();
         for (size_t i = 0; i < lsList.size(); i++) {
             LineSegment tmp = lsList[i];
-            Point2d midPoint = tmp.GetMiddle();
+            cv::Point2d midPoint = tmp.GetMiddle();
             res.push_back(midPoint);
             lsListTmp.push_back(LineSegment(tmp.P1, midPoint));
             lsListTmp.push_back(LineSegment(tmp.P2, midPoint));
@@ -248,7 +248,7 @@ LineSegment::GetMidPoints(const int& count, const bool& sortthis)
     }
 
     if (sortthis) {
-        sort(res.begin(), res.end(), bind(&LineSegment::SortbyDistance, this, placeholders::_1, placeholders::_2));
+        sort(res.begin(), res.end(), std::bind(&LineSegment::SortbyDistance, this, std::placeholders::_1, std::placeholders::_2));
     }
 
     return res;
@@ -324,9 +324,9 @@ LineSegment::Intersect(LineSegment L, cv::Point2d& res)
 bool
 LineSegment::IntersectLineForm(LineSegment L, cv::Point2d& res)
 {
-    Point2d x = L.P1 - P1;
-    Point2d d1 = P2 - P1;
-    Point2d d2 = L.P2 - L.P1;
+    cv::Point2d x = L.P1 - P1;
+    cv::Point2d d1 = P2 - P1;
+    cv::Point2d d2 = L.P2 - L.P1;
 
     double cross = d1.x * d2.y - d1.y * d2.x;
     if (std::abs(cross) < 1e-8) {
@@ -344,7 +344,7 @@ LineSegment::PerpendicularLineSegment(const double& scale)
 {
     double angle = GetRadianFromX();
     angle += M_PI / 2;
-    Point2d mid = GetMiddle();
+    cv::Point2d mid = GetMiddle();
     double len = GetLength() / 2;
     len *= scale;
     double x1 = mid.x + std::cos(angle) * len;
@@ -387,7 +387,7 @@ LineSegment
 LineSegment::Scale(const double& _in)
 {
     double angle = GetRadianFromX();
-    Point2d mid = GetMiddle();
+    cv::Point2d mid = GetMiddle();
     double len = GetLength() / 2;
     len *= _in;
     double x2 = mid.x + std::cos(angle) * len;
@@ -398,7 +398,7 @@ LineSegment::Scale(const double& _in)
 }
 
 bool
-LineSegment::SortbyDistance(const Point2d& a, const Point2d& b)
+LineSegment::SortbyDistance(const cv::Point2d& a, const cv::Point2d& b)
 {
     double x = std::abs(P1.x - a.x);
     double y = std::abs(P1.y - a.y);
@@ -412,7 +412,7 @@ LineSegment::SortbyDistance(const Point2d& a, const Point2d& b)
 }
 
 bool
-LineSegment::IsOnThis(const Point2f& ptTest, float flEp)
+LineSegment::IsOnThis(const cv::Point2f& ptTest, float flEp)
 {
     bool bTestX = true;
     const float flX = P2.x - P1.x;
@@ -442,7 +442,7 @@ LineSegment::IsOnThis(const Point2f& ptTest, float flEp)
 }
 
 void
-LineSegment::Clip(Rect boundry)
+LineSegment::Clip(cv::Rect boundry)
 {
     double minXPossible = boundry.x;
     double minYPossible = boundry.y;

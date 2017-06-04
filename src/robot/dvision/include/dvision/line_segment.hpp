@@ -17,9 +17,6 @@
 #include <ros/ros.h>
 #include <vector>
 
-using namespace std;
-using namespace cv;
-
 namespace dvision {
 
 #define DEFFLEQEPSILON 0.001
@@ -52,8 +49,8 @@ class LineSegment
     bool GetSlope(double& slope);
     double GetRadianFromX();
     double GetDegreeFromX();
-    vector<LineSegment> GetMidLineSegments(const int& count);
-    vector<cv::Point2d> GetMidPoints(const int& count, const bool& sortthis = true);
+    std::vector<LineSegment> GetMidLineSegments(const int& count);
+    std::vector<cv::Point2d> GetMidPoints(const int& count, const bool& sortthis = true);
 
     // Operation
     float DistanceFromLine(const cv::Point2f& p);
@@ -64,9 +61,9 @@ class LineSegment
     cv::Point2d ExtensionPointDown(const double& len);
     LineSegment ExtensionCordDown(const double& len);
     LineSegment Scale(const double& _in);
-    bool SortbyDistance(const Point2d& a, const Point2d& b);
-    bool IsOnThis(const Point2f& ptTest, float flEp = DEFFLEQEPSILON);
-    void Clip(Rect boundry);
+    bool SortbyDistance(const cv::Point2d& a, const cv::Point2d& b);
+    bool IsOnThis(const cv::Point2f& ptTest, float flEp = DEFFLEQEPSILON);
+    void Clip(cv::Rect boundry);
 
     // TODO(corenel) make m_P1, m_P2 private
     cv::Point2d P1, P2;
