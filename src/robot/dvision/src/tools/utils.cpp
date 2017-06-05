@@ -519,4 +519,10 @@ DistanceFromLineSegment(const LineSegment& line, const cv::Point2f& p)
 
     return dist;
 }
+
+bool
+SortFuncDescending(const std::vector<cv::Point>& i, const std::vector<cv::Point>& j)
+{
+    return cv::contourArea(i, false) > cv::contourArea(j, false);
+}
 } // namespace dvision

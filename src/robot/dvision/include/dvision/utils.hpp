@@ -159,4 +159,6 @@ GetWeightedAverage(const float& p0, const float& p1, const float& w0, const floa
 float
 DistanceFromLineSegment(const LineSegment& line, const cv::Point2f& p);
 
+bool
+SortFuncDescending(const std::vector<cv::Point>& i, const std::vector<cv::Point>& j);
 } // namespace dvision

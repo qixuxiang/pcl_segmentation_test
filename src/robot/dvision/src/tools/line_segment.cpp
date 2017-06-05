@@ -467,4 +467,110 @@ LineSegment::Within(const float& fl, const float& flLow, const float& flHi, cons
     }
     return false;
 }
+
+LinearInterpolator::LinearInterpolator(LineSegment _line)
+  : line(_line)
+{
+}
+
+LinearInterpolator::LinearInterpolator(const cv::Point2d& p1, const cv::Point2d& p2)
+{
+    line.P1 = p1;
+    line.P2 = p2;
+}
+
+double
+LinearInterpolator::Interpolate(const double& x)
+{
+    return (line.P1.y + (line.P2.y - line.P1.y) * (x - line.P1.x) / (line.P2.x - line.P1.x));
+}
+
+LinearInterpolator::~LinearInterpolator()
+{
+}
+
+bool
+LinearBoundaryChecker::checkValidity()
+{
+    cv::Point2d tmp;
+    return !LLow.Intersect(LHigh, tmp);
+}
+
+LinearBoundaryChecker::LinearBoundaryChecker(const LineSegment& _LLow, const LineSegment& _LHigh)
+  : LLow(_LLow)
+  , LHigh(_LHigh)
+{
+    if (!checkValidity()) {
+        // HAF_ERROR_THROTTLE(1, "Conflict in input for LinearBoundaryChecker");
+    }
+}
+
+LinearBoundaryChecker::LinearBoundaryChecker(const double& nearDistance, const double& nearMin, const double& nearMax, const double& farDistance, const double& farMin, const double& farMax)
+{
+    LLow.P1 = cv::Point2d(nearDistance, nearMin);
+    LLow.P2 = cv::Point2d(farDistance, farMin);
+
+    LHigh.P1 = cv::Point2d(nearDistance, nearMax);
+    LHigh.P2 = cv::Point2d(farDistance, farMax);
+    if (!checkValidity()) {
+        // HAF_ERROR_THROTTLE(1, "Conflict in input for LinearBoundaryChecker");
+    }
+}
+
+bool
+LinearBoundaryChecker::CheckExtrapolation(const double& distance, const double& value)
+{
+    LineSegment verLine(cv::Point2d(distance, -10), cv::Point2d(distance, 10));
+    cv::Point2d resLowerBand, resUpperBand;
+    if (LLow.IntersectLineForm(verLine, resLowerBand) && LHigh.IntersectLineForm(verLine, resUpperBand)) {
+        if (value >= resLowerBand.y && value <= resUpperBand.y) {
+            return true;
+        }
+    } else {
+        ROS_ERROR("CheckExtrapolation Error: distance %f", distance);
+    }
+
+    return false;
+}
+
+bool
+LinearBoundaryChecker::GetExtrapolation(const double& distance, double& min, double& max)
+{
+    LineSegment verLine(cv::Point2d(distance, -10), cv::Point2d(distance, 10));
+    cv::Point2d resLowerBand, resUpperBand;
+
+    if (LLow.IntersectLineForm(verLine, resLowerBand) && LHigh.IntersectLineForm(verLine, resUpperBand)) {
+        if (resUpperBand.y > resLowerBand.y) {
+            min = resLowerBand.y;
+            max = resUpperBand.y;
+            return true;
+        }
+    } else {
+        ROS_ERROR("GetExtrapolation Error: distance %f", distance);
+    }
+    return false;
+}
+
+bool
+LinearBoundaryChecker::CheckInside(const double& distance, const double& value)
+{
+    double max_y = std::max(LLow.P1.y, std::max(LLow.P2.y, std::max(LHigh.P1.y, LHigh.P2.y)));
+    LineSegment verLine(cv::Point2d(distance, 0), cv::Point2d(distance, max_y));
+    cv::Point2d resLowerBand, resUpperBand;
+    // cout << "distance: " << distance << endl;
+    // cout << "value: " << value << endl;
+    if (LLow.Intersect(verLine, resLowerBand) && LHigh.Intersect(verLine, resUpperBand)) {
+        // cout << "resLowerBand: " << resLowerBand << endl;
+        // cout << "resUpperBand: " << resUpperBand << endl;
+        if (value >= resLowerBand.y && value <= resUpperBand.y) {
+            return true;
+        }
+    }
+    return false;
+}
+
+LinearBoundaryChecker::~LinearBoundaryChecker()
+{
+}
+
 } // namespace dvision

@@ -72,4 +72,32 @@ class LineSegment
     double probability;
     bool Within(const float& fl, const float& flLow, const float& flHi, const float& flEp = DEFFLEQEPSILON);
 };
+
+class LinearInterpolator
+{
+  public:
+    explicit LinearInterpolator(LineSegment _line);
+    LinearInterpolator(const cv::Point2d& p1, const cv::Point2d& p2);
+    double Interpolate(const double& x);
+    ~LinearInterpolator();
+
+  private:
+    LineSegment line;
+};
+
+class LinearBoundaryChecker
+{
+  public:
+    bool checkValidity();
+    LinearBoundaryChecker(const LineSegment& _LLow, const LineSegment& _LHigh);
+    LinearBoundaryChecker(const double& nearDistance, const double& nearMin, const double& nearMax, const double& farDistance, const double& farMin, const double& farMax);
+    bool CheckExtrapolation(const double& distance, const double& value);
+    bool GetExtrapolation(const double& distance, double& min, double& max);
+    bool CheckInside(const double& distance, const double& value);
+    ~LinearBoundaryChecker();
+
+  private:
+    LineSegment LLow, LHigh;
+};
+
 } // namespace dvision
