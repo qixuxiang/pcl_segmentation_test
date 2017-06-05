@@ -149,6 +149,18 @@ Parameters::init(ros::NodeHandle* nh)
     GPARAM("/dvision/localization/useKalman", parameters.loc.useKalman);
     GPARAM("/dvision/localization/forwardRobotTrackerXY", parameters.loc.forwardRobotTrackerXY);
     GPARAM("/dvision/localization/forwardRobotTrackerZ", parameters.loc.forwardRobotTrackerZ);
+
+    // Get field parameters
+    GPARAM("/dvision/field_model/field_length", parameters.field_model.field_length);
+    GPARAM("/dvision/field_model/field_width", parameters.field_model.field_width);
+    GPARAM("/dvision/field_model/goal_depth", parameters.field_model.goal_depth);
+    GPARAM("/dvision/field_model/goal_width", parameters.field_model.goal_width);
+    GPARAM("/dvision/field_model/goal_height", parameters.field_model.goal_height);
+    GPARAM("/dvision/field_model/goal_area_length", parameters.field_model.goal_area_length);
+    GPARAM("/dvision/field_model/goal_area_width", parameters.field_model.goal_area_width);
+    GPARAM("/dvision/field_model/penalty_mark_distance", parameters.field_model.penalty_mark_distance);
+    GPARAM("/dvision/field_model/center_circle_diameter", parameters.field_model.center_circle_diameter);
+    GPARAM("/dvision/field_model/border_strip_width", parameters.field_model.border_strip_width);
 }
 
 #undef GPARAM

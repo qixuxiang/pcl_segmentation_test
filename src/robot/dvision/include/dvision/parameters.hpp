@@ -157,6 +157,20 @@ struct LocalizationParameters
     bool forwardRobotTrackerZ;
 };
 
+struct FieldModelParameters
+{
+    int field_length;
+    int field_width;
+    int goal_depth;
+    int goal_width;
+    int goal_height;
+    int goal_area_length;
+    int goal_area_width;
+    int penalty_mark_distance;
+    int center_circle_diameter;
+    int border_strip_width;
+};
+
 struct Parameters
 {
     CircleDetectorParameters circle;
@@ -166,6 +180,7 @@ struct Parameters
 
     LocalizationParameters loc;
     CameraParameters camera;
+    FieldModelParameters field_model;
 
     void init(ros::NodeHandle* nh);
 };

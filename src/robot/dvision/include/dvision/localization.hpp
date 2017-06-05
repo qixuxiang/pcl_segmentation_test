@@ -35,16 +35,123 @@
 #include <g2o/types/slam3d/vertex_se3.h>
 #include <opencv2/opencv.hpp>
 #include <ros/ros.h>
+#include <string>
 #include <vector>
 
 namespace dvision {
+enum LineType
+{
+    HorUndef,
+    HorCenter,
+    HorGoal,
+    HorGoalNear,
+    VerUndef,
+    VerLeft,
+    VerRight,
+    VerLeftNear,
+    VerRightNear,
+    VerLeftT,
+    VerRightT,
+    LTRES
+};
+
+enum LandmarkType
+{
+    CenterL = 0,
+    RightL,
+    FrontL,
+    LeftL,
+    BackL
+};
+
+const std::string LineTypeName[LTRES] = { "HorUndef", "HorCenter", "HorGoal", "HorGoalNear", "VerUndef", "VerLeft", "VerRight", "VerLeftNear", "VerRightNear", "VerLeftT", "VerRightT" };
+
+class LineContainer
+{
+  public:
+    LineContainer(LineSegment _lineTransformed, LineType _type);
+    LineSegment lineTransformed;
+    LineType type;
+};
+
+class FeatureContainer
+{
+  public:
+    FeatureContainer(cv::Point2f _position, std::string _type);
+    cv::Point2f position;
+    std::string type;
+};
+
 class Localization
 {
   public:
     explicit Localization();
     ~Localization();
-    void init();
+
+    g2o::SparseOptimizer optimizer;
+    double A;
+    double B;
+    double E;
+    double F;
+    double G;
+    double H;
+    double D;
+    double I;
+    double A2;
+    double B2;
+    double E2;
+    double F2;
+    double G2;
+    double H2;
+    double D2;
+    double I2;
+
+    bool Init();
+    bool Update(Projection& projection);
+    bool Calculate(std::vector<LineSegment>&,
+                   const bool& circleDetected,
+                   const cv::Point2f&,
+                   const std::vector<cv::Point2f>&,
+                   const cv::Point2d&,
+                   const std::vector<cv::Point2f>&,
+                   const bool& confiused,
+                   std::vector<LineContainer>&,
+                   std::vector<FeatureContainer>&);
+
+    // graph
+    void InitG2OGraph();
+    void updateVertexIdx();
+    bool addObservation(const cv::Point2d& observation, const double& xFasher, const double& yFasher, const LandmarkType& type);
+
+    // getter
+    cv::Point2f GetBall();
+    cv::Point3d GetLocalization();
+    cv::Point2d GetOdometryFromLastGet();
+
+    // setter
+    void SetBall(const cv::Point2f& _in);
 
   private:
+    cv::Point2d location;
+    cv::Point2d locationKalman;
+    KalmanFilterC kalmanI;
+    Projection* _cameraProjections;
+    float lastOdomX, lastOdomY;
+    cv::Point3d globalPos;
+    cv::Point3d lastOdom;
+    uint32_t lastOdomID;
+    cv::Point2f ballPos;
+    g2o::BlockSolverX::LinearSolverType* linearSolver;
+    g2o::BlockSolverX* blockSolver;
+    g2o::OptimizationAlgorithmLevenberg* optimizationAlgorithm;
+    int CurrentVertexId;
+    int PreviousVertexId;
+    int LandmarkCount;
+    cv::Point2d odomLastGet;
+    bool atLeastOneObservation;
+    long unsigned int nodeCounter;
+
+    double GetUpdateCoef(const double& coef, const cv::Point2f& point);
+    double GetUpdateCoef(const double& coef, const LineSegment& line);
 };
 } // namespace dvision

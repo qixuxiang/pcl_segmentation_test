@@ -34,6 +34,11 @@ catkin_package(
 
 include_directories(include ${catkin_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIRS}) #${Boost_INCLUDE_DIRS})
 
+SET (G2O_LIBS csparse cxsparse g2o_csparse_extension g2o_cli g2o_core g2o_interface g2o_parser g2o_solver_cholmod
+g2o_solver_csparse g2o_solver_dense g2o_solver_pcg g2o_stuff g2o_types_icp
+g2o_types_sba g2o_types_sim3 g2o_types_slam2d g2o_types_slam3d)
+
+
 add_library(dvisionlib
   src/dvision.cpp
   src/frame.cpp
@@ -52,7 +57,7 @@ add_library(dvisionlib
   src/tools/utils.cpp
   src/tools/kalman.cpp
   )
-target_link_libraries(dvisionlib ${catkin_LIBRARIES} ${OpenCV_LIBS}) # ${Boost_LIBRARIES})
+target_link_libraries(dvisionlib ${catkin_LIBRARIES} ${OpenCV_LIBS} ${G2O_LIBS}) # ${Boost_LIBRARIES})
 #add_dependencies(dvisionlib ${PROJECT_NAME}_generate_messages_cpp)
 
 add_executable(dvision_node src/main.cpp)
