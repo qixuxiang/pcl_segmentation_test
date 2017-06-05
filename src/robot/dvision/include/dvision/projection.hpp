@@ -27,12 +27,12 @@ class Projection
         return m_ipm.initGetHomography(m_extrinsic, homoImgToReal, homoRealToImg);
     }
 
-    bool getOnImageCoordinate(const std::vector<cv::Point>& points, std::vector<cv::Point2f>& resPoints);
-    bool getOnRealCoordinate(const std::vector<cv::Point2f>& points, std::vector<cv::Point>& resPoints);
+    bool getOnImageCoordinate(const std::vector<cv::Point2f>& points, std::vector<cv::Point>& resPoints);
+    bool getOnRealCoordinate(const std::vector<cv::Point>& points, std::vector<cv::Point2f>& resPoints);
 
     // single point
-    bool getOnImageCoordinate(const cv::Point& point, cv::Point2f& resPoint);
-    bool getOnRealCoordinate(const cv::Point2f& point, cv::Point& resPoint);
+    bool getOnImageCoordinate(const cv::Point2f& point, cv::Point& resPoint);
+    bool getOnRealCoordinate(const cv::Point& point, cv::Point2f& resPoint);
 
   private:
     void init();

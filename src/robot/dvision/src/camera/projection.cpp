@@ -8,12 +8,12 @@ Projection::Projection()
 {
 }
 
-void Projection::init(ros::NodeHandle* nh)
+void
+Projection::init(ros::NodeHandle* nh)
 {
     parameters.init(nh);
     m_dist.init();
 }
-
 
 Projection::~Projection()
 {
@@ -31,14 +31,14 @@ Projection::updateExtrinsic(double yaw, double pitch)
 // Single point
 
 bool
-Projection::getOnImageCoordinate(const Point& point, Point2f& resPoint)
+Projection::getOnImageCoordinate(const Point2f& point, Point& resPoint)
 {
     ROS_ERROR("Not implemented");
     return true;
 }
 
 bool
-Projection::getOnRealCoordinate(const Point2f& point, Point& resPoint)
+Projection::getOnRealCoordinate(const Point& point, Point2f& resPoint)
 {
     ROS_ERROR("Not implemented");
     return true;
@@ -47,16 +47,17 @@ Projection::getOnRealCoordinate(const Point2f& point, Point& resPoint)
 // Points
 
 bool
-Projection::getOnImageCoordinate(const vector<Point>& points, vector<Point2f>& resPoints)
+Projection::getOnImageCoordinate(const vector<Point2f>& points, vector<Point>& resPoints)
 {
-    if (!m_dist.undistort(points, resPoints)) {
-        return false;
-    }
+    // if (!m_dist.undistort(points, resPoints)) {
+    //     return false;
+    // }
+    ROS_ERROR("Not implemented");
     return true;
 }
 
 bool
-Projection::getOnRealCoordinate(const vector<Point2f>& points, vector<Point>& resPoints)
+Projection::getOnRealCoordinate(const vector<Point>& points, vector<Point2f>& resPoints)
 {
     ROS_ERROR("Not implemented");
     return true;

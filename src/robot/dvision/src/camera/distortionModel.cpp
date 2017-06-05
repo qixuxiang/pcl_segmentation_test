@@ -133,7 +133,6 @@ DistortionModel::undistort(const vector<Point>& points, vector<Point2f>& res)
     return true;
 }
 
-
 bool
 DistortionModel::undistort(const vector<Point>& points, vector<Point>& res)
 {
