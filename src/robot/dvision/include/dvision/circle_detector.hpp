@@ -20,7 +20,7 @@ class CircleDetector : public IDetector
   public:
     explicit CircleDetector();
     ~CircleDetector();
-    void init();
+    bool Init();
 
   private:
 };

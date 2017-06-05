@@ -20,7 +20,7 @@ class GoalDetector : public IDetector
   public:
     explicit GoalDetector();
     ~GoalDetector();
-    void init();
+    bool Init();
 
   private:
 };

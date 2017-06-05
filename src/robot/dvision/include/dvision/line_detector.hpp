@@ -11,6 +11,7 @@
 
 #pragma once
 #include "dvision/idetector.hpp"
+#include "dvision/projection.hpp"
 #include <ros/ros.h>
 #include <vector>
 
@@ -20,7 +21,10 @@ class LineDetector : public IDetector
   public:
     explicit LineDetector();
     ~LineDetector();
-    void init();
+    bool Init();
+
+    bool
+    GetLines(cv::Mat& rawHSV, cv::Mat& fieldMask, cv::Mat& guiImg, Projection& projections, const bool& showGui, const cv::Mat& lineBinary, const cv::Rect& box, std::vector<LineSegment>& resLines);
 
   private:
 };

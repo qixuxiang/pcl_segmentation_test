@@ -17,8 +17,8 @@ CircleDetector::CircleDetector()
 {
 }
 
-void
-CircleDetector::init()
+bool
+CircleDetector::Init()
 {
 }
 

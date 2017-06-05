@@ -17,8 +17,8 @@ GoalDetector::GoalDetector()
 {
 }
 
-void
-GoalDetector::init()
+bool
+GoalDetector::Init()
 {
 }
 
