@@ -48,6 +48,7 @@ add_library(dvisionlib
   src/localization/localization.cpp
   src/tools/line_segment.cpp
   src/tools/utils.cpp
+  src/tools/kalman.cpp
   )
 target_link_libraries(dvisionlib ${catkin_LIBRARIES} ${OpenCV_LIBS}) # ${Boost_LIBRARIES})
 #add_dependencies(dvisionlib ${PROJECT_NAME}_generate_messages_cpp)
