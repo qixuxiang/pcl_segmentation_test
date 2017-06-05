@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 2.8.3)
 project(dvision)
 add_definitions(-std=c++11 -Wall -Wextra -Wfloat-equal -Wno-unused-result) #-Weffc++ -pedantic
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake_modules/")
+
 find_package(catkin REQUIRED
   COMPONENTS roscpp
   geometry_msgs
@@ -10,7 +12,7 @@ find_package(catkin REQUIRED
 
 find_package(OpenCV 3 REQUIRED)
 find_package(Eigen3 REQUIRED)
-
+find_package(G2O REQUIRED)
 
 #find_package(Boost REQUIRED COMPONENTS system)
 
