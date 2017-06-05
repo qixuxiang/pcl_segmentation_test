@@ -105,7 +105,7 @@ cv::Scalar
 blackGary();
 
 bool
-MergeLinesMax(const std::vector<LineSegment>& resLinesReal,
+MergeLinesMax(std::vector<LineSegment> resLinesReal,
               const double& maxDegree,
               const double& maxDistance,
               std::vector<LineSegment>& clusteredLines,
@@ -113,7 +113,7 @@ MergeLinesMax(const std::vector<LineSegment>& resLinesReal,
               const bool& useBounding = false);
 
 bool
-MergeLinesOnce(const std::vector<LineSegment>& resLinesReal,
+MergeLinesOnce(std::vector<LineSegment> resLinesReal,
                const double& maxDegree,
                const double& maxDistance,
                std::vector<LineSegment>& clusteredLines,
