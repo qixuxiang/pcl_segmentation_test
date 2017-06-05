@@ -10,16 +10,23 @@
  */
 
 #pragma once
+#include "dvision/idetector.hpp"
 #include <ros/ros.h>
 #include <vector>
 
 namespace dvision {
-class FieldDetector
+class FieldDetector : public IDetector
 {
   public:
     explicit FieldDetector();
     ~FieldDetector();
-    void init();
+    bool Init();
+
+    bool GetPoints(cv::Mat& binaryFrame, std::vector<cv::Point>& resPoints, std::vector<std::vector<cv::Point>>& allFieldContours);
+    void FindInField(const cv::Mat& srcHsvImg, const cv::Mat& templateGrayImg, cv::Mat* dstGrayImgs, HSVRange* ranges, bool* inTemplate, int size = 1);
+    std::vector<cv::Point> getBodyMaskContourInRaw(float rot);
+
+    std::vector<cv::Point> BodyMaskContourInverted;
 
   private:
 };

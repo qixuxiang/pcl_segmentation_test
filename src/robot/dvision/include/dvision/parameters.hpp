@@ -170,5 +170,16 @@ struct Parameters
     void init(ros::NodeHandle* nh);
 };
 
+struct HSVRange
+{
+    bool active;
+    int h0;
+    int h1;
+    int s0;
+    int s1;
+    int v0;
+    int v1;
+};
+
 extern Parameters parameters;
 }

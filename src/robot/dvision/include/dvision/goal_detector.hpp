@@ -10,11 +10,12 @@
  */
 
 #pragma once
+#include "dvision/idetector.hpp"
 #include <ros/ros.h>
 #include <vector>
 
 namespace dvision {
-class GoalDetector
+class GoalDetector : public IDetector
 {
   public:
     explicit GoalDetector();

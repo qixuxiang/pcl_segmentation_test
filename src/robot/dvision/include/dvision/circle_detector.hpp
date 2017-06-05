@@ -10,11 +10,12 @@
  */
 
 #pragma once
+#include "dvision/idetector.hpp"
 #include <ros/ros.h>
 #include <vector>
 
 namespace dvision {
-class CircleDetector
+class CircleDetector : public IDetector
 {
   public:
     explicit CircleDetector();
