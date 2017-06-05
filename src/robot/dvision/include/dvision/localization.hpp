@@ -108,20 +108,19 @@ class Localization
 
     bool Init();
     bool Update(Projection& projection);
-    bool Calculate(std::vector<LineSegment>&,
+    bool Calculate(std::vector<LineSegment>& clusteredLines,
                    const bool& circleDetected,
-                   const cv::Point2f&,
-                   const std::vector<cv::Point2f>&,
-                   const cv::Point2d&,
-                   const std::vector<cv::Point2f>&,
-                   const bool& confiused,
-                   std::vector<LineContainer>&,
-                   std::vector<FeatureContainer>&);
+                   const cv::Point2f& FieldHullRealCenter,
+                   const std::vector<cv::Point2f>& FieldHullReal,
+                   const cv::Point2d& resultCircleRotated,
+                   const std::vector<cv::Point2f>& goalPosition,
+                   std::vector<LineContainer>& AllLines,
+                   std::vector<FeatureContainer>& AllFeatures);
 
     // graph
     void InitG2OGraph();
     void updateVertexIdx();
-    bool addObservation(const cv::Point2d& observation, const double& xFasher, const double& yFasher, const LandmarkType& type);
+    bool addObservation(cv::Point2d observation, const double& xFasher, const double& yFasher, const LandmarkType& type);
 
     // getter
     cv::Point2f GetBall();
@@ -152,6 +151,6 @@ class Localization
     long unsigned int nodeCounter;
 
     double GetUpdateCoef(const double& coef, const cv::Point2f& point);
-    double GetUpdateCoef(const double& coef, const LineSegment& line);
+    double GetUpdateCoef(const double& coef, LineSegment line);
 };
 } // namespace dvision
