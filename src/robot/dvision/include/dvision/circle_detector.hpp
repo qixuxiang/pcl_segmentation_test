@@ -22,6 +22,8 @@ class CircleDetector : public IDetector
     ~CircleDetector();
     bool Init();
 
+    bool GetCircle(const double& H2, std::vector<LineSegment>& clusteredLines, bool& confiused, cv::Point2d& resultCircle);
+
   private:
 };
 } // namespace dvision

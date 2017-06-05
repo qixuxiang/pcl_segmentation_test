@@ -20,6 +20,8 @@ GoalDetector::GoalDetector()
 bool
 GoalDetector::Init()
 {
+    ROS_INFO("GoalDetector Init() started");
+    return true;
 }
 
 GoalDetector::~GoalDetector()

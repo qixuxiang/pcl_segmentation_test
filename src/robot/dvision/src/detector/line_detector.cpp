@@ -29,14 +29,7 @@ LineDetector::~LineDetector()
 }
 
 bool
-LineDetector::GetLines(cv::Mat& rawHSV,
-                       cv::Mat& fieldMask,
-                       cv::Mat& guiImg,
-                       Projection& projections,
-                       const bool& showGui,
-                       const cv::Mat& lineBinary,
-                       const cv::Rect& box,
-                       std::vector<LineSegment>& resLines)
+LineDetector::GetLines(cv::Mat& rawHSV, cv::Mat& fieldMask, cv::Mat& guiImg, const bool& showGui, const cv::Mat& lineBinary, std::vector<LineSegment>& resLines)
 {
     // true
     bool aprxDist = parameters.line.aprxDist;
@@ -186,10 +179,10 @@ LineDetector::GetLines(cv::Mat& rawHSV,
                 upDistance = GetDistance(cenP, upP);
                 downDistance = GetDistance(cenP, downP);
 
-                cv::Point2f cenPR = realQueryPoint[idx * 3];
-                cv::Point2f upPR = realQueryPoint[idx * 3 + 1];
-                cv::Point2f downPR = realQueryPoint[idx * 3 + 2];
                 // 获得向上向下实际点的距离
+                // cv::Point2f cenPR = realQueryPoint[idx * 3];
+                // cv::Point2f upPR = realQueryPoint[idx * 3 + 1];
+                // cv::Point2f downPR = realQueryPoint[idx * 3 + 2];
                 // double upDistanceR = GetDistance(cenPR, upPR);
                 // double downDistanceR = GetDistance(cenPR, downPR);
                 // 实际坐标系中的两个点的距离 × 图片中这两个点的距离 =
