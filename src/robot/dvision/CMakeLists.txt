@@ -37,6 +37,7 @@ add_library(dvisionlib
   src/frame.cpp
   src/parameters.cpp
   src/camera/camera.cpp
+  src/camera/camera_dummy.cpp
   src/camera/calibration.cpp
   src/camera/distortionModel.cpp
   src/camera/ipm.cpp
@@ -66,6 +67,10 @@ add_executable(capture src/tools/capture.cpp)
 target_link_libraries(capture dvisionlib)
 
 ## TEST
+catkin_add_gtest(test_cameraDummy test/test_cameraDummy.cpp)
+target_link_libraries(test_cameraDummy dvisionlib)
+target_link_libraries(test_cameraDummy ${catkin_LIBRARIES})
+
 catkin_add_gtest(test_distortionModel test/test_distortionModel.cpp)
 target_link_libraries(test_distortionModel dvisionlib)
 target_link_libraries(test_distortionModel ${catkin_LIBRARIES})
