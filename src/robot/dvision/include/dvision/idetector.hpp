@@ -9,6 +9,7 @@
  * @Copyright: ZJUDancer
  */
 
+#pragma once
 #include "dvision/parameters.hpp"
 #include "dvision/utils.hpp"
 #include <algorithm>

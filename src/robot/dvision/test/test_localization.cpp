@@ -9,19 +9,20 @@
  * @Copyright: ZJUDancer
  */
 
-#include "dvision/localization.hpp"
+#include "dvision/dvision.hpp"
 #include <gtest/gtest.h>
 
 using namespace dvision;
-using namespace std;
 
 TEST(Localization, locmain)
 {
 
-    Localization loc;
+    ros::NodeHandle nh;
+    dvision::DVision v(&nh);
 
-    //    while (ros::ok()) {
-    //    }
+    // while (ros::ok()) {
+    //     v.tick();
+    // }
 }
 
 int

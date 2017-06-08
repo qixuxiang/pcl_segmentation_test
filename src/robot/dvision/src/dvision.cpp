@@ -10,6 +10,12 @@ DVision::DVision(ros::NodeHandle* n)
   , m_nh(n)
 {
     m_projection.init(n);
+    m_circle.Init();
+    m_field.Init();
+    m_goal.Init();
+    m_line.Init();
+    m_loc.Init();
+
     m_concurrent.push([] {
         //     ROS_INFO("concurrent");
     });
@@ -25,10 +31,23 @@ DVision::tick()
     ROS_INFO("dvision tick");
     auto frame = m_camera.capture();
 
+    // TODO(mwx) get yaw and pitch from motor
     double yaw = 0;
     double pitch = 0;
-    m_projection.updateExtrinsic(yaw, pitch);
-    m_projection.calcHomography();
+
+    if (!m_projection.updateExtrinsic(yaw, pitch)) {
+        ROS_ERROR("Cannot update extrinsic of camera!");
+    }
+
+    if (!m_projection.calcHomography()) {
+        ROS_ERROR("Cannot calculate homography!");
+    }
+    if (!m_loc.Update(m_projection)) {
+        ROS_ERROR("Cannot update localization!");
+    }
+
+    m_field_hull_real.clear();
+    m_field_hull_real_rotated.clear();
 
     m_concurrent.spinOnce();
     m_concurrent.join();
