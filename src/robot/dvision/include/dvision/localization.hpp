@@ -69,17 +69,17 @@ const std::string LineTypeName[LTRES] = { "HorUndef", "HorCenter", "HorGoal", "H
 class LineContainer
 {
   public:
-    LineContainer(LineSegment _lineTransformed, LineType _type);
-    LineSegment lineTransformed;
-    LineType type;
+    LineContainer(LineSegment lineTransformed, LineType type);
+    LineSegment line_transformed_;
+    LineType type_;
 };
 
 class FeatureContainer
 {
   public:
-    FeatureContainer(cv::Point2f _position, std::string _type);
-    cv::Point2f position;
-    std::string type;
+    FeatureContainer(cv::Point2f position, std::string type);
+    cv::Point2f position_;
+    std::string type_;
 };
 
 class Localization
@@ -89,66 +89,66 @@ class Localization
     ~Localization();
 
     g2o::SparseOptimizer optimizer;
-    double A;
-    double B;
-    double E;
-    double F;
-    double G;
-    double H;
-    double D;
-    double I;
-    double A2;
-    double B2;
-    double E2;
-    double F2;
-    double G2;
-    double H2;
-    double D2;
-    double I2;
 
     bool Init();
     bool Update(Projection& projection);
-    bool Calculate(std::vector<LineSegment>& clusteredLines,
-                   const bool& circleDetected,
-                   const cv::Point2f& FieldHullRealCenter,
-                   const std::vector<cv::Point2f>& FieldHullReal,
-                   const cv::Point2d& resultCircleRotated,
-                   const std::vector<cv::Point2f>& goalPosition,
-                   std::vector<LineContainer>& AllLines,
-                   std::vector<FeatureContainer>& AllFeatures);
+    bool Calculate(std::vector<LineSegment>& clustered_lines,
+                   const bool& circle_detected,
+                   const cv::Point2f& field_hull_real_center,
+                   const std::vector<cv::Point2f>& field_hull_real,
+                   const cv::Point2d& result_circle_rotated,
+                   const std::vector<cv::Point2f>& goal_position,
+                   std::vector<LineContainer>& all_lines,
+                   std::vector<FeatureContainer>& all_features);
 
     // graph
     void InitG2OGraph();
-    void updateVertexIdx();
-    bool addObservation(cv::Point2d observation, const double& xFasher, const double& yFasher, const LandmarkType& type);
+    void UpdateVertexIdx();
+    bool AddObservation(cv::Point2d observation, const double& x_fasher, const double& y_fasher, const LandmarkType& type);
 
     // getter
-    cv::Point2f GetBall();
-    cv::Point3d GetLocalization();
-    cv::Point2d GetOdometryFromLastGet();
+    cv::Point2f ball();
+    cv::Point3d location();
+    cv::Point2d odom_last_get();
 
     // setter
-    void SetBall(const cv::Point2f& _in);
+    void ball(const cv::Point2f& _in);
 
   private:
-    cv::Point2d location;
-    cv::Point2d locationKalman;
-    KalmanFilterC kalmanI;
-    Projection* _cameraProjections;
-    float lastOdomX, lastOdomY;
-    cv::Point3d globalPos;
-    cv::Point3d lastOdom;
-    uint32_t lastOdomID;
-    cv::Point2f ballPos;
-    g2o::BlockSolverX::LinearSolverType* linearSolver;
-    g2o::BlockSolverX* blockSolver;
-    g2o::OptimizationAlgorithmLevenberg* optimizationAlgorithm;
-    int CurrentVertexId;
-    int PreviousVertexId;
-    int LandmarkCount;
-    cv::Point2d odomLastGet;
-    bool atLeastOneObservation;
-    long unsigned int nodeCounter;
+    double A_;
+    double B_;
+    double E_;
+    double F_;
+    double G_;
+    double H_;
+    double D_;
+    double I_;
+    double A2_;
+    double B2_;
+    double E2_;
+    double F2_;
+    double G2_;
+    double H2_;
+    double D2_;
+    double I2_;
+    cv::Point2d location_;
+    cv::Point2d location_kalman_;
+    KalmanFilterC kalmanI_;
+    Projection* camera_projections_;
+    float last_odom_x_, last_odom_y_;
+    cv::Point3d global_pos_;
+    cv::Point3d last_odom_;
+    uint32_t last_odom_id_;
+    cv::Point2f ball_pos_;
+    g2o::BlockSolverX::LinearSolverType* linear_solver_;
+    g2o::BlockSolverX* block_solver_;
+    g2o::OptimizationAlgorithmLevenberg* opt_algo_;
+    int current_vertex_id_;
+    int previous_vertex_id_;
+    int landmark_count_;
+    cv::Point2d odom_last_get_;
+    bool at_least_one_observation_;
+    long unsigned int node_counter_;
 
     double GetUpdateCoef(const double& coef, const cv::Point2f& point);
     double GetUpdateCoef(const double& coef, LineSegment line);

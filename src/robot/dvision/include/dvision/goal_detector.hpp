@@ -23,31 +23,32 @@ class GoalDetector : public IDetector
     ~GoalDetector();
     bool Init();
 
-    bool GetPosts(cv::Mat& cannyImg,
-                  cv::Mat& rawHSV,
+    bool GetPosts(cv::Mat& canny_img,
+                  cv::Mat& raw_hsv,
                   cv::Mat& gray,
-                  const cv::Mat& binaryFrame,
+                  const cv::Mat& binary_frame,
                   Projection& projection,
-                  const std::vector<cv::Point>& fieldHull,
-                  std::vector<LineSegment>& resLines,
-                  std::vector<LineSegment>& alllLines,
-                  std::vector<cv::Point2f>& goalPosition,
+                  const std::vector<cv::Point>& field_hull,
+                  std::vector<LineSegment>& res_lines,
+                  std::vector<LineSegment>& all_lines,
+                  std::vector<cv::Point2f>& goal_position,
                   const bool& SHOWGUI,
-                  cv::Mat& guiImg);
+                  cv::Mat& gui_img);
 
-    bool checkDistance_Box(cv::Point2f downPointInReal, double length);
-    bool checkDownPointDistance(const cv::Point& down, double& jumpDouble, Projection& projection, std::vector<cv::Point> fieldHull);
-    bool voteGoalPostPoint(LineSegment& tmpLine,
-                           const cv::Point2d& point,
-                           const double& jumpDouble,
-                           const bool& SHOWGUI,
-                           cv::Mat& guiImg,
-                           const cv::Mat& rawHSV,
-                           const cv::Mat& cannyImg,
-                           double& leftAvg,
-                           double& rightAvg,
-                           int& vote_for_doubleLeft,
-                           int& vote_for_doubleRight);
+    bool CheckDistanceBox(cv::Point2f down_point_in_real, double length);
+    bool CheckDownPointDistance(const cv::Point &down, double &jump_double, Projection &projection,
+                                std::vector<cv::Point> field_hull);
+    bool VoteGoalPostPoint(LineSegment &tmp_line,
+                           const cv::Point2d &point,
+                           const double &jump_double,
+                           const bool &SHOWGUI,
+                           cv::Mat &gui_img,
+                           const cv::Mat &raw_hsv,
+                           const cv::Mat &canny_img,
+                           double &left_avg,
+                           double &right_avg,
+                           int &vote_for_double_left,
+                           int &vote_for_double_right);
 
   private:
 };

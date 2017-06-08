@@ -22,11 +22,11 @@ class FieldDetector : public IDetector
     ~FieldDetector();
     bool Init();
 
-    bool GetPoints(cv::Mat& binaryFrame, std::vector<cv::Point>& resPoints, std::vector<std::vector<cv::Point>>& allFieldContours);
-    void FindInField(const cv::Mat& srcHsvImg, const cv::Mat& templateGrayImg, cv::Mat* dstGrayImgs, HSVRange* ranges, bool* inTemplate, int size = 1);
-    std::vector<cv::Point> getBodyMaskContourInRaw(float rot);
+    bool GetPoints(cv::Mat& binary_frame, std::vector<cv::Point>& res_points, std::vector<std::vector<cv::Point>>& all_field_contours);
+    void FindInField(const cv::Mat& src_hsv_img, const cv::Mat& template_gray_img, cv::Mat* dst_gray_imgs, HSVRange* ranges, bool* in_template, int size = 1);
+    std::vector<cv::Point> GetBodyMaskContourInRaw(float rot);
 
-    std::vector<cv::Point> BodyMaskContourInverted;
+    std::vector<cv::Point> body_mask_contour_inverted_;
 
   private:
 };

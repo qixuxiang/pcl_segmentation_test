@@ -32,7 +32,7 @@ class LineSegment
 
     // Setter
     void SetProbability(const double& _in);
-    void SetDownPoint(const cv::Point2f& alterDown);
+    void SetDownPoint(const cv::Point2f& alter_down);
 
     // Getter
     double GetProbability();
@@ -69,20 +69,20 @@ class LineSegment
     cv::Point2d P1, P2;
 
   private:
-    double probability;
+    double probability_;
     bool Within(const float& fl, const float& flLow, const float& flHi, const float& flEp = DEFFLEQEPSILON);
 };
 
 class LinearInterpolator
 {
   public:
-    explicit LinearInterpolator(LineSegment _line);
+    explicit LinearInterpolator(LineSegment line);
     LinearInterpolator(const cv::Point2d& p1, const cv::Point2d& p2);
     double Interpolate(const double& x);
     ~LinearInterpolator();
 
   private:
-    LineSegment line;
+    LineSegment line_;
 };
 
 class LinearBoundaryChecker

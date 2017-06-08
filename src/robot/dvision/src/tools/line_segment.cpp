@@ -37,14 +37,14 @@ LineSegment::LineSegment(const cv::Point2d center, double angle, double length, 
 LineSegment::LineSegment(const LineSegment& l)
   : P1(l.P1)
   , P2(l.P2)
-  , probability(l.probability)
+  , probability_(l.probability_)
 {
 }
 
 LineSegment::LineSegment()
   : P1(cv::Point2f(0, 0))
   , P2(cv::Point2f(0, 0))
-  , probability(0)
+  , probability_(0)
 {
 }
 
@@ -56,16 +56,16 @@ LineSegment::~LineSegment()
 void
 LineSegment::SetProbability(const double& _in)
 {
-    probability = std::max(0.0, std::min(_in, 1.0));
+    probability_ = std::max(0.0, std::min(_in, 1.0));
 }
 
 void
-LineSegment::SetDownPoint(const cv::Point2f& alterDown)
+LineSegment::SetDownPoint(const cv::Point2f& alter_down)
 {
     if (P1.y >= P2.y) {
-        P1 = alterDown;
+        P1 = alter_down;
     } else {
-        P2 = alterDown;
+        P2 = alter_down;
     }
 }
 
@@ -73,7 +73,7 @@ LineSegment::SetDownPoint(const cv::Point2f& alterDown)
 double
 LineSegment::GetProbability()
 {
-    return probability;
+    return probability_;
 }
 
 double
@@ -468,21 +468,21 @@ LineSegment::Within(const float& fl, const float& flLow, const float& flHi, cons
     return false;
 }
 
-LinearInterpolator::LinearInterpolator(LineSegment _line)
-  : line(_line)
+LinearInterpolator::LinearInterpolator(LineSegment line)
+  : line_(line)
 {
 }
 
 LinearInterpolator::LinearInterpolator(const cv::Point2d& p1, const cv::Point2d& p2)
 {
-    line.P1 = p1;
-    line.P2 = p2;
+    line_.P1 = p1;
+    line_.P2 = p2;
 }
 
 double
 LinearInterpolator::Interpolate(const double& x)
 {
-    return (line.P1.y + (line.P2.y - line.P1.y) * (x - line.P1.x) / (line.P2.x - line.P1.x));
+    return (line_.P1.y + (line_.P2.y - line_.P1.y) * (x - line_.P1.x) / (line_.P2.x - line_.P1.x));
 }
 
 LinearInterpolator::~LinearInterpolator()

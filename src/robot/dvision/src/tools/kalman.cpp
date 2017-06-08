@@ -14,32 +14,32 @@
 namespace dvision {
 KalmanFilterC::KalmanFilterC(const cv::Point2f& pt)
 {
-    kalman = new cv::KalmanFilter(6, 2, 0);
+    kalman_ = new cv::KalmanFilter(6, 2, 0);
     cv::Mat processNoise(6, 1, CV_32F);
 
-    kalman->statePre.at<float>(0) = pt.x;
-    kalman->statePre.at<float>(1) = pt.y;
-    kalman->statePre.at<float>(2) = 0;
-    kalman->statePre.at<float>(3) = 0;
-    kalman->statePre.at<float>(4) = 0;
-    kalman->statePre.at<float>(5) = 0;
-    kalman->transitionMatrix = (cv::Mat_<float>(6, 6) << 1, 0, 1, 0, 0.5, 0, 0, 1, 0, 1, 0, 0.5, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1);
-    kalman->measurementMatrix = (cv::Mat_<float>(2, 6) << 1, 0, 1, 0, 0.5, 0, 0, 1, 0, 1, 0, 0.5);
-    cv::setIdentity(kalman->measurementMatrix);
-    cv::setIdentity(kalman->processNoiseCov, cv::Scalar::all(1e-4));
-    cv::setIdentity(kalman->measurementNoiseCov, cv::Scalar::all(1e-1));
-    cv::setIdentity(kalman->errorCovPost, cv::Scalar::all(.1));
+    kalman_->statePre.at<float>(0) = pt.x;
+    kalman_->statePre.at<float>(1) = pt.y;
+    kalman_->statePre.at<float>(2) = 0;
+    kalman_->statePre.at<float>(3) = 0;
+    kalman_->statePre.at<float>(4) = 0;
+    kalman_->statePre.at<float>(5) = 0;
+    kalman_->transitionMatrix = (cv::Mat_<float>(6, 6) << 1, 0, 1, 0, 0.5, 0, 0, 1, 0, 1, 0, 0.5, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1);
+    kalman_->measurementMatrix = (cv::Mat_<float>(2, 6) << 1, 0, 1, 0, 0.5, 0, 0, 1, 0, 1, 0, 0.5);
+    cv::setIdentity(kalman_->measurementMatrix);
+    cv::setIdentity(kalman_->processNoiseCov, cv::Scalar::all(1e-4));
+    cv::setIdentity(kalman_->measurementNoiseCov, cv::Scalar::all(1e-1));
+    cv::setIdentity(kalman_->errorCovPost, cv::Scalar::all(.1));
 }
 
 KalmanFilterC::~KalmanFilterC()
 {
-    delete kalman;
+    delete kalman_;
 }
 
 cv::Point2f
 KalmanFilterC::GetPrediction()
 {
-    cv::Mat prediction = kalman->predict();
+    cv::Mat prediction = kalman_->predict();
     return cv::Point2f(prediction.at<float>(0), prediction.at<float>(1));
 }
 
@@ -51,7 +51,7 @@ KalmanFilterC::Update(const cv::Point2f& p)
     measurement.at<float>(0) = p.x;
     measurement.at<float>(1) = p.y;
 
-    cv::Mat estimated = kalman->correct(measurement);
+    cv::Mat estimated = kalman_->correct(measurement);
     return cv::Point2f(estimated.at<float>(0), estimated.at<float>(1));
 }
 

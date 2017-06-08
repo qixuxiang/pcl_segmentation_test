@@ -23,7 +23,7 @@ class KalmanFilterC
     cv::Point2f GetPrediction();
     cv::Point2f Update(const cv::Point2f& p);
 
-    cv::KalmanFilter* kalman;
+    cv::KalmanFilter* kalman_;
 
   private:
 };

@@ -20,13 +20,13 @@ FieldDetector::FieldDetector()
 bool
 FieldDetector::Init()
 {
-    // TODO(corenel) init BodyMaskContourInverted
+    // TODO(corenel) init body_mask_contour_inverted_
     //      cv::FileStorage fr(parameters.configPath+"BodyMask.yml",
     //                         cv::FileStorage::READ);
     //      cv::FileNode fileNode = fr["IGUS"];
-    //      read(fileNode, BodyMaskContourInverted);
+    //      read(fileNode, body_mask_contour_inverted_);
     //      fr.release();
-    //      if (BodyMaskContourInverted.size() < 6)
+    //      if (body_mask_contour_inverted_.size() < 6)
     //      {
     //        ROS_ERROR("Create or modify BodyMask.yml!");
     //      }
@@ -39,77 +39,77 @@ FieldDetector::~FieldDetector()
 }
 
 bool
-FieldDetector::GetPoints(cv::Mat& binaryFrame, std::vector<cv::Point>& resPoints, std::vector<std::vector<cv::Point>>& allFieldContours)
+FieldDetector::GetPoints(cv::Mat& binary_frame, std::vector<cv::Point>& res_points, std::vector<std::vector<cv::Point>>& all_field_contours)
 {
     if (parameters.field.erode > 0) {
-        erode(binaryFrame, binaryFrame, cv::Mat(), cv::Point(-1, -1), parameters.field.erode);
+        erode(binary_frame, binary_frame, cv::Mat(), cv::Point(-1, -1), parameters.field.erode);
     }
     if (parameters.field.dilate > 0) {
-        dilate(binaryFrame, binaryFrame, cv::Mat(), cv::Point(-1, -1), parameters.field.dilate);
+        dilate(binary_frame, binary_frame, cv::Mat(), cv::Point(-1, -1), parameters.field.dilate);
     }
     if (parameters.field.erode2 > 0) {
-        erode(binaryFrame, binaryFrame, cv::Mat(), cv::Point(-1, -1), parameters.field.erode2);
+        erode(binary_frame, binary_frame, cv::Mat(), cv::Point(-1, -1), parameters.field.erode2);
     }
     if (parameters.field.dilate2 > 0) {
-        dilate(binaryFrame, binaryFrame, cv::Mat(), cv::Point(-1, -1), parameters.field.dilate2);
+        dilate(binary_frame, binary_frame, cv::Mat(), cv::Point(-1, -1), parameters.field.dilate2);
     }
-    cv::findContours(binaryFrame.clone(), allFieldContours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
-    resPoints.reserve(parameters.field.maxContourCount);
-    std::sort(allFieldContours.begin(), allFieldContours.end(), SortFuncDescending);
+    cv::findContours(binary_frame.clone(), all_field_contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
+    res_points.reserve(parameters.field.maxContourCount);
+    std::sort(all_field_contours.begin(), all_field_contours.end(), SortFuncDescending);
     bool ret = false;
-    int totalResult = 0;
-    for (size_t i = 0; i < allFieldContours.size(); i++) {
-        if (totalResult >= parameters.field.maxContourCount) {
+    int total_result = 0;
+    for (size_t i = 0; i < all_field_contours.size(); i++) {
+        if (total_result >= parameters.field.maxContourCount) {
             return ret;
         }
-        cv::Rect rec = cv::boundingRect(allFieldContours[i]);
-        double area = cv::contourArea(allFieldContours[i]);
+        cv::Rect rec = cv::boundingRect(all_field_contours[i]);
+        double area = cv::contourArea(all_field_contours[i]);
         if (std::abs(parameters.camera.height - Bottom(rec)) <= parameters.field.maxDownDiffPixel && area >= parameters.field.minArea) {
-            cv::approxPolyDP(allFieldContours[i], allFieldContours[i], cv::arcLength(allFieldContours[i], true) * 0.003, true);
-            for (size_t pIt = 0; pIt < allFieldContours[i].size(); pIt++) {
-                resPoints.push_back(allFieldContours[i][pIt]);
+            cv::approxPolyDP(all_field_contours[i], all_field_contours[i], cv::arcLength(all_field_contours[i], true) * 0.003, true);
+            for (size_t pIt = 0; pIt < all_field_contours[i].size(); pIt++) {
+                res_points.push_back(all_field_contours[i][pIt]);
             }
             ret = true;
         }
-        totalResult++;
+        total_result++;
     }
     return ret;
 }
 
 void
-FieldDetector::FindInField(const cv::Mat& srcHsvImg, const cv::Mat& templateGrayImg, cv::Mat* dstGrayImgs, HSVRange* ranges, bool* inTemplate, int size)
+FieldDetector::FindInField(const cv::Mat& src_hsv_img, const cv::Mat& template_gray_img, cv::Mat* dst_gray_imgs, HSVRange* ranges, bool* in_template, int size)
 {
-    const int srcSize = srcHsvImg.rows * srcHsvImg.cols;
+    const int src_size = src_hsv_img.rows * src_hsv_img.cols;
     int* indexs = new int[4];
     for (int k = 0; k < size; k++) {
         indexs[k] = 0;
     }
-    uchar* srcHsvImg_D = srcHsvImg.data;
-    uchar* templateGrayImg_D = templateGrayImg.data;
+    uchar* src_hsv_img_D = src_hsv_img.data;
+    uchar* template_gray_img_D = template_gray_img.data;
 
-    for (int i = 0; i < srcSize; i++) {
-        ushort h = srcHsvImg_D[0], s = srcHsvImg_D[1], v = srcHsvImg_D[2];
-        if (templateGrayImg_D[0] >= 254) {
+    for (int i = 0; i < src_size; i++) {
+        ushort h = src_hsv_img_D[0], s = src_hsv_img_D[1], v = src_hsv_img_D[2];
+        if (template_gray_img_D[0] >= 254) {
             for (int k = 0; k < size; k++) {
                 if (h >= ranges[k].h0 && h <= ranges[k].h1 && s >= ranges[k].s0 && s <= ranges[k].s1 && v >= ranges[k].v0 && v <= ranges[k].v1) {
-                    dstGrayImgs[k].data[indexs[k]] = 255;
+                    dst_gray_imgs[k].data[indexs[k]] = 255;
                 } else {
-                    dstGrayImgs[k].data[indexs[k]] = 0;
+                    dst_gray_imgs[k].data[indexs[k]] = 0;
                 }
             }
         } else {
             for (int k = 0; k < size; k++) {
-                if (inTemplate[k])
+                if (in_template[k])
                     continue;
                 if (h >= ranges[k].h0 && h <= ranges[k].h1 && s >= ranges[k].s0 && s <= ranges[k].s1 && v >= ranges[k].v0 && v <= ranges[k].v1) {
-                    dstGrayImgs[k].data[indexs[k]] = 255;
+                    dst_gray_imgs[k].data[indexs[k]] = 255;
                 } else {
-                    dstGrayImgs[k].data[indexs[k]] = 0;
+                    dst_gray_imgs[k].data[indexs[k]] = 0;
                 }
             }
         }
-        templateGrayImg_D += 1;
-        srcHsvImg_D += 3;
+        template_gray_img_D += 1;
+        src_hsv_img_D += 3;
         for (int k = 0; k < size; k++) {
             indexs[k]++;
         }
@@ -118,13 +118,13 @@ FieldDetector::FindInField(const cv::Mat& srcHsvImg, const cv::Mat& templateGray
 }
 
 std::vector<cv::Point>
-FieldDetector::getBodyMaskContourInRaw(float rot)
+FieldDetector::GetBodyMaskContourInRaw(float rot)
 {
     std::vector<cv::Point> res;
-    if (BodyMaskContourInverted.size() < 6)
+    if (body_mask_contour_inverted_.size() < 6)
         return res;
-    for (size_t i = 0; i < BodyMaskContourInverted.size(); i++) {
-        cv::Point rotated = RotateAroundPoint(BodyMaskContourInverted[i], rot);
+    for (size_t i = 0; i < body_mask_contour_inverted_.size(); i++) {
+        cv::Point rotated = RotateAroundPoint(body_mask_contour_inverted_[i], rot);
         cv::Point p(static_cast<int>(rotated.x + parameters.camera.width / 2.), abs(rotated.y - 480));
         if (p.inside(cv::Rect(0, 0, parameters.camera.width, parameters.camera.height))) {
             if (res.size() == 0) {
