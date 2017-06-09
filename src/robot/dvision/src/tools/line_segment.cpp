@@ -71,7 +71,7 @@ LineSegment::SetDownPoint(const cv::Point2f& alter_down)
 
 // Getter
 double
-LineSegment::GetProbability()
+LineSegment::GetProbability() const
 {
     return probability_;
 }

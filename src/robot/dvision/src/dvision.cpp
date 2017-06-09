@@ -57,6 +57,7 @@ DVision::tick()
     /******************
      * Field Detector *
      ******************/
+    bool field_detection_OK = false;
 
     // clear field convex hull
     m_field_hull_real.clear();
@@ -77,6 +78,7 @@ DVision::tick()
     std::vector<cv::Point> field_points;
     std::vector<cv::Point> field_contour_undist;
     std::vector<std::vector<cv::Point>> all_field_contours;
+    std::vector<cv::Point> hull_undist, hull_undist_mid_point, hull_field;
 
     // detect field
     if (parameters.field.enable && m_field.GetPoints(m_field_binary, field_points, all_field_contours)) {
@@ -87,7 +89,6 @@ DVision::tick()
 
         // 计算非畸变下的轮廓点
         if (m_projection.undistort(field_points, field_contour_undist)) {
-            std::vector<cv::Point> hull_undist, hull_undist_mid_point, hull_field;
             // 计算非畸变下的凸包
             cv::convexHull(field_contour_undist, hull_undist, false);
 
@@ -170,7 +171,160 @@ DVision::tick()
                 if (parameters.field.showResult && parameters.monitor.update_gui_img) {
                     cv::drawContours(m_gui_img, hulls, -1, yellowColor(), 2, 8);
                 }
+
+                field_detection_OK = true;
             }
+        }
+    }
+
+    if (parameters.field.enable && !field_detection_OK) {
+        ROS_ERROR("Detecting field failed.");
+    }
+
+    /*****************
+     * Line Detector *
+     *****************/
+
+    bool line_detection_OK = false;
+
+    // calculate canny image
+    cv::Mat channels[3], canny_img;
+    cv::split(m_hsv_img, channels);
+    m_canny_img_in_field = cv::Mat::zeros(m_canny_img_in_field.size(), CV_8UC1);
+    // 对v进行模糊,模糊结果存在canny_img中
+    cv::blur(channels[2], canny_img, cv::Size(parameters.line.blurSize, parameters.line.blurSize));
+    cv::Canny(canny_img, canny_img, parameters.line.cannyThreadshold, parameters.line.cannyThreadshold * 3, parameters.line.cannyaperture);
+    if (parameters.line.showCanny) {
+        // fuck
+    }
+    canny_img.copyTo(m_canny_img_in_field, m_field_convex_hull);
+
+    std::vector<LineSegment> clustered_lines;
+    std::vector<LineSegment> clustered_lines_rotated;
+
+    // detect white lines
+    if (field_detection_OK && parameters.line.enable) {
+        cv::Rect top_view_box;
+        // top_view.width = field_model.field_length = 900
+        top_view_box.x = -1 * parameters.field_model.field_length;
+        top_view_box.y = -1 * parameters.field_model.field_length;
+        top_view_box.width = 2 * parameters.field_model.field_length;
+        top_view_box.height = 2 * parameters.field_model.field_length;
+        std::vector<LineSegment> result_lines, result_lines_real;
+
+        // get unmerged lines
+        if (m_line.GetLines(m_hsv_img,
+                            field_binary_raw,
+                            m_gui_img,
+                            // m_projection,
+                            parameters.monitor.update_gui_img,
+                            m_canny_img_in_field,
+                            // cv::Rect(0, 0, parameters.camera.width, parameters.camera.height),
+                            result_lines)) {
+            // draw unmerged lines
+            if (parameters.monitor.update_gui_img) {
+                for (auto line : result_lines) {
+                    cv::line(m_gui_img, line.P1, line.P2, blueMeloColor(), 3, 8);
+                }
+            }
+
+            // merge lines
+            if (m_projection.getOnRealCoordinate(result_lines, result_lines_real)) {
+                if (MergeLinesMax(result_lines_real, parameters.line.AngleToMerge, parameters.line.DistanceToMerge, clustered_lines, top_view_box)) {
+                    line_detection_OK = true;
+                }
+            }
+
+            // draw merged lines
+            if (parameters.line.showResult && parameters.monitor.update_gui_img) {
+                std::vector<LineSegment> clustered_lines_img;
+                if (m_projection.getOnImageCoordinate(clustered_lines, clustered_lines_img)) {
+                    for (size_t i = 0; i < clustered_lines_img.size(); i++) {
+                        line(m_gui_img, clustered_lines_img[i].P1, clustered_lines_img[i].P2, greenColor(), 3, 8);
+                        circle(m_gui_img, clustered_lines_img[i].P1, 2, blueColor(), 2, 8);
+                        circle(m_gui_img, clustered_lines_img[i].P2, 2, blueColor(), 2, 8);
+                    }
+                }
+            }
+        }
+    }
+
+    // if (parameters.line.enable && !field_detection_OK) {
+    //     ROS_ERROR("Detecting lines failed.");
+    // }
+
+    /*******************
+     * Circle detector *
+     *******************/
+
+    bool circle_detected = false;
+    bool confused = false;
+    cv::Point2d result_circle;
+    cv::Point2d result_circle_rotated;
+
+    if (field_detection_OK && parameters.circle.enable) {
+        if (m_circle.GetCircle(parameters.field_model.center_circle_diameter / 2, clustered_lines, confused, result_circle)) {
+            circle_detected = true;
+        }
+    }
+
+    // if (parameters.circle.enable && !circle_detected) {
+    //     ROS_ERROR("Detecting circle failed.");
+    // }
+
+    /*****************
+     * Goal Detector *
+     *****************/
+
+    bool goal_detection_OK = false;
+
+    std::vector<cv::Point2f> goal_position_real;
+    std::vector<cv::Point2f> goal_position_real_rotated;
+
+    if (field_detection_OK && parameters.goal.enable) {
+        std::vector<LineSegment> result_lines, all_lines;
+        // detect goal position
+        goal_detection_OK =
+          m_goal.GetPosts(canny_img, m_hsv_img, m_gray_img, m_goal_binary.clone(), m_projection, hull_field, result_lines, all_lines, goal_position_real, parameters.monitor.update_gui_img, m_gui_img);
+
+        // draw all possible goal lines
+        if (parameters.goal.showAllLines && parameters.monitor.update_gui_img) {
+            for (auto line : all_lines) {
+                cv::line(m_gui_img, line.P1, line.P2, blueMeloColor(), 2, 8);
+            }
+        }
+
+        if (goal_detection_OK) {
+            // draw selected goal lines
+            if (parameters.goal.showResLine && parameters.monitor.update_gui_img) {
+                for (auto line : result_lines) {
+                    cv::line(m_gui_img, line.P1, line.P2, blueMeloColor(), 2, 8);
+                }
+            }
+        }
+    }
+
+    // if (parameters.goal.enable && !goal_detection_OK) {
+    //     ROS_ERROR("Detecting goal failed.");
+    // }
+
+    /****************
+     * Localization *
+     ****************/
+    bool loc_detection_OK = false;
+
+    // Rotate everthing!
+    m_projection.CalcHeadingOffset(clustered_lines, circle_detected, result_circle, goal_position_real);
+    m_field_hull_real_rotated = m_projection.RotateTowardHeading(m_field_hull_real);
+    clustered_lines_rotated = m_projection.RotateTowardHeading(clustered_lines);
+    goal_position_real_rotated = m_projection.RotateTowardHeading(goal_position_real);
+    result_circle_rotated = m_projection.RotateTowardHeading(result_circle);
+
+    if (parameters.loc.enable) {
+        std::vector<LineContainer> all_lines;
+        std::vector<FeatureContainer> all_features;
+        if (m_loc.Calculate(clustered_lines_rotated, circle_detected, m_field_hull_real_center, m_field_hull_real, result_circle_rotated, goal_position_real_rotated, all_lines, all_features)) {
+            loc_detection_OK = true;
         }
     }
 

@@ -35,7 +35,7 @@ class LineSegment
     void SetDownPoint(const cv::Point2f& alter_down);
 
     // Getter
-    double GetProbability();
+    double GetProbability() const;
     double GetLength() const;
     cv::Point2f GetClosestPointOnLineSegment(cv::Point2f p);
     cv::Point2f GetMiddle();
