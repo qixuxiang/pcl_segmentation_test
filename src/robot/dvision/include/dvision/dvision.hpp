@@ -11,6 +11,7 @@
 #include "dvision/line_detector.hpp"
 #include "dvision/localization.hpp"
 #include "dvision/projection.hpp"
+#include "dvision/utils.hpp"
 #include <vector>
 
 namespace dvision {
@@ -40,9 +41,9 @@ class DVision : public dprocess::DProcess<DVision>
     cv::Point2f m_field_hull_real_center;
 
     // img
-    cv::Mat m_raw_hsv_img, m_gray_img;
+    cv::Mat m_hsv_img, m_gray_img;
     cv::Mat m_gui_top_view_rotate, m_gui_img, m_gui_undist;
     cv::Mat m_ball_binary, m_field_binary, m_goal_binary;
-    cv::Mat m_field_convect_hull, m_canny_img_in_field;
+    cv::Mat m_field_convex_hull, m_canny_img_in_field;
 };
 } // namespace dvision

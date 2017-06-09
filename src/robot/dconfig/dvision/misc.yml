@@ -10,3 +10,6 @@ dvision:
     penalty_mark_distance: 20
     center_circle_diameter: 150
     border_strip_width: 70
+
+  monitor:
+    update_gui_img: true

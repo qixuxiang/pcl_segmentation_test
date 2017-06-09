@@ -27,6 +27,16 @@ class Projection
         return m_ipm.initGetHomography(m_extrinsic, homoImgToReal, homoRealToImg);
     }
 
+    inline bool undistort(const std::vector<cv::Point>& points, std::vector<cv::Point>& res)
+    {
+        return m_dist.undistort(points, res);
+    }
+
+    inline bool undistort(const std::vector<cv::Point>& points, std::vector<cv::Point2f>& res)
+    {
+        return m_dist.undistort(points, res);
+    }
+
     bool getOnImageCoordinate(const std::vector<cv::Point2f>& points, std::vector<cv::Point>& resPoints);
     bool getOnRealCoordinate(const std::vector<cv::Point>& points, std::vector<cv::Point2f>& resPoints);
 

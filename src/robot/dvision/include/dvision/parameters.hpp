@@ -171,6 +171,11 @@ struct FieldModelParameters
     int border_strip_width;
 };
 
+struct MonitorParameters
+{
+    bool update_gui_img;
+};
+
 struct Parameters
 {
     CircleDetectorParameters circle;
@@ -181,6 +186,7 @@ struct Parameters
     LocalizationParameters loc;
     CameraParameters camera;
     FieldModelParameters field_model;
+    MonitorParameters monitor;
 
     void init(ros::NodeHandle* nh);
 };

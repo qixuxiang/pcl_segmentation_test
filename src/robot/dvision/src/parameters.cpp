@@ -161,6 +161,9 @@ Parameters::init(ros::NodeHandle* nh)
     GPARAM("/dvision/field_model/penalty_mark_distance", parameters.field_model.penalty_mark_distance);
     GPARAM("/dvision/field_model/center_circle_diameter", parameters.field_model.center_circle_diameter);
     GPARAM("/dvision/field_model/border_strip_width", parameters.field_model.border_strip_width);
+
+    // Get monitor parameters
+    GPARAM("/dvision/monitor/update_gui_img", parameters.monitor.update_gui_img);
 }
 
 #undef GPARAM
