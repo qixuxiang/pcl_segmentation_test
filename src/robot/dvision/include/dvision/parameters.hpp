@@ -2,6 +2,7 @@
 #include <Eigen/Dense>
 #include <opencv2/opencv.hpp>
 #include <ros/ros.h>
+#include <string>
 #include <vector>
 
 namespace dvision {
@@ -31,6 +32,16 @@ struct CameraParameters
     int undistHeight;
 
     // TODO(MWX): Extrinsic parameters
+};
+
+struct BallDetectorParameters
+{
+    bool enable;
+    std::string label_file;
+    std::string net_cfg;
+    std::string weight_file;
+    float low_thresh;
+    float high_thresh;
 };
 
 struct CircleDetectorParameters
@@ -178,6 +189,7 @@ struct MonitorParameters
 
 struct Parameters
 {
+    BallDetectorParameters ball;
     CircleDetectorParameters circle;
     FieldDetectorParameters field;
     GoalDetectorParameters goal;

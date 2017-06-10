@@ -10,6 +10,7 @@ DVision::DVision(ros::NodeHandle* n)
   , m_nh(n)
 {
     m_projection.init(n);
+    m_ball.Init();
     m_circle.Init();
     m_field.Init();
     m_goal.Init();

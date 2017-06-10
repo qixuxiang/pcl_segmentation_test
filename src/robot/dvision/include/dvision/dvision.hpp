@@ -4,6 +4,7 @@
 #pragma once
 #include "dprocess/dconcurrent.hpp"
 #include "dprocess/dprocess.hpp"
+#include "dvision/ball_detector.hpp"
 #include "dvision/camera.hpp"
 #include "dvision/circle_detector.hpp"
 #include "dvision/field_detector.hpp"
@@ -29,6 +30,7 @@ class DVision : public dprocess::DProcess<DVision>
     dprocess::DConcurrent m_concurrent;
 
     // detectors and loc
+    BallDetector m_ball;
     CircleDetector m_circle;
     LineDetector m_line;
     GoalDetector m_goal;

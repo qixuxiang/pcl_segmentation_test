@@ -36,6 +36,14 @@ Parameters::init(ros::NodeHandle* nh)
 
     parameters.camera.imageSize = Size(parameters.camera.width, parameters.camera.height);
 
+    // Get ball detector parameters
+    GPARAM("/dvision/ball_detector/enable", parameters.ball.enable);
+    GPARAM("/dvision/ball_detector/label_file", parameters.ball.label_file);
+    GPARAM("/dvision/ball_detector/net_cfg", parameters.ball.net_cfg);
+    GPARAM("/dvision/ball_detector/weight_file", parameters.ball.weight_file);
+    GPARAM("/dvision/ball_detector/low_thresh", parameters.ball.low_thresh);
+    GPARAM("/dvision/ball_detector/high_thresh", parameters.ball.high_thresh);
+
     // Get circle detector parameters
     GPARAM("/dvision/circle_detector/enable", parameters.circle.enable);
     GPARAM("/dvision/circle_detector/minLineLen", parameters.circle.minLineLen);

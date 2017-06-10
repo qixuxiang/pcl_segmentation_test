@@ -1,4 +1,69 @@
 dvision:
+  ball_detector:
+    enable:                     true
+    label_file:                 'data/rob.names'
+    net_cfg:                    'cfg/tiny-yolo-v1-voc.cfg'
+    weight_file:                'model/tiny-yolo.weights'
+    low_thresh:                 0.1
+    high_thresh:                1.0
+  circle_detector:
+    enable:                     true
+    minLineLen:                 20
+    maxLineLen:                 150
+    maxDistBetween2LS:          30
+    radiusMaxCoef:              1.5
+    radiusMinCoef:              0.7
+    confiusedDist:              1
+    minLineSegmentCount:        3
+  field_detector:
+    enable:                     true
+    showMask:                   false
+    showResult:                 true
+    showDebug:                  false
+    h0:                         33
+    h1:                         89
+    s0:                         70
+    s1:                         255
+    v0:                         25
+    v1:                         157
+    active:                     false
+    erode:                      1
+    dilate:                     1
+    erode2:                     3
+    dilate2:                    0
+    maxContourCount:            5
+    minArea:                    0
+    maxDownDiffPixel:           700
+    approxPoly:                 0.02
+    maxAcceptDistance:          10.81
+    minAcceptX:                 -1
+  goal_detector:
+    enable:                     true
+    showMask:                   false
+    showResult:                 false
+    showAllLines:               false
+    showResLine:                true
+    showVote:                   false
+    h0:                         37
+    h1:                         110
+    s0:                         0
+    s1:                         86
+    v0:                         54
+    v1:                         255
+    active:                     true
+    MinLineLength:              30
+    MaxOutField:                0
+    DistanceToMerge:            15
+    NearestDistance:            0
+    FurthestDistance:           1081
+    NearMinLen:                 0
+    NearMaxLen:                 1920 #IMGWIDTH
+    FarMinLen:                  0
+    FarMaxLen:                  1920 #IMGWIDTH
+    jumpMax:                    2
+    doubleVote:                 40
+    minDoubleLength:            3
+    minContinuesColor:          7
   line_detector:
     enable:                     true
     showMask:                   false
@@ -39,64 +104,6 @@ dvision:
     cannyThreadshold:           23
     blurSize:                   6
     cannyaperture:              3
-  field_detector:
-    enable:                     true
-    showMask:                   false
-    showResult:                 true
-    showDebug:                  false
-    h0:                         33
-    h1:                         89
-    s0:                         70
-    s1:                         255
-    v0:                         25
-    v1:                         157
-    active:                     false
-    erode:                      1
-    dilate:                     1
-    erode2:                     3
-    dilate2:                    0
-    maxContourCount:            5
-    minArea:                    0
-    maxDownDiffPixel:           700
-    approxPoly:                 0.02
-    maxAcceptDistance:          10.81
-    minAcceptX:                 -1
-  circle_detector:
-    enable:                     true
-    minLineLen:                 20
-    maxLineLen:                 150
-    maxDistBetween2LS:          30
-    radiusMaxCoef:              1.5
-    radiusMinCoef:              0.7
-    confiusedDist:              1
-    minLineSegmentCount:        3
-  goal_detector:
-    enable:                     true
-    showMask:                   false
-    showResult:                 false
-    showAllLines:               false
-    showResLine:                true
-    showVote:                   false
-    h0:                         37
-    h1:                         110
-    s0:                         0
-    s1:                         86
-    v0:                         54
-    v1:                         255
-    active:                     true
-    MinLineLength:              30
-    MaxOutField:                0
-    DistanceToMerge:            15
-    NearestDistance:            0
-    FurthestDistance:           1081
-    NearMinLen:                 0
-    NearMaxLen:                 1920 #IMGWIDTH
-    FarMinLen:                  0
-    FarMaxLen:                  1920 #IMGWIDTH
-    jumpMax:                    2
-    doubleVote:                 40
-    minDoubleLength:            3
-    minContinuesColor:          7
   localization:
     enable:                     true
     minLineLen:                 150

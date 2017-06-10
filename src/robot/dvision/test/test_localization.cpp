@@ -28,7 +28,7 @@ TEST(Localization, locmain)
 int
 main(int argc, char** argv)
 {
-    ros::init(argc, argv, "capture");
+    ros::init(argc, argv, "localization");
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }
