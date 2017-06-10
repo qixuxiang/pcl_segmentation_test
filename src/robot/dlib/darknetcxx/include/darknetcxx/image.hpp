@@ -72,7 +72,7 @@ class Image
     /**
      * find bbox using boxes and probs
      */
-    std::vector<bbox> find_bbox(const int& num, const float& thresh, box* boxes, float** probs, const int& classes);
+    void find_bbox(const int& num, const float& thresh, box* boxes, float** probs, const int& classes, std::vector<bbox>& ball_position);
     /**
      * get m_data
      */

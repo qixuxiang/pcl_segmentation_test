@@ -17,6 +17,7 @@
 #include <vector>
 
 namespace dvision {
+
 class BallDetector : public IDetector
 {
   public:
@@ -24,7 +25,7 @@ class BallDetector : public IDetector
     ~BallDetector();
     bool Init();
 
-    bool GetBall(cv::Mat& frame, std::vector<cv::Point2d>& ball_position);
+    bool GetBall(cv::Mat& frame, std::vector<darknet::bbox>& ball_position);
 
   private:
     darknet::Network* net_;

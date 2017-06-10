@@ -61,16 +61,20 @@ BallDetector::~BallDetector()
 }
 
 bool
-BallDetector::GetBall(cv::Mat& frame, std::vector<cv::Point2d>& ball_position)
+BallDetector::GetBall(cv::Mat& frame, std::vector<darknet::bbox>& ball_position)
 {
     darknet::Image raw_img(frame);
     darknet::params p = net_->get_params();
+    ROS_INFO("resize to %d x %d x %d", p.h, p.w, p.c);
     raw_img.resize_neo(p.h, p.w, p.c);
 
-    std::vector<darknet::bbox> bboxes = darknet::obj_detection(net_, &raw_img, parameters.ball.low_thresh);
-    for (auto bbox : bboxes) {
-        // m_objects.emplace_back(static_cast<int>(bbox.m_label), bbox.m_prob, bbox.m_left, bbox.m_top, bbox.m_right, bbox.m_bottom);
-        ROS_INFO("%5d - %5f\n", bbox.m_label, bbox.m_prob);
+    darknet::obj_detection(net_, &raw_img, parameters.ball.low_thresh, ball_position);
+    for (auto bbox : ball_position) {
+        ROS_INFO("%5d - %5f - (%d, %d) && (%d, %d)", bbox.m_label, bbox.m_prob, bbox.m_left, bbox.m_top, bbox.m_right, bbox.m_bottom);
+        // std::cout << "left:" << bbox.m_left << std::endl;
+        // std::cout << "right:" << bbox.m_right << std::endl;
+        // std::cout << "top:" << bbox.m_top << std::endl;
+        // std::cout << "bottom:" << bbox.m_bottom << std::endl;
     }
 
     return true;

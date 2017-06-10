@@ -24,16 +24,22 @@ TEST(BallDetector, main)
 
     // init ball detector
     BallDetector ball;
-    std::vector<cv::Point2d> ball_position;
+    std::vector<darknet::bbox> ball_position;
     ball.Init();
 
     // get frame from camera
     cv::VideoCapture cap(0);
-    cv::Mat cv_frame;
+    cv::namedWindow("ball_detector", CV_WINDOW_NORMAL);
+    cv::Mat frame, ball_img;
 
     while (ros::ok()) {
-        cap >> cv_frame;
-        ball.GetBall(cv_frame, ball_position);
+        cap >> frame;
+        ball.GetBall(frame, ball_position);
+        for (auto bbox : ball_position) {
+            cv::rectangle(frame, cv::Point(bbox.m_left, bbox.m_top), cv::Point(bbox.m_right, bbox.m_bottom), cv::Scalar(0, 255, 0));
+        }
+        cv::imshow("ball_detector", frame);
+        cv::waitKey(1);
     }
 }
 

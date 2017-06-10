@@ -222,7 +222,8 @@ Image::show(const std::string& window_name)
 void
 Image::draw_detections(const int& num, const float& thresh, box* boxes, float** probs, const std::vector<std::string>& label_list, const int& classes)
 {
-    std::vector<bbox> bboxes = find_bbox(num, thresh, boxes, probs, classes);
+    std::vector<bbox> bboxes;
+    find_bbox(num, thresh, boxes, probs, classes, bboxes);
     for (auto bbox : bboxes) {
         printf("- %s: %.0f%%\n", label_list[bbox.m_label].c_str(), bbox.m_prob * 100);
 
@@ -236,10 +237,10 @@ Image::draw_detections(const int& num, const float& thresh, box* boxes, float** 
     }
 }
 
-std::vector<bbox>
-Image::find_bbox(const int& num, const float& thresh, box* boxes, float** probs, const int& classes)
+void
+Image::find_bbox(const int& num, const float& thresh, box* boxes, float** probs, const int& classes, std::vector<bbox>& ball_position)
 {
-    std::vector<bbox> bboxes;
+    // std::vector<bbox> bboxes;
 
     for (int i = 0; i < num; ++i) {
         int max_id = max_index(probs[i], probs[i] + classes);
@@ -258,11 +259,14 @@ Image::find_bbox(const int& num, const float& thresh, box* boxes, float** probs,
             if (bottom > m_h - 1)
                 bottom = m_h - 1;
 
-            bboxes.emplace_back(max_id, probs[i][max_id], left, top, right, bottom);
+            // std::cout << "left:" << left << std::endl;
+            // std::cout << "right:" << right << std::endl;
+            // std::cout << "top:" << top << std::endl;
+            // std::cout << "bottom:" << bottom << std::endl;
+
+            ball_position.emplace_back(max_id, probs[i][max_id], left, top, right, bottom);
         }
     }
-
-    return bboxes;
 }
 
 /***********
