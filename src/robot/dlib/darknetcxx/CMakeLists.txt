@@ -14,11 +14,11 @@ add_definitions(-std=c++11)
 
 ## Add options
 option(DARKNET_TEST "Build all tests." OFF) # Makes boolean 'test' available.
-option(DARKNET_OPENCV "Using OpenCV" OFF)
+option(DARKNET_OPENCV "Using OpenCV" ON)
 option(CUDA_USE_STATIC_CUDA_RUNTIME OFF)
 option(DARKNET_GPU "Using GPU" OFF)
 option(DARKNET_GPROF "Using GPROF" OFF)
-option(DARKNET_NO_DISPLAY, "No display" ON)
+option(DARKNET_NO_DISPLAY, "No display" OFF)
 option(DARKNET_MALLOCATED, "No m_allocated" OFF)
 
 ## Find catkin macros and libraries
@@ -62,7 +62,6 @@ SET(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-O3;-std=c++11)
 
 if(DARKNET_TX1)
   SET(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-gencode arch=compute_53,code=sm_53)
-  add_definitions(-DDARKNET_TX1)
 else(DARKNET_TX1)
   SET(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-gencode arch=compute_61,code=sm_61)
 endif(DARKNET_TX1)
@@ -75,36 +74,8 @@ endif(DARKNET_GPU)
 find_package(Threads REQUIRED)
 if (DARKNET_OPENCV)
   find_package(OpenCV 3 REQUIRED COMPONENTS core imgproc highgui)
-  # find_package(Qt5Core REQUIRED )
-  # find_package(Qt5Widgets REQUIRED )
-  # find_package(Qt5Gui REQUIRED )
-  # find_package(Qt5Test REQUIRED )
-  # find_package(Qt5Concurrent REQUIRED )
-  # find_package(Qt5OpenGL REQUIRED )
-  add_definitions(-DDARKNET_OPENCV)
-  # include_directories(${OpenCV_INCLUDE_DIRS})
+  # add_definitions(-DDARKNET_OPENCV)
 endif(DARKNET_OPENCV)
-
-#############
-# for flags #
-#############
-
-if (DARKNET_MALLOCATED)
-  add_definitions(-DDARKNET_MALLOCATED)
-  # message("ALLOCATED!")
-endif(DARKNET_MALLOCATED)
-
-if (DARKNET_GPU)
-    add_definitions(-DDARKNET_GPU)
-endif(DARKNET_GPU)
-
-if (DARKNET_GPROF)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pg")
-endif(DARKNET_GPROF)
-
-if (DARKNET_NO_DISPLAY)
-    add_definitions(-DDARKNET_NO_DISPLAY)
-endif(DARKNET_NO_DISPLAY)
 
 # include_directories(./)
 
@@ -181,6 +152,45 @@ if (DARKNET_GPU)
 target_link_libraries(darknetcxx darknetcxx-cuda)
 target_include_directories(darknetcxx PUBLIC ${CUDA_INCLUDE_DIRS})
 endif(DARKNET_GPU)
+
+
+#############
+# for flags #
+#############
+
+if (DARKNET_OPENCV)
+    target_compile_definitions(darknetcxx PUBLIC -DDARKNET_OPENCV)
+endif(DARKNET_OPENCV)
+
+if (DARKNET_MALLOCATED)
+  # add_definitions(-DDARKNET_MALLOCATED)
+  target_compile_definitions(darknetcxx PUBLIC -DDARKNET_MALLOCATED)
+  # message("ALLOCATED!")
+endif(DARKNET_MALLOCATED)
+
+if (DARKNET_GPU)
+    # add_definitions(-DDARKNET_GPU)
+    target_compile_definitions(darknetcxx PUBLIC -DARKNET_GPU)
+    target_compile_definitions(darknetcxx-cuda PUBLIC -DARKNET_GPU)
+    target_compile_definitions(darknetcxx-cuda PUBLIC -DDARKNET_OPENCV)
+    target_compile_definitions(darknetcxx-cuda PUBLIC -DDARKNET_MALLOCATED)
+    target_compile_definitions(darknetcxx-cuda PUBLIC -DARKNET_TX1)
+    target_compile_definitions(darknetcxx-cuda PUBLIC -DARKNET_NO_DISPLAY)
+endif(DARKNET_GPU)
+
+if (DARKNET_TX1)
+    # add_definitions(-DDARKNET_TX1)
+    target_compile_definitions(darknetcxx PUBLIC -DARKNET_TX1)
+endif(DARKNET_TX1)
+
+if (DARKNET_GPROF)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pg")
+endif(DARKNET_GPROF)
+
+if (DARKNET_NO_DISPLAY)
+    # add_definitions(-DDARKNET_NO_DISPLAY)
+    target_compile_definitions(darknetcxx PUBLIC -DARKNET_NO_DISPLAY)
+endif(DARKNET_NO_DISPLAY)
 
 #############
 ## Testing ##

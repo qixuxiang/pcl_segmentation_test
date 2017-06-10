@@ -12,6 +12,7 @@
 #include "dvision/ball_detector.hpp"
 #include "dvision/dvision.hpp"
 #include <gtest/gtest.h>
+#include <opencv2/opencv.hpp>
 
 using namespace dvision;
 
@@ -22,6 +23,12 @@ TEST(BallDetector, main)
 
     BallDetector ball;
     ball.Init();
+
+    cv::VideoCapture cap(0);
+    cv::Mat frame;
+    cap >> frame;
+
+    darknet::Image img(frame);
 }
 
 int

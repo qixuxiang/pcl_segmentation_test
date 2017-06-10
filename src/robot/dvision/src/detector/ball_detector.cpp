@@ -15,6 +15,7 @@
 
 namespace dvision {
 BallDetector::BallDetector()
+  : net_(NULL)
 {
 }
 
@@ -56,7 +57,7 @@ BallDetector::Init()
 
 BallDetector::~BallDetector()
 {
-    // delete net_;
+    delete net_;
 }
 
 bool
