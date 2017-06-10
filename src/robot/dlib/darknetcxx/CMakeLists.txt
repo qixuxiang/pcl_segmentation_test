@@ -175,7 +175,7 @@ if (DARKNET_OPENCV)
 endif(DARKNET_OPENCV)
 
 set_target_properties(darknetcxx PROPERTIES
-    COMPILE_FLAGS "-std=c++14 -Wall  -Wshadow -Wnon-virtual-dtor -pedantic")
+COMPILE_FLAGS "-std=c++11 -Wall -Wshadow -Wnon-virtual-dtor -pedantic -fPIC")
 
 if (DARKNET_GPU)
 target_link_libraries(darknetcxx darknetcxx-cuda)

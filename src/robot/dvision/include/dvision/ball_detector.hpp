@@ -27,7 +27,7 @@ class BallDetector : public IDetector
     bool GetBall();
 
   private:
-    static darknet::Network* net_;
-    static std::vector<std::string> label_list_;
+    darknet::Network* net_;
+    std::vector<std::string> label_list_;
 };
 } // namespace dvision
