@@ -8,7 +8,8 @@ find_package(catkin REQUIRED
   COMPONENTS roscpp
   geometry_msgs
   message_generation
-  dprocess)
+  dprocess
+  darknetcxx)
 
 find_package(OpenCV 3 REQUIRED)
 find_package(Eigen3 REQUIRED)
