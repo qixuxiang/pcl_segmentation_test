@@ -20,7 +20,7 @@ CircleDetector::CircleDetector()
 bool
 CircleDetector::Init()
 {
-    ROS_INFO("CircleDetector Init() started");
+    ROS_INFO("CircleDetector Init() finished");
     return true;
 }
 

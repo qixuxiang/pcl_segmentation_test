@@ -20,7 +20,7 @@ LineDetector::LineDetector()
 bool
 LineDetector::Init()
 {
-    ROS_INFO("LineDetector Init() started");
+    ROS_INFO("LineDetector Init() finished");
     return true;
 }
 

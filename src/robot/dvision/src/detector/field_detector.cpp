@@ -30,7 +30,7 @@ FieldDetector::Init()
     //      {
     //        ROS_ERROR("Create or modify BodyMask.yml!");
     //      }
-    ROS_INFO("FieldDetector Init() started");
+    ROS_INFO("FieldDetector Init() finished");
     return true;
 }
 

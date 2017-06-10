@@ -79,7 +79,7 @@ Localization::~Localization()
 bool
 Localization::Init()
 {
-    ROS_INFO("Localization Init() started");
+    ROS_INFO("Localization Init() finished");
     return true;
 }
 
