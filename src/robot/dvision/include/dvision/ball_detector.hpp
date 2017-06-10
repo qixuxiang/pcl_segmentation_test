@@ -12,6 +12,7 @@
 #pragma once
 #include "dvision/idetector.hpp"
 #include <ros/ros.h>
+#include <string>
 #include <vector>
 
 namespace dvision {
@@ -25,5 +26,7 @@ class BallDetector : public IDetector
     bool GetBall();
 
   private:
+    static darknet::Network* net_;
+    static std::vector<std::string> label_list_;
 };
 } // namespace dvision
