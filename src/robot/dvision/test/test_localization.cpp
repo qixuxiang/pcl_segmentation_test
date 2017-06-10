@@ -20,9 +20,9 @@ TEST(Localization, locmain)
     ros::NodeHandle nh;
     dvision::DVision v(&nh);
 
-    // while (ros::ok()) {
-    //     v.tick();
-    // }
+    while (ros::ok()) {
+        v.tick();
+    }
 }
 
 int
