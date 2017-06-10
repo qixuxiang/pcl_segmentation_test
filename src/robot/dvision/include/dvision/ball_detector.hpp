@@ -24,7 +24,7 @@ class BallDetector : public IDetector
     ~BallDetector();
     bool Init();
 
-    bool GetBall();
+    bool GetBall(cv::Mat& frame, std::vector<cv::Point2d>& ball_position);
 
   private:
     darknet::Network* net_;

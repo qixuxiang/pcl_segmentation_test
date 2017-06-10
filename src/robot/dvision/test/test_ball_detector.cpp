@@ -18,17 +18,23 @@ using namespace dvision;
 
 TEST(BallDetector, main)
 {
+    // init node handle and params
     ros::NodeHandle nh;
     parameters.init(&nh);
 
+    // init ball detector
     BallDetector ball;
+    std::vector<cv::Point2d> ball_position;
     ball.Init();
 
+    // get frame from camera
     cv::VideoCapture cap(0);
-    cv::Mat frame;
-    cap >> frame;
+    cv::Mat cv_frame;
 
-    darknet::Image img(frame);
+    while (ros::ok()) {
+        cap >> cv_frame;
+        ball.GetBall(cv_frame, ball_position);
+    }
 }
 
 int

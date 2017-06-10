@@ -61,8 +61,18 @@ BallDetector::~BallDetector()
 }
 
 bool
-BallDetector::GetBall()
+BallDetector::GetBall(cv::Mat& frame, std::vector<cv::Point2d>& ball_position)
 {
+    darknet::Image raw_img(frame);
+    darknet::params p = net_->get_params();
+    raw_img.resize_neo(p.h, p.w, p.c);
+
+    std::vector<darknet::bbox> bboxes = darknet::obj_detection(net_, &raw_img, parameters.ball.low_thresh);
+    for (auto bbox : bboxes) {
+        // m_objects.emplace_back(static_cast<int>(bbox.m_label), bbox.m_prob, bbox.m_left, bbox.m_top, bbox.m_right, bbox.m_bottom);
+        ROS_INFO("%5d - %5f\n", bbox.m_label, bbox.m_prob);
+    }
+
     return true;
 }
 
