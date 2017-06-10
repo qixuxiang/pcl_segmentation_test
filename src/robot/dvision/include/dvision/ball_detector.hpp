@@ -10,6 +10,7 @@
  */
 
 #pragma once
+#include "darknetcxx/detector.hpp"
 #include "dvision/idetector.hpp"
 #include <ros/ros.h>
 #include <string>
