@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(dvision)
+#LIST(APPEND CMAKE_MODULE_PATH ${dvision_SOURCE_DIR}/cmake_modules)
+
 add_definitions(-std=c++11 -Wall -Wextra -Wfloat-equal -Wno-unused-result) #-Weffc++ -pedantic
 
 find_package(catkin REQUIRED
@@ -30,7 +32,7 @@ catkin_package(
   #  DEPENDS system_lib
 )
 
-include_directories(include ${catkin_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIRS}) #${Boost_INCLUDE_DIRS})
+include_directories(include ${catkin_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR}) #${Boost_INCLUDE_DIRS})
 
 add_library(dvisionlib
   src/dvision.cpp

@@ -5,8 +5,13 @@ devel/
 build/
 
 # qcreator stuff
-CMakeLists.txt.user
+*.workspace
+*.user
+*-build
 
 *~
 .#*
 *.png
+
+# vim stuff
+*.swp

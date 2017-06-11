@@ -34,3 +34,9 @@ Parameters = [0 0 100,  0  0  0,  0 0 0,  0  0  0, 1 1 0 0];
 uv = projection(Parameters, 0, 0, 600, 0);
 disp(uv);
 
+
+
+options = optimset('Display','iter-detailed','Algorithm','interior-point','FunValCheck','on',...
+    'TolFun',10^-6,'LargeScale','off','TolX',10^-6,'MaxFunEvals',10^6,...
+
+[respara reserror exitflag output] = fmincon(@errorfunc, para0, [], [], [], [], lb, ub, options);
