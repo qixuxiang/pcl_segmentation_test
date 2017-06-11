@@ -1,3 +1,4 @@
+"""ConfigBlackBoard."""
 # @Author: Yusu Pan <yuthon>
 # @Date:   2017-06-11T15:03:34+08:00
 # @Email:  xxdsox@gmail.com
@@ -11,6 +12,8 @@ from .status_bb import StatusBlackBoard
 
 
 class ConfigBlackBoard(StatusBlackBoard):
-    """BlackBoard for robot configs"""
+    """BlackBoard for robot configs."""
+
     def __init__(self):
+        """Init ConfigBlackBoard."""
         super(ConfigBlackBoard, self).__init__()

@@ -1,3 +1,4 @@
+"""Main script for dbehaviour."""
 #!/usr/bin/env python
 # @Author: Yusu Pan <yuthon>
 # @Date:   2017-06-11T13:10:23+08:00
@@ -10,10 +11,10 @@
 
 import rospy
 from blackboard import BlackBoard
-from std_msgs.msg import String
 
 
 def mainloop():
+    """Main loop for dbehaviour."""
     # init node
     rospy.init_node("dbehavior_node", anonymous=True, log_level=rospy.DEBUG)
     rospy.loginfo("dbehavior node started")

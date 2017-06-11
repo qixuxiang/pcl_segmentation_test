@@ -1,3 +1,4 @@
+"""BlackBoard."""
 # @Author: Yusu Pan <yuthon>
 # @Date:   2017-06-11T13:40:48+08:00
 # @Email:  xxdsox@gmail.com
@@ -9,11 +10,15 @@
 
 from .motion_bb import MotionBlackBoard
 from .vision_bb import VisionBlackBoard
+from .config_bb import ConfigBlackBoard
 
 
 class BlackBoard(object):
-    """BlackBoard for subscribing and publishing robot status"""
+    """BlackBoard for subscribing and publishing robot status."""
+
     def __init__(self):
+        """Init BlackBoard."""
         super(BlackBoard, self).__init__()
+        self.config = ConfigBlackBoard()
         self.motion = MotionBlackBoard()
         self.vision = VisionBlackBoard()

@@ -1,3 +1,4 @@
+"""VisionBlackBoard."""
 # @Author: Yusu Pan <yuthon>
 # @Date:   2017-06-11T13:57:57+08:00
 # @Email:  xxdsox@gmail.com
@@ -12,8 +13,10 @@ from std_msgs.msg import String
 
 
 class VisionBlackBoard(StatusBlackBoard):
-    """BlackBoard for robot vision status"""
+    """BlackBoard for robot vision status."""
+
     def __init__(self):
+        """Init VisionBlackBoard."""
         super(VisionBlackBoard, self).__init__()
 
         # subscribe

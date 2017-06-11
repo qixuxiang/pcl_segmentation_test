@@ -1,3 +1,4 @@
+"""MotionBlackBoard."""
 # @Author: Yusu Pan <yuthon>
 # @Date:   2017-06-11T13:58:08+08:00
 # @Email:  xxdsox@gmail.com
@@ -11,6 +12,8 @@ from .status_bb import StatusBlackBoard
 
 
 class MotionBlackBoard(StatusBlackBoard):
-    """BlackBoard for robot motion status"""
+    """BlackBoard for robot motion status."""
+
     def __init__(self):
+        """Init MotionBlackBoard."""
         super(MotionBlackBoard, self).__init__()
