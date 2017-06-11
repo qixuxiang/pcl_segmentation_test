@@ -164,7 +164,7 @@ bbox_detection(Network* net, Image* im, const std::vector<std::string>& label_li
 }
 
 void
-obj_detection(Network* net, Image* im, const float& thresh, std::vector<bbox>& ball_position)
+obj_detection(Network* net, Image* im, const float& thresh, std::vector<RelateiveBBox>& ball_position)
 {
 #ifdef DARKNET_GPU
     net->network_predict_gpu(im->data());
@@ -189,6 +189,6 @@ obj_detection(Network* net, Image* im, const float& thresh, std::vector<bbox>& b
     tmp_box.nms_sort(boxes, probs, side * side * n, classes, thresh);
 
     // output detections
-    im->find_bbox(side * side * n, thresh, boxes, probs, classes, ball_position);
+    im->find_relative_bbox(side * side * n, thresh, boxes, probs, classes, ball_position);
 }
 } // namespace darknet

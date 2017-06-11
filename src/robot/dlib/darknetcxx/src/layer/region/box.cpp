@@ -275,4 +275,14 @@ bbox::bbox(int label, float prob, int left, int top, int right, int bottom)
 {
 }
 
+RelateiveBBox::RelateiveBBox(int label, float prob, float x, float y, float h, float w)
+  : m_label(label)
+  , m_prob(prob)
+  , m_x(x)
+  , m_y(y)
+  , m_h(h)
+  , m_w(w)
+{
+}
+
 } // namespace darknet

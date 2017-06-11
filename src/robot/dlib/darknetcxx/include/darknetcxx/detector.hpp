@@ -35,5 +35,5 @@ demo_detector(const std::string& data_cfg,
 void
 bbox_detection(Network* net, Image* im, const std::vector<std::string>& label_list, const float& thresh, const bool verbose = true);
 void
-obj_detection(Network* net, Image* im, const float& thresh, std::vector<bbox>& ball_position);
+obj_detection(Network* net, Image* im, const float& thresh, std::vector<RelateiveBBox>& ball_position);
 } // namespace darknet

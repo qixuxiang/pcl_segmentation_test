@@ -269,6 +269,18 @@ Image::find_bbox(const int& num, const float& thresh, box* boxes, float** probs,
     }
 }
 
+void
+Image::find_relative_bbox(const int& num, const float& thresh, box* boxes, float** probs, const int& classes, std::vector<RelateiveBBox>& ball_position)
+{
+
+    for (int i = 0; i < num; ++i) {
+        int max_id = max_index(probs[i], probs[i] + classes);
+        if (probs[i][max_id] > thresh) {
+            ball_position.emplace_back(max_id, probs[i][max_id], boxes[i].x, boxes[i].y, boxes[i].h, boxes[i].w);
+        }
+    }
+}
+
 /***********
  * Getters *
  ***********/

@@ -65,18 +65,39 @@ BallDetector::GetBall(cv::Mat& frame, std::vector<darknet::bbox>& ball_position)
 {
     darknet::Image raw_img(frame);
     darknet::params p = net_->get_params();
-    ROS_INFO("resize to %d x %d x %d", p.h, p.w, p.c);
+    ROS_DEBUG("darknet resize image to %d x %d x %d", p.h, p.w, p.c);
     raw_img.resize_neo(p.h, p.w, p.c);
 
-    darknet::obj_detection(net_, &raw_img, parameters.ball.low_thresh, ball_position);
-    for (auto bbox : ball_position) {
-        ROS_INFO("%5d - %5f - (%d, %d) && (%d, %d)", bbox.m_label, bbox.m_prob, bbox.m_left, bbox.m_top, bbox.m_right, bbox.m_bottom);
-        // std::cout << "left:" << bbox.m_left << std::endl;
-        // std::cout << "right:" << bbox.m_right << std::endl;
-        // std::cout << "top:" << bbox.m_top << std::endl;
-        // std::cout << "bottom:" << bbox.m_bottom << std::endl;
+    std::vector<darknet::RelateiveBBox> ball_position_relative;
+    darknet::obj_detection(net_, &raw_img, parameters.ball.low_thresh, ball_position_relative);
+    if (CvtRelativePosition(ball_position_relative, ball_position)) {
+        for (auto bbox : ball_position) {
+            ROS_DEBUG("find %5d - %5f - (%d, %d) && (%d, %d)", bbox.m_label, bbox.m_prob, bbox.m_left, bbox.m_top, bbox.m_right, bbox.m_bottom);
+        }
+        return true;
     }
+    return false;
+}
 
+bool
+BallDetector::CvtRelativePosition(std::vector<darknet::RelateiveBBox>& ball_position, std::vector<darknet::bbox>& ball_position_cvt)
+{
+    for (auto rbbox : ball_position) {
+        int left = (rbbox.m_x - rbbox.m_w / 2.) * parameters.camera.width;
+        int right = (rbbox.m_x + rbbox.m_w / 2.) * parameters.camera.width;
+        int top = (rbbox.m_y - rbbox.m_h / 2.) * parameters.camera.height;
+        int bottom = (rbbox.m_y + rbbox.m_h / 2.) * parameters.camera.height;
+
+        if (left < 0)
+            left = 0;
+        if (right > parameters.camera.width - 1)
+            right = parameters.camera.width - 1;
+        if (top < 0)
+            top = 0;
+        if (bottom > parameters.camera.height - 1)
+            bottom = parameters.camera.height - 1;
+        ball_position_cvt.emplace_back(rbbox.m_label, rbbox.m_prob, left, top, right, bottom);
+    }
     return true;
 }
 
