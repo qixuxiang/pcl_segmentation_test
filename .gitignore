@@ -8,6 +8,8 @@ build/
 *.workspace
 *.user
 *-build
+build*
+*.qrc
 
 *~
 .#*

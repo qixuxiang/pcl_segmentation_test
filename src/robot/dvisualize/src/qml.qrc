@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
+        <file>common/Box.qml</file>
     </qresource>
 </RCC>
