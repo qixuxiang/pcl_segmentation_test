@@ -26,11 +26,13 @@ class ParamsBlackBoard(StatusBlackBoard):
                     "FINAL_ATK_DIS", self.robot_config)
         self.gparam("/dbehaviour/robot_{}/LEFT_KICK".format(robot_id),
                     "LEFT_KICK", self.robot_config)
-        self.gparam_vecpos("/dbehaviour/robot_{}/LEFT_KICK_POINT".format(robot_id),
+        self.gparam_vecpos("/dbehaviour/robot_{}/LEFT_KICK_POINT"
+                           .format(robot_id),
                            "LEFT_KICK_POINT", self.robot_config)
         self.gparam("/dbehaviour/robot_{}/RIGHT_KICK".format(robot_id),
                     "RIGHT_KICK", self.robot_config)
-        self.gparam_vecpos("/dbehaviour/robot_{}/RIGHT_KICK_POINT".format(robot_id),
+        self.gparam_vecpos("/dbehaviour/robot_{}/RIGHT_KICK_POINT"
+                           .format(robot_id),
                            "RIGHT_KICK_POINT", self.robot_config)
         self.gparam("/dbehaviour/robot_{}/KICK_ABILITY".format(robot_id),
                     "KICK_ABILITY", self.robot_config)
@@ -40,9 +42,11 @@ class ParamsBlackBoard(StatusBlackBoard):
                     "KICK_OFF", self.robot_config)
         self.gparam_vecpos("/dbehaviour/robot_{}/DOGE_POINT".format(robot_id),
                            "DOGE_POINT", self.robot_config)
-        self.gparam_vecpos("/dbehaviour/robot_{}/DOGE_POINT_UP".format(robot_id),
+        self.gparam_vecpos("/dbehaviour/robot_{}/DOGE_POINT_UP"
+                           .format(robot_id),
                            "DOGE_POINT_UP", self.robot_config)
-        self.gparam_vecpos("/dbehaviour/robot_{}/DOGE_POINT_DOWN".format(robot_id),
+        self.gparam_vecpos("/dbehaviour/robot_{}/DOGE_POINT_DOWN"
+                           .format(robot_id),
                            "DOGE_POINT_DOWN", self.robot_config)
         self.doge_angle = degree_between(self.DOGE_POINT, VecPos(0, 50))
         self.gparam("/dbehaviour/robot_{}/LINE_UP_TIMEOUT".format(robot_id),
@@ -55,7 +59,8 @@ class ParamsBlackBoard(StatusBlackBoard):
                     "ATTACK_MODE", self.robot_config)
         self.gparam("/dbehaviour/robot_{}/MANUAL_SET".format(robot_id),
                     "MANUAL_SET", self.robot_config)
-        self.gparam("/dbehaviour/robot_{}/MANUAL_SET_POSITION".format(robot_id),
+        self.gparam("/dbehaviour/robot_{}/MANUAL_SET_POSITION"
+                    .format(robot_id),
                     "MANUAL_SET_POSITION", self.robot_config)
         self.gparam("/dbehaviour/robot_{}/GOAL_SHIFT".format(robot_id),
                     "GOAL_SHIFT", self.robot_config)

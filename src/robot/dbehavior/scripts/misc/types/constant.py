@@ -76,6 +76,7 @@ Y = rospy.get_param("/dbehaviour/constant/Y")
 
 
 def get_role_str(self, role):
+    """Get role string."""
     if role is ROLE_NONE:
         return 'NONE'
     elif role is ROLE_GOALIE:

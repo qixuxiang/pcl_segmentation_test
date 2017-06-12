@@ -10,15 +10,15 @@
 
 from ..utils.mathutil import (get_angle, get_magnitude, get_dis,
                               angle_normalization)
-from util.FieldGeometry import GOALIE_POS
-from Constant import (WALK_SPEED, TURN_SPEED, ROBOTS_PER_TEAM,
-                      NUM_LOST_FRAMES_TEAM_BALL_LOST,
-                      ROLE_DEFENDER, ROLE_GOALIE, ROLE_MIDFIELDER, ROLE_NONE,
-                      ROLE_STRIKER, get_role_str, LEFT)
-from util.CalcAttackPoint import get_rub
-from util.FieldGeometry import (STRIKER_POS_KICKOFF, STRIKER_POS_NONE_KICK_OFF,
-                                DEFENDER_POS, MIDFIELDER_POS,
-                                inverse_global_pos_by_side)
+from ..utils.calc_attack_point import get_rub
+from ..types.constant import (WALK_SPEED, TURN_SPEED, ROBOTS_PER_TEAM,
+                              NUM_LOST_FRAMES_TEAM_BALL_LOST, ROLE_NONE,
+                              ROLE_DEFENDER, ROLE_GOALIE, ROLE_MIDFIELDER,
+                              ROLE_STRIKER, get_role_str, LEFT)
+from ..types.field_geometry import (STRIKER_POS_KICKOFF,
+                                    STRIKER_POS_NONE_KICK_OFF,
+                                    DEFENDER_POS, MIDFIELDER_POS, GOALIE_POS,
+                                    inverse_global_pos_by_side)
 from util.GameControl import get_gc
 
 

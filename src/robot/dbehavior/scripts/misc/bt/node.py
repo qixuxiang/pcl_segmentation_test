@@ -11,9 +11,9 @@ from inspect import isclass
 
 
 from ..gglobal import get_req, get_bb, get_world, get_team, get_cfg
-from ..util.mathutil import get_dis, abs_angle_diff, get_magnitude, get_angle
-from ..util.vec_pos import VecPos
-from util.calc_walk_engine import get_walk, get_walk_field
+from ..utils.mathutil import get_dis, abs_angle_diff, get_magnitude, get_angle
+from ..utils.calc_walk_engine import get_walk, get_walk_field
+from ..types.vec_pos import VecPos
 from util.GameControl import get_gc
 from util.actioncommand import walk, look_at, crouch, \
     standup, wenxi_gaits, kick

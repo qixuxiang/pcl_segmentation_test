@@ -11,8 +11,9 @@
 import rospy
 from ..types.vec_pos import VecPos
 from ..utils.mathutil import calc_global_position
+from ..types.constant import UNKNOWN, ROLE_NONE
+from ..types.field_geometry import inside_field, inside_view
 from util.Timer import Timer, get_current_time
-from util.FieldGeometry import inside_field, inside_view
 
 
 class World(object):
@@ -21,27 +22,21 @@ class World(object):
     def __init__(self, blackboard):
         """Init."""
         self.bb = blackboard
-        self.obstalce = VecPos(self.bb.params.constant.UNKNOWN,
-                               self.bb.params.constant.UNKNOWN)
+        self.obstalce = VecPos(UNKNOWN, UNKNOWN)
         self.reentry = False
         self.check_goal = False
         self.enable_kick = False
-        self.last_seen_ball_field = VecPos(self.bb.params.constant.UNKNOWN,
-                                           self.bb.params.constant.UNKNOWN)
+        self.last_seen_ball_field = VecPos(UNKNOWN, UNKNOWN)
         self.last_seen_blue_goal_time = 0
         self.last_seen_red_goal_time = 0
         self.check_goal_timer = Timer()
         self.uptime = 0
-        self.ball_field = VecPos(self.bb.params.constant.UNKNOWN,
-                                 self.bb.params.constant.UNKNOWN)
-        self.ball_global = VecPos(self.bb.params.constant.UNKNOWN,
-                                  self.bb.params.constant.UNKNOWN)
+        self.ball_field = VecPos(UNKNOWN, UNKNOWN)
+        self.ball_global = VecPos(UNKNOWN, UNKNOWN)
 
         # memorize ball temporally
-        self.mem_ball_field = VecPos(self.bb.params.constant.UNKNOWN,
-                                     self.bb.params.constant.UNKNOWN)
-        self.mem_ball_global = VecPos(self.bb.params.constant.UNKNOWN,
-                                      self.bb.params.constant.UNKNOWN)
+        self.mem_ball_field = VecPos(UNKNOWN, UNKNOWN)
+        self.mem_ball_global = VecPos(UNKNOWN, UNKNOWN)
         # whether memorized ball position is still valid
         # changed by HeadSkill.CheckBall
         self.mem_ball_valid = False
@@ -50,27 +45,21 @@ class World(object):
         self.ball_valid_cycle = 0
         self.lost_ball.elapsedTime = 100000000
 
-        self.last_ball_global = VecPos(self.bb.params.constant.UNKNOWN,
-                                       self.bb.params.constant.UNKNOWN)
+        self.last_ball_global = VecPos(UNKNOWN, UNKNOWN)
 
         # whether we saw goal
         self.lost_goal_cycle = 0
         self.see_both_goal = False
         self.see_unknown_goal = False
-        self.left_goal = VecPos(self.bb.params.constant.UNKNOWN,
-                                self.bb.params.constant.UNKNOWN)
-        self.right_goal = VecPos(self.bb.params.constant.UNKNOWN,
-                                 self.bb.params.constant.UNKNOWN)
-        self.unknown_goal = VecPos(self.bb.params.constant.UNKNOWN,
-                                   self.bb.params.constant.UNKNOWN)
+        self.left_goal = VecPos(UNKNOWN, UNKNOWN)
+        self.right_goal = VecPos(UNKNOWN, UNKNOWN)
+        self.unknown_goal = VecPos(UNKNOWN, UNKNOWN)
         self.enable_checkgoal = False
 
-        self.blue_goal_center = VecPos(self.bb.params.constant.UNKNOWN,
-                                       self.bb.params.constant.UNKNOWN)
-        self.red_goal_center = VecPos(self.bb.params.constant.UNKNOWN,
-                                      self.bb.params.constant.UNKNOWN)
+        self.blue_goal_center = VecPos(UNKNOWN, UNKNOWN)
+        self.red_goal_center = VecPos(UNKNOWN, UNKNOWN)
 
-        self.role = self.bb.params.constant.ROLE_NONE
+        self.role = ROLE_NONE
 
         # whether we are stable
         self.stable = True
@@ -173,10 +162,8 @@ class World(object):
         else:
             self.see_ball = False
             self.ball_valid_cycle = 0
-            self.ball_field = VecPos(self.bb.params.constant.UNKNOWN,
-                                     self.bb.params.constant.UNKNOWN)
-            self.ball_global = VecPos(self.bb.params.constant.UNKNOWN,
-                                      self.bb.params.constant.UNKNOWN)
+            self.ball_field = VecPos(UNKNOWN, UNKNOWN)
+            self.ball_global = VecPos(UNKNOWN, UNKNOWN)
 
             # update memorized ball position
             if self.mem_ball_valid:
@@ -185,10 +172,8 @@ class World(object):
                 self.ball_field = self.mem_ball_field
                 self.ball_global = self.mem_ball_global
             else:
-                self.mem_ball_field = VecPos(self.bb.params.constant.UNKNOWN,
-                                             self.bb.params.constant.UNKNOWN)
-                self.mem_ball_global = VecPos(self.bb.params.constant.UNKNOWN,
-                                              self.bb.params.constant.UNKNOWN)
+                self.mem_ball_field = VecPos(UNKNOWN, UNKNOWN)
+                self.mem_ball_global = VecPos(UNKNOWN, UNKNOWN)
 
         self.log_info()
 

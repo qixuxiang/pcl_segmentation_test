@@ -2,9 +2,9 @@
 
 import rospy
 from node import Node
+from ..types.constant import STATE_INITIAL, STATE_READY
 from Global import get_req, get_world
 from util.GameControl import get_gc
-from Constant import STATE_INVALID, STATE_INITIAL, STATE_READY
 
 
 class Root(Node):
