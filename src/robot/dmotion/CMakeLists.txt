@@ -11,6 +11,7 @@ find_package(catkin REQUIRED
                dprocess)
 
 find_package(Boost REQUIRED COMPONENTS system)
+find_package(OpenCV 3 REQUIRED)
 
 add_message_files(
   FILES
@@ -29,7 +30,7 @@ catkin_package(
 #  DEPENDS system_lib
 )
 
-include_directories(include ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
+include_directories(include ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
 
 add_library(dmotionlib
   src/dmotion.cpp

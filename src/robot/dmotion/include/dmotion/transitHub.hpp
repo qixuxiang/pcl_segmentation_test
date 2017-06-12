@@ -1,7 +1,7 @@
 #pragma once
 
-#include <string>
 #include <memory>
+#include <string>
 
 #include "MotionShareData.hpp"
 #include "RobotStatus.hpp"
@@ -29,77 +29,77 @@ using std::string;
 **                    }
 */
 
-enum packet_types {
-  PACKET_NULL,  // 0
-  PACKET_MOTION,  // 1
-  PACKET_PING,  // 2
-  PACKET_CHECK,  // 3
-  PACKET_SET_INIT,  // 4
-  PACKET_GYRO_PRESS,  // 5
-  PACKET_LOCK,  // 6
-  PACKET_INITIAL,  // 7
+enum packet_types
+{
+    PACKET_NULL, // 0
+    PACKET_MOTION, // 1
+    PACKET_PING, // 2
+    PACKET_CHECK, // 3
+    PACKET_SET_INIT, // 4
+    PACKET_GYRO_PRESS, // 5
+    PACKET_LOCK, // 6
+    PACKET_INITIAL, // 7
 };
 
-class transitHub {
- private:
-  ros::NodeHandle* m_nh;
-  RobotStatus* m_status;
-  bool m_bOpen;
-  int m_ifd;
-  long m_gaitCycle;
-  int comNumber;
-  /* com name for ttyUSB0 */
-  string comName;
-  int baudRate;
-  initdataDebug initdata;
+class transitHub
+{
+  private:
+    ros::NodeHandle* m_nh;
+    RobotStatus* m_status;
+    bool m_bOpen;
+    int m_ifd;
+    long m_gaitCycle;
+    int comNumber;
+    /* com name for ttyUSB0 */
+    string comName;
+    int baudRate;
+    initdataDebug initdata;
 
-  double m_gyroscope_correct;
-  string m_imu_version;
-  int m_robot_version;
+    double m_gyroscope_correct;
+    string m_imu_version;
+    int m_robot_version;
 
-  /* the return value refers to the actual number of the transmitted data */
-  void transmit(int *data, packet_types type = PACKET_MOTION);
-  bool portOpen(); /* /dev/ttyS0 or /dev/ttyUSB0 */
-  bool isOpen();
-  bool portClose();
+    /* the return value refers to the actual number of the transmitted data */
+    void transmit(int* data, packet_types type = PACKET_MOTION);
+    bool portOpen(); /* /dev/ttyS0 or /dev/ttyUSB0 */
+    bool isOpen();
+    bool portClose();
 
-  /* the return value refers to the actual number of the reveived data */
-  int receive(char* str, int length);
-  /* generate the result string(str) from the input(data),
-   * according to the packet type(type), return the length of the string
-   */
-  size_t makeStdData(char *str, int *data, packet_types type);
+    /* the return value refers to the actual number of the reveived data */
+    int receive(char* str, int length);
+    /* generate the result string(str) from the input(data),
+     * according to the packet type(type), return the length of the string
+     */
+    size_t makeStdData(char* str, int* data, packet_types type);
 
-  /**
-   * data sharing with other modules
-   **/
-  CompassData compass;
-  GyroData gyroscope;
+    /**
+     * data sharing with other modules
+     **/
+    CompassData compass;
+    GyroData gyroscope;
 
-  bool m_simulation;
+    bool m_simulation;
 
-  // to do: private functions
- public:
-  transitHub(ros::NodeHandle* nh, RobotStatus* rs);
-  ~transitHub();
-  void readOptions();
-  void update_initdata();
+    // to do: private functions
+  public:
+    transitHub(ros::NodeHandle* nh, RobotStatus* rs);
+    ~transitHub();
+    void readOptions();
+    void update_initdata();
 
-  void gypdatatransform(char* temp);
-  void feetdatatransform(char* temp);
-  void updateInitData();
+    void gypdatatransform(char* temp);
+    void feetdatatransform(char* temp);
+    void updateInitData();
 
-  /* basic task of receiving process */
-  void doRx(char* recv = NULL, int failureCount = 0);
+    /* basic task of receiving process */
+    void doRx(char* recv = NULL, int failureCount = 0);
 
-  /* basic task of transmitting process */
-  void doLoopTx(int* body = NULL, int* camera = NULL);
+    /* basic task of transmitting process */
+    void doLoopTx(int* body = NULL, int* camera = NULL);
 
-  void doCheckTx(int id = 0, bool pos = false, bool temp = false,
-                 bool vol = false, bool load = false);
+    void doCheckTx(int id = 0, bool pos = false, bool temp = false, bool vol = false, bool load = false);
 
-  // long getGaitTime();
-  // void clearGaitTime();
-  // void setRobotStatus(robotStatus *status);
-
+    // long getGaitTime();
+    // void clearGaitTime();
+    // void setRobotStatus(robotStatus *status);
 };

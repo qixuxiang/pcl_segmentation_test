@@ -1,0 +1,11 @@
+<launch>
+    <node pkg="dvisualize"
+          name="dvisualize"
+          type="dvisualize"
+          output="screen"
+          respawn="false"
+          required="true"
+          cwd="node"
+          args=""/>
+    <rosparam command="load" file="$(find dconfig)/dvision/camera.yml"/>
+</launch>
