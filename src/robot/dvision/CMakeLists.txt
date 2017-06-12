@@ -13,6 +13,7 @@ find_package(catkin REQUIRED
   dprocess
   darknetcxx)
 
+find_package(SuiteSparse REQUIRED)
 find_package(OpenCV 3 REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(G2O REQUIRED)
@@ -35,7 +36,7 @@ catkin_package(
   #  DEPENDS system_lib
 )
 
-include_directories(include ${catkin_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR}) #${Boost_INCLUDE_DIRS})
+include_directories(include ${catkin_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR} ${CSPARSE_INCLUDE_DIR}) #${Boost_INCLUDE_DIRS})
 
 SET (G2O_LIBS csparse cxsparse g2o_csparse_extension g2o_cli g2o_core g2o_interface g2o_parser g2o_solver_cholmod
 g2o_solver_csparse g2o_solver_dense g2o_solver_pcg g2o_stuff g2o_types_icp
