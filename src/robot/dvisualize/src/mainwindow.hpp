@@ -21,6 +21,7 @@ public:
     inline void setApp(QApplication* app) { m_app = app; }
 private:
     void init();
+    QPoint undistPoint(int x, int y);
 
 signals:
 
@@ -32,8 +33,11 @@ private slots:
     void on_currentChanged(QModelIndex current);
     void keyReleaseEvent(QKeyEvent* ev) override;
 
+    void appendText();
     void updateView();
 
+
+    void on_actionSave_triggered();
 
 private:
     Ui::MainWindow* ui;

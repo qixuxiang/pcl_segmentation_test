@@ -55,16 +55,13 @@ void MainWindow::init()
     }
 }
 
-
-
-void MainWindow::on_actionOpen_triggered()
+QPoint MainWindow::undistPoint(int x, int y)
 {
-    QString filename = QFileDialog::getOpenFileName(this, tr("Open Image"), "/home/", tr("Image files (*.png *.jpg)"));
-    if(filename != NULL) {
-        m_model->loadImages(filename);
-        ui->listView->setCurrentIndex(m_model->index(0, 0));
-    }
+   return QPoint(x, y);
 }
+
+
+
 
 void MainWindow::on_currentChanged(QModelIndex current)
 {
@@ -85,8 +82,8 @@ void MainWindow::keyReleaseEvent(QKeyEvent *ev)
     if(ev->key() == Qt::Key_Space) {
         appendText();
     } else if (ev->key() == Qt::Key_Escape) {
-        qDebug() << "Exit";
-        m_app->closeAllWindows();
+//        qDebug() << "Exit";
+//        m_app->closeAllWindows();
     }
 }
 
@@ -95,10 +92,16 @@ void MainWindow::appendText()
     auto* textEdit = ui->textEdit;
     auto real = m_realPoints.at(ui->candidateReal->currentIndex());
 
-    // todo, calc undistorted img position
+    // !? todo, calc undistorted img position
+    int x = m_imgPanel->x();
+    int y = m_imgPanel->y();
+    auto p = undistPoint(x, y);
+    x = p.x();
+    y = p.y();
+
     textEdit->append(QString("%1 %2 %3 %4")
-            .arg(m_imgPanel->x())
-            .arg(m_imgPanel->y())
+            .arg(x)
+            .arg(y)
             .arg(real.x())
             .arg(real.y()));
 }
@@ -107,4 +110,36 @@ void MainWindow::updateView()
 {
     QString imgpos = QString("%1, %2").arg(m_imgPanel->x()).arg(m_imgPanel->y());
     ui->labelImagePosition->setText(imgpos);
+}
+
+void MainWindow::on_actionSave_triggered()
+{
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
+                               QDir::homePath(),
+                               tr("Plain text (*.txt)"));
+
+    qDebug() << fileName << endl;
+
+    if(fileName == NULL)
+        return;
+
+    QFile file(fileName);
+    if(!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        return;
+    }
+
+    QTextStream in(&file);
+    in << ui->textEdit->toPlainText();
+    file.close();
+
+//    m_app->closeAllWindows();
+}
+
+void MainWindow::on_actionOpen_triggered()
+{
+    QString filename = QFileDialog::getOpenFileName(this, tr("Open Image"), "/home/", tr("Image files (*.png *.jpg)"));
+    if(filename != NULL) {
+        m_model->loadImages(filename);
+        ui->listView->setCurrentIndex(m_model->index(0, 0));
+    }
 }
