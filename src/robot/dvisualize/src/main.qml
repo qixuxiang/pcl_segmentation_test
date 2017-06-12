@@ -2,29 +2,32 @@ import QtQuick 2.5
 import QtQuick.Window 2.2
 import QtQuick.Controls 1.4
 import QtQuick.Dialogs 1.0
-import 'common'
 
 ApplicationWindow {
     id: root
     visible: true
     width:  pic.width + flick.width + 3 * padding
-    height: pic.height + 2 * padding
-    title: width + "x" + height
+    height: 650
+    //title: width + "x" + height
+    title: "Camera Caliration"
 
     property int padding: 10
     property int pictureWidth: 640
     property int pictureHeight: 480
 
-    //maximumHeight: height
-    // minimumHeight: 600
+//  maximumHeight: height
+//  minimumHeight: height
 
-    //maximumWidth: width
-    // minimumWidth: 800
+//  maximumWidth: width
+//  minimumWidth: width
 
     FileDialog {
         id: filedialog
         visible: false
-        onAccepted: console.log('fuck')
+        nameFilters: ["Image files (*.jpg *.png)", "All files (*)"]
+        onAccepted: {
+            edit.text = folder
+        }
     }
 
 
@@ -64,7 +67,14 @@ ApplicationWindow {
                     id: fullview
                     width: root.pictureWidth
                     height: root.pictureHeight
-                    color: "yellow"
+                    color: "black"
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            console.log("clicked" + mouseX + " " + mouseY)
+                        }
+                    }
                 }
 
                 Rectangle {
@@ -77,10 +87,14 @@ ApplicationWindow {
         }
 
 
+        // text edit
         Flickable {
             id: flick
             width: 200
             height: pic.height
+            visible: true
+            opacity: 1
+            clip: false
             contentWidth: edit.paintedWidth
             contentHeight: edit.paintedHeight
 
@@ -88,10 +102,17 @@ ApplicationWindow {
                 id: edit
                 width: flick.width
                 height: flick.height
+                cursorVisible: true
                 focus: true
-                wrapMode: TextEdit.Wrap
+                mouseSelectionMode: TextEdit.SelectCharacters
+                selectByMouse: true
+
+
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.IBeamCursor
+                }
             }
         }
     }
-
 }

@@ -16,16 +16,28 @@ catkin_package(
   #  DEPENDS system_lib
 )
 
-find_package(Qt5 COMPONENTS Core Gui Quick Qml REQUIRED)
+find_package(Qt5 COMPONENTS
+    Core
+    Widgets
+    REQUIRED)
+
+set(CMAKE_INCLUDE_CURRENT_DIR on)
+
 set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
+
+qt5_wrap_ui(UI_SRC src/mainwindow.ui)
 
 include_directories(include ${catkin_INCLUDE_DIRS}) 
-add_executable(dvisualize
-    src/main.cpp
-    src/qml.qrc
-    src/main.qml
+
+add_executable(dvisualize src/main.cpp
+    src/mainwindow.cpp
+    src/mainwindow.hpp
+
+    src/mymodel.hpp
+    src/mymodel.cpp
+
+    ${UI_SRC}
     )
 
 
-target_link_libraries(dvisualize Qt5::Core Qt5::Gui Qt5::Qml Qt5::Quick)
+target_link_libraries(dvisualize Qt5::Core Qt5::Widgets)
