@@ -39,9 +39,30 @@ catkin_package(
 
 include_directories(include ${catkin_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR} ${CSPARSE_INCLUDE_DIR}) #${Boost_INCLUDE_DIRS})
 
-SET (G2O_LIBS csparse cxsparse g2o_csparse_extension g2o_cli g2o_core g2o_interface g2o_parser g2o_solver_cholmod
-g2o_solver_csparse g2o_solver_dense g2o_solver_pcg g2o_stuff g2o_types_icp
-g2o_types_sba g2o_types_sim3 g2o_types_slam2d g2o_types_slam3d)
+#SET (G2O_LIBS csparse cxsparse g2o_csparse_extension g2o_cli g2o_core g2o_interface g2o_parser g2o_solver_cholmod
+#g2o_solver_csparse g2o_solver_dense g2o_solver_pcg g2o_stuff g2o_types_icp
+#g2o_types_sba g2o_types_sim3 g2o_types_slam2d g2o_types_slam3d)
+
+SET(G2O_LIBS 
+    ${G2O_CORE_LIBRARY}
+    ${G2O_STUFF_LIBRARY}
+    ${G2O_CLI_LIBRARY}
+    ${G2O_SOLVER_CHOLMOD}
+    ${G2O_SOLVER_CSPARSE}
+    ${G2O_SOLVER_CSPARSE_EXTENSION}
+    ${G2O_SOLVER_DENSE}
+    ${G2O_SOLVER_PCG}
+    ${G2O_SOLVER_SLAM2D_LINEAR}
+    ${G2O_SOLVER_STRUCTURE_ONLY}
+    ${G2O_SOLVER_EIGEN}
+    ${G2O_TYPES_DATA}
+    ${G2O_TYPES_ICP}
+    ${G2O_TYPES_SBA}
+    ${G2O_TYPES_SCLAM2D}
+    ${G2O_TYPES_SIM3}
+    ${G2O_TYPES_SLAM2D}
+    ${G2O_TYPES_SLAM3D}
+    )
 
 
 add_library(dvisionlib
