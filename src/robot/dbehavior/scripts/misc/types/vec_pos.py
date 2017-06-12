@@ -1,4 +1,4 @@
-"""VecPos."""
+"""class VecPos."""
 
 from math import sqrt, atan2, pi, sin, cos, radians
 

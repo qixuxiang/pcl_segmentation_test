@@ -10,11 +10,10 @@ from enum import Enum
 from inspect import isclass
 
 
-from util.mathutil import get_dis, abs_angle_diff, get_magnitude
-from util.VecPos import VecPos
+from ..gglobal import get_req, get_bb, get_world, get_team, get_cfg
+from ..util.mathutil import get_dis, abs_angle_diff, get_magnitude, get_angle
+from ..util.vec_pos import VecPos
 from util.calc_walk_engine import get_walk, get_walk_field
-from util.mathutil import get_angle
-from Global import get_req, get_bb, get_world, get_team, get_cfg
 from util.GameControl import get_gc
 from util.actioncommand import walk, look_at, crouch, \
     standup, wenxi_gaits, kick

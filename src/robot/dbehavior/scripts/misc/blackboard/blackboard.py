@@ -10,7 +10,8 @@
 
 from .motion_bb import MotionBlackBoard
 from .vision_bb import VisionBlackBoard
-from .config_bb import ConfigBlackBoard
+from .params_bb import ParamsBlackBoard
+from .gc_bb import GameControllerBlackBoard;
 
 
 class BlackBoard(object):
@@ -19,6 +20,7 @@ class BlackBoard(object):
     def __init__(self):
         """Init BlackBoard."""
         super(BlackBoard, self).__init__()
-        self.config = ConfigBlackBoard()
+        self.params = ParamsBlackBoard()
         self.motion = MotionBlackBoard()
         self.vision = VisionBlackBoard()
+        self.gc = GameControllerBlackBoard()

@@ -10,7 +10,7 @@
 # @Copyright: ZJUDancer
 
 import rospy
-from blackboard import BlackBoard
+from misc.blackboard import BlackBoard
 
 
 def mainloop():
@@ -20,7 +20,7 @@ def mainloop():
     rospy.loginfo("dbehavior node started")
 
     # init blackboard
-    global bb = BlackBoard()
+    bb = BlackBoard()
 
     # start loop
     rospy.spin()
