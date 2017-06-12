@@ -1,5 +1,5 @@
-"""Main script for dbehaviour."""
 #!/usr/bin/env python
+"""Main script for dbehaviour."""
 # @Author: Yusu Pan <yuthon>
 # @Date:   2017-06-11T13:10:23+08:00
 # @Email:  xxdsox@gmail.com

@@ -8,7 +8,6 @@
 # @Last modified time: 2017-06-11T15:08:29+08:00
 # @Copyright: ZJUDancer
 
-from __future__ import print_function
 import rospy
 from ..types.vec_pos import make_vecpos_from_list
 

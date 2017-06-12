@@ -1,7 +1,7 @@
 """Math Utilities."""
 
 from math import pi, sqrt, atan2, degrees
-from vec_pos import VecPos
+from ..types.vec_pos import VecPos
 
 PI = pi
 PI_2 = pi / 2.0

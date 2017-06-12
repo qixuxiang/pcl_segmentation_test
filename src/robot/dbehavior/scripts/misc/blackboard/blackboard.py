@@ -20,7 +20,8 @@ class BlackBoard(object):
     def __init__(self):
         """Init BlackBoard."""
         super(BlackBoard, self).__init__()
-        self.params = ParamsBlackBoard()
+        self.gc = GameControllerBlackBoard()
         self.motion = MotionBlackBoard()
         self.vision = VisionBlackBoard()
-        self.gc = GameControllerBlackBoard()
+        # TODO(corenel) get robot id from GameController
+        self.params = ParamsBlackBoard(0)
