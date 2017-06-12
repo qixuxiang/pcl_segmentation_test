@@ -18,7 +18,7 @@ from ..utils.mathutil import degree_between
 class ParamsBlackBoard(StatusBlackBoard):
     """BlackBoard for parameters and robot configs."""
 
-    def __init__(self):
+    def __init__(self, robot_id):
         """Init ParamsBlackBoard."""
         super(ParamsBlackBoard, self).__init__()
         self.constant = Constant()
@@ -123,40 +123,40 @@ class ParamsBlackBoard(StatusBlackBoard):
         self.gparam("/dbehaviour/constant/Y",
                     "Y", self.constant)
         # get robot config
-        self.gparam("/dbehaviour/constant/FINAL_ATK_DIS",
+        self.gparam("/dbehaviour/robot_{}/FINAL_ATK_DIS".format(robot_id),
                     "FINAL_ATK_DIS", self.robot_config)
-        self.gparam("/dbehaviour/constant/LEFT_KICK",
+        self.gparam("/dbehaviour/robot_{}/LEFT_KICK".format(robot_id),
                     "LEFT_KICK", self.robot_config)
-        self.gparam_vecpos("/dbehaviour/constant/LEFT_KICK_POINT",
+        self.gparam_vecpos("/dbehaviour/robot_{}/LEFT_KICK_POINT".format(robot_id),
                            "LEFT_KICK_POINT", self.robot_config)
-        self.gparam("/dbehaviour/constant/RIGHT_KICK",
+        self.gparam("/dbehaviour/robot_{}/RIGHT_KICK".format(robot_id),
                     "RIGHT_KICK", self.robot_config)
-        self.gparam_vecpos("/dbehaviour/constant/RIGHT_KICK_POINT",
+        self.gparam_vecpos("/dbehaviour/robot_{}/RIGHT_KICK_POINT".format(robot_id),
                            "RIGHT_KICK_POINT", self.robot_config)
-        self.gparam("/dbehaviour/constant/KICK_ABILITY",
+        self.gparam("/dbehaviour/robot_{}/KICK_ABILITY".format(robot_id),
                     "KICK_ABILITY", self.robot_config)
-        self.gparam("/dbehaviour/constant/KICK_RANGE",
+        self.gparam("/dbehaviour/robot_{}/KICK_RANGE".format(robot_id),
                     "KICK_RANGE", self.robot_config)
-        self.gparam("/dbehaviour/constant/KICK_OFF",
+        self.gparam("/dbehaviour/robot_{}/KICK_OFF".format(robot_id),
                     "KICK_OFF", self.robot_config)
-        self.gparam_vecpos("/dbehaviour/constant/DOGE_POINT",
+        self.gparam_vecpos("/dbehaviour/robot_{}/DOGE_POINT".format(robot_id),
                            "DOGE_POINT", self.robot_config)
-        self.gparam_vecpos("/dbehaviour/constant/DOGE_POINT_UP",
+        self.gparam_vecpos("/dbehaviour/robot_{}/DOGE_POINT_UP".format(robot_id),
                            "DOGE_POINT_UP", self.robot_config)
-        self.gparam_vecpos("/dbehaviour/constant/DOGE_POINT_DOWN",
+        self.gparam_vecpos("/dbehaviour/robot_{}/DOGE_POINT_DOWN".format(robot_id),
                            "DOGE_POINT_DOWN", self.robot_config)
         self.doge_angle = degree_between(self.DOGE_POINT, VecPos(0, 50))
-        self.gparam("/dbehaviour/constant/LINE_UP_TIMEOUT",
+        self.gparam("/dbehaviour/robot_{}/LINE_UP_TIMEOUT".format(robot_id),
                     "LINE_UP_TIMEOUT", self.robot_config)
-        self.gparam("/dbehaviour/constant/DEST_REGION",
+        self.gparam("/dbehaviour/robot_{}/DEST_REGION".format(robot_id),
                     "DEST_REGION", self.robot_config)
-        self.gparam("/dbehaviour/constant/DEST_RE_ANGLE",
+        self.gparam("/dbehaviour/robot_{}/DEST_RE_ANGLE".format(robot_id),
                     "DEST_RE_ANGLE", self.robot_config)
-        self.gparam("/dbehaviour/constant/ATTACK_MODE",
+        self.gparam("/dbehaviour/robot_{}/ATTACK_MODE".format(robot_id),
                     "ATTACK_MODE", self.robot_config)
-        self.gparam("/dbehaviour/constant/MANUAL_SET",
+        self.gparam("/dbehaviour/robot_{}/MANUAL_SET".format(robot_id),
                     "MANUAL_SET", self.robot_config)
-        self.gparam("/dbehaviour/constant/MANUAL_SET_POSITION",
+        self.gparam("/dbehaviour/robot_{}/MANUAL_SET_POSITION".format(robot_id),
                     "MANUAL_SET_POSITION", self.robot_config)
-        self.gparam("/dbehaviour/constant/GOAL_SHIFT",
+        self.gparam("/dbehaviour/robot_{}/GOAL_SHIFT".format(robot_id),
                     "GOAL_SHIFT", self.robot_config)
