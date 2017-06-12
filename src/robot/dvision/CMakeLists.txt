@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(dvision)
+
 add_definitions(-std=c++11 -Wall -Wextra -Wno-unused-result) #-Wfloat-equal -Weffc++ -pedantic
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake_modules/")
+add_definitions(-std=c++11 -Wall -Wextra -Wfloat-equal -Wno-unused-result) #-Weffc++ -pedantic
 
 find_package(catkin REQUIRED
   COMPONENTS roscpp
@@ -27,13 +29,13 @@ find_package(G2O REQUIRED)
 #)
 
 catkin_package(
-  INCLUDE_DIRS include
-  #  LIBRARIES dmotion
+    INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIR}
+    LIBRARIES dvisionlib
   #  CATKIN_DEPENDS dprocess
   #  DEPENDS system_lib
 )
 
-include_directories(include ${catkin_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIRS}) #${Boost_INCLUDE_DIRS})
+include_directories(include ${catkin_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR}) #${Boost_INCLUDE_DIRS})
 
 SET (G2O_LIBS csparse cxsparse g2o_csparse_extension g2o_cli g2o_core g2o_interface g2o_parser g2o_solver_cholmod
 g2o_solver_csparse g2o_solver_dense g2o_solver_pcg g2o_stuff g2o_types_icp

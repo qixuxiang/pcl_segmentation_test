@@ -10,6 +10,7 @@ class DistortionModel
     DistortionModel();
     void init();
 
+    cv::Point2f undistort(int x, int y);
     bool undistort(const std::vector<cv::Point>& points, std::vector<cv::Point>& res);
     bool undistort(const std::vector<cv::Point>& points, std::vector<cv::Point2f>& res);
     void undistortImage(const cv::Mat& src, cv::Mat& dst);

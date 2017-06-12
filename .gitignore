@@ -5,7 +5,11 @@ devel/
 build/
 
 # qcreator stuff
-CMakeLists.txt.user
+*.workspace
+*.user
+*-build
+build*
+*.qrc
 
 *~
 .#*
@@ -13,3 +17,7 @@ CMakeLists.txt.user
 
 .ftpconfig
 .tags
+
+# vim stuff
+*.swp
+*.autosave
