@@ -12,6 +12,7 @@ int MyModel::rowCount(const QModelIndex &parent) const
     return m_pictures.size();
 }
 
+
 bool MyModel::insertRows(int row, int count, const QModelIndex &parent)
 {
     Q_UNUSED(count);
@@ -33,7 +34,7 @@ QVariant MyModel::data(const QModelIndex &index, int role) const
 
     switch (role) {
     case Qt::DecorationRole:
-        return m_pictures.at(row);
+        return m_pictures.at(row).scaledToWidth(100);
     default:
         break;
     }
@@ -60,12 +61,29 @@ void MyModel::loadImages(QString filename)
     m_pictures.resize(allfiles.size());
     m_pics.resize(allfiles.size());
     for(int i = 0; i < allfiles.size(); ++i) {
-       m_pictures[i] = QPixmap(allfiles[i].absoluteFilePath()).scaledToHeight(100);
+       m_pictures[i] = QPixmap(allfiles[i].absoluteFilePath());
     }
 
 
     insertRows(0, allfiles.size(), QModelIndex());
+}
 
-    return;
+const QPixmap MyModel::getImage(int row) const
+{
+    if(row < 0 || row >= m_pictures.size()) {
+        qWarning() << "index out of range" << endl;
+       return QPixmap();
+    }
+    return m_pictures.at(row);
+}
+
+const QPixmap MyModel::getImage() const
+{
+    return getImage(m_currentIndex);
+}
+
+void MyModel::setCurrentIndex(int idx)
+{
+    m_currentIndex = idx;
 }
 

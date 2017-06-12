@@ -17,3 +17,5 @@ build*
 
 # vim stuff
 *.swp
+
+*.autosave

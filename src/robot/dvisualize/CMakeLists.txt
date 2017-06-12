@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(dvisualize)
 #LIST(APPEND CMAKE_MODULE_PATH ${dvision_SOURCE_DIR}/cmake_modules)
 
-add_definitions(-std=c++11 -Wall -Wextra -Wfloat-equal -Wno-unused-result) #-Weffc++ -pedantic
+add_definitions(-std=c++11 -g -Wall -Wextra -Wfloat-equal -Wno-unused-result) #-Weffc++ -pedantic
 
 find_package(catkin REQUIRED
   COMPONENTS roscpp
@@ -24,10 +24,11 @@ find_package(Qt5 COMPONENTS
 set(CMAKE_INCLUDE_CURRENT_DIR on)
 
 set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
 
 qt5_wrap_ui(UI_SRC src/mainwindow.ui)
 
-include_directories(include ${catkin_INCLUDE_DIRS}) 
+include_directories(include src ${catkin_INCLUDE_DIRS})
 
 add_executable(dvisualize src/main.cpp
     src/mainwindow.cpp
@@ -35,6 +36,11 @@ add_executable(dvisualize src/main.cpp
 
     src/mymodel.hpp
     src/mymodel.cpp
+
+    src/dvis.qrc
+
+    src/clabel.cpp
+    src/clabel.hpp
 
     ${UI_SRC}
     )
