@@ -14,6 +14,8 @@
 #include "dvision/projection.hpp"
 #include "dvision/utils.hpp"
 #include <vector>
+#include "dvision/SaveImg.h"
+#include "dmotion/ActionCmd.h"
 
 namespace dvision {
 class DVision : public dprocess::DProcess<DVision>
@@ -25,6 +27,8 @@ class DVision : public dprocess::DProcess<DVision>
 
   private:
     ros::NodeHandle* m_nh;
+    ros::Subscriber m_sub_action_cmd;
+    ros::Subscriber m_sub_save_img;
     Camera m_camera;
     Projection m_projection;
     dprocess::DConcurrent m_concurrent;
@@ -47,5 +51,12 @@ class DVision : public dprocess::DProcess<DVision>
     cv::Mat m_gui_top_view_rotate, m_gui_img, m_gui_undist;
     cv::Mat m_ball_binary, m_field_binary, m_goal_binary;
     cv::Mat m_field_convex_hull, m_canny_img_in_field;
+    // added by yyj
+    int m_yaw;
+    int m_pitch;
+    dmotion::ActionCmd m_action_cmd;
+    SaveImg m_save_img;
+    void motionCallback(const dmotion::ActionCmd::ConstPtr& msg);
+    void saveImgCallback(const SaveImg::ConstPtr& save_img_msg);
 };
 } // namespace dvision

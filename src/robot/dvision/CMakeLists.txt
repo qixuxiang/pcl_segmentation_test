@@ -20,14 +20,15 @@ find_package(G2O REQUIRED)
 
 #find_package(Boost REQUIRED COMPONENTS system)
 
-#add_message_files(
-#  FILES
-#)
-#
-#generate_messages(
-#  DEPENDENCIES
-#
-#)
+add_message_files(
+  FILES
+  SaveImg.msg
+)
+
+generate_messages(
+  DEPENDENCIES
+
+)
 
 catkin_package(
     INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIR}
@@ -48,6 +49,7 @@ add_library(dvisionlib
   src/frame.cpp
   src/parameters.cpp
   src/camera/camera.cpp
+  src/camera/camera_dummy.cpp
   src/camera/calibration.cpp
   src/camera/distortionModel.cpp
   src/camera/ipm.cpp
@@ -63,7 +65,7 @@ add_library(dvisionlib
   src/tools/kalman.cpp
   )
 target_link_libraries(dvisionlib ${catkin_LIBRARIES} ${OpenCV_LIBS} ${G2O_LIBS}) # ${Boost_LIBRARIES})
-#add_dependencies(dvisionlib ${PROJECT_NAME}_generate_messages_cpp)
+#add_dependencies(dvisionlib ${project_name}_generate_messages_cpp)
 
 add_executable(dvision_node src/main.cpp)
 target_link_libraries(dvision_node dvisionlib ${catkin_LIBRARIES})
@@ -79,6 +81,10 @@ add_executable(capture src/tools/capture.cpp)
 target_link_libraries(capture dvisionlib)
 
 ## TEST
+catkin_add_gtest(test_cameraDummy test/test_cameraDummy.cpp)
+target_link_libraries(test_cameraDummy dvisionlib)
+target_link_libraries(test_cameraDummy ${catkin_LIBRARIES})
+
 catkin_add_gtest(test_distortionModel test/test_distortionModel.cpp)
 target_link_libraries(test_distortionModel dvisionlib)
 target_link_libraries(test_distortionModel ${catkin_LIBRARIES})

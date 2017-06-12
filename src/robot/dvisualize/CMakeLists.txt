@@ -34,7 +34,7 @@ include_directories(include src ${catkin_INCLUDE_DIRS})
 add_executable(dvisualize src/main.cpp
     src/mainwindow.cpp
     src/mymodel.cpp
-    src/dvis.qrc
+    #src/dvis.qrc
     src/clabel.cpp
     ${UI_SRC}
     )
