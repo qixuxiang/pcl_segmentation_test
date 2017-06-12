@@ -5,12 +5,10 @@ dbehaviour:
     LEFT_KICK:           true
     LEFT_KICK_POINT:     [15, 8]
     RIGHT_KICK:          true
-    RIGHT_KICK_POINT:    [15, -]
+    RIGHT_KICK_POINT:    [15, -8]
     KICK_ABILITY:        false
     KICK_RANGE:          [80, 100]
     KICK_OFF:            false
-    ONLY_KICK:           1
-    KICK_NEAR_GOAL:      2
     # doge
     DOGE_POINT:          [40, 0]
     DOGE_POINT_UP:       [0, 40]
@@ -20,7 +18,9 @@ dbehaviour:
     DEST_REGION:         15
     DEST_RE_ANGLE:       15
     # attack
-    ATTACK_MODE:         KICK_NEAR_GOAL
+    # ONLY_KICK:         1
+    # KICK_NEAR_GOAL:    2
+    ATTACK_MODE:         2
     # manual
     MANUAL_SET:          true
     MANUAL_SET_POSITION: 'up'
@@ -32,12 +32,10 @@ dbehaviour:
     LEFT_KICK:           true
     LEFT_KICK_POINT:     [15, 8]
     RIGHT_KICK:          true
-    RIGHT_KICK_POINT:    [15, -]
+    RIGHT_KICK_POINT:    [15, -8]
     KICK_ABILITY:        false
     KICK_RANGE:          [80, 100]
     KICK_OFF:            false
-    ONLY_KICK:           1
-    KICK_NEAR_GOAL:      2
     # doge
     DOGE_POINT:          [40, 0]
     DOGE_POINT_UP:       [0, 40]
@@ -47,7 +45,9 @@ dbehaviour:
     DEST_REGION:         15
     DEST_RE_ANGLE:       15
     # attack
-    ATTACK_MODE:         KICK_NEAR_GOAL
+    # ONLY_KICK:         1
+    # KICK_NEAR_GOAL:    2
+    ATTACK_MODE:         2
     # manual
     MANUAL_SET:          true
     MANUAL_SET_POSITION: 'up'
@@ -59,12 +59,10 @@ dbehaviour:
     LEFT_KICK:           true
     LEFT_KICK_POINT:     [15, 8]
     RIGHT_KICK:          true
-    RIGHT_KICK_POINT:    [15, -]
+    RIGHT_KICK_POINT:    [15, -8]
     KICK_ABILITY:        false
     KICK_RANGE:          [80, 100]
     KICK_OFF:            false
-    ONLY_KICK:           1
-    KICK_NEAR_GOAL:      2
     # doge
     DOGE_POINT:          [40, 0]
     DOGE_POINT_UP:       [0, 40]
@@ -74,7 +72,9 @@ dbehaviour:
     DEST_REGION:         15
     DEST_RE_ANGLE:       15
     # attack
-    ATTACK_MODE:         KICK_NEAR_GOAL
+    # ONLY_KICK:         1
+    # KICK_NEAR_GOAL:    2
+    ATTACK_MODE:         2
     # manual
     MANUAL_SET:          true
     MANUAL_SET_POSITION: 'up'
@@ -86,12 +86,10 @@ dbehaviour:
     LEFT_KICK:           true
     LEFT_KICK_POINT:     [15, 8]
     RIGHT_KICK:          true
-    RIGHT_KICK_POINT:    [15, -]
+    RIGHT_KICK_POINT:    [15, -8]
     KICK_ABILITY:        false
     KICK_RANGE:          [80, 100]
     KICK_OFF:            false
-    ONLY_KICK:           1
-    KICK_NEAR_GOAL:      2
     # doge
     DOGE_POINT:          [40, 0]
     DOGE_POINT_UP:       [0, 40]
@@ -101,7 +99,9 @@ dbehaviour:
     DEST_REGION:         15
     DEST_RE_ANGLE:       15
     # attack
-    ATTACK_MODE:         KICK_NEAR_GOAL
+    # ONLY_KICK:         1
+    # KICK_NEAR_GOAL:    2
+    ATTACK_MODE:         2
     # manual
     MANUAL_SET:          true
     MANUAL_SET_POSITION: 'up'
@@ -113,7 +113,7 @@ dbehaviour:
     LEFT_KICK:           true
     LEFT_KICK_POINT:     [15, 8]
     RIGHT_KICK:          true
-    RIGHT_KICK_POINT:    [15, -]
+    RIGHT_KICK_POINT:    [15, -8]
     KICK_ABILITY:        false
     KICK_RANGE:          [80, 100]
     KICK_OFF:            false
@@ -128,7 +128,7 @@ dbehaviour:
     DEST_REGION:         15
     DEST_RE_ANGLE:       15
     # attack
-    ATTACK_MODE:         KICK_NEAR_GOAL
+    ATTACK_MODE:         2
     # manual
     MANUAL_SET:          true
     MANUAL_SET_POSITION: 'up'
@@ -140,12 +140,10 @@ dbehaviour:
     LEFT_KICK:           true
     LEFT_KICK_POINT:     [15, 8]
     RIGHT_KICK:          true
-    RIGHT_KICK_POINT:    [15, -]
+    RIGHT_KICK_POINT:    [15, -8]
     KICK_ABILITY:        false
     KICK_RANGE:          [100, 120]
     KICK_OFF:            false
-    ONLY_KICK:           1
-    KICK_NEAR_GOAL:      2
     # doge
     DOGE_POINT:          [40, 0]
     DOGE_POINT_UP:       [0, 40]
@@ -155,7 +153,9 @@ dbehaviour:
     DEST_REGION:         15
     DEST_RE_ANGLE:       15
     # attack
-    ATTACK_MODE:         KICK_NEAR_GOAL
+    # ONLY_KICK:         1
+    # KICK_NEAR_GOAL:    2
+    ATTACK_MODE:         2
     # manual
     MANUAL_SET:          true
     MANUAL_SET_POSITION: 'down'

@@ -72,3 +72,9 @@ class VecPos(object):
 def make_vecpos(pos):
     """Genarate VecPos."""
     return VecPos(pos.x, pos.y)
+
+
+def make_vecpos_from_list(pos):
+    """Make list as VecPos."""
+    if (len(pos) == 2):
+        return VecPos(pos[0], pos[1])

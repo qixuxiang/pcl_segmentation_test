@@ -36,7 +36,7 @@ dbehaviour:
     ROLE_STRIKER:                    2
     ROLE_DEFENDER:                   3
     ROLE_MIDFIELDER:                 4
-    ROLE_STR:                        ['NONE', 'Goalie', 'Striker', 'Defender', 'MidFielder']
+    # ROLE_STR:                        ['NONE', 'Goalie', 'Striker', 'Defender', 'MidFielder']
     # image
     IMAGE_WIDTH:                     640
     IMAGE_HEIGHT:                    480

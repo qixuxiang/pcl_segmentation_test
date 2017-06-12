@@ -10,6 +10,7 @@
 
 from __future__ import print_function
 import rospy
+from ..types.vec_pos import make_vecpos_from_list
 
 
 class StatusBlackBoard(object):
@@ -32,3 +33,8 @@ class StatusBlackBoard(object):
     def gparam(self, param_name, var_name, parent):
         """Get parameters from parameters server and save it to variables."""
         setattr(parent, var_name, rospy.get_param(param_name))
+
+    def gparam_vecpos(self, param_name, var_name, parent):
+        """Get VecPos from parameters server and save it to variables."""
+        setattr(parent, var_name,
+                make_vecpos_from_list(rospy.get_param(param_name)))
