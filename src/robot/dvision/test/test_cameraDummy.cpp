@@ -15,7 +15,8 @@ TEST(cameraDummy, main)
     DistortionModel dist;
     dvision::CameraDummy c("/home/yyj/Pictures/calibrationimage/");
     while (ros::ok()) {
-         cv::imshow("undistorted",c.capture());
+        auto frame = c.capture();
+         cv::imshow("undistorted",frame.getRGB());
         // auto frame = c.capture();
         // frame.show();
         //

@@ -14,14 +14,15 @@ find_package(Eigen3 REQUIRED)
 
 #find_package(Boost REQUIRED COMPONENTS system)
 
-#add_message_files(
-#  FILES
-#)
-#
-#generate_messages(
-#  DEPENDENCIES
-#
-#)
+add_message_files(
+  FILES
+  SaveImg.msg
+)
+
+generate_messages(
+  DEPENDENCIES
+
+)
 
 catkin_package(
   INCLUDE_DIRS include
@@ -51,7 +52,7 @@ add_library(dvisionlib
   src/tools/utils.cpp
   )
 target_link_libraries(dvisionlib ${catkin_LIBRARIES} ${OpenCV_LIBS}) # ${Boost_LIBRARIES})
-#add_dependencies(dvisionlib ${PROJECT_NAME}_generate_messages_cpp)
+add_dependencies(dvisionlib ${PROJECT_NAME}_generate_messages_cpp)
 
 add_executable(dvision_node src/main.cpp)
 target_link_libraries(dvision_node dvisionlib ${catkin_LIBRARIES})

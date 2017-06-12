@@ -1,7 +1,6 @@
 #include <dvision/camera_dummy.hpp>
 namespace dvision{
-
-bool CameraDummy::init(std::string imageFolder){
+bool CameraDummy::init(std::string imageFolder) {
   path = imageFolder;
   DIR *dir;
   struct dirent *ent;
@@ -25,17 +24,17 @@ bool CameraDummy::init(std::string imageFolder){
       perror ("");
       return EXIT_FAILURE;
   }
+    ROS_INFO("----------imagesNum------------%d",imagesNum);
 }
 
-cv::Mat
+Frame
 CameraDummy::capture(){
   cv::Mat res = cv::imread((path + imagesName[imageCnt]).c_str());
-  if(imageCnt < imagesNum){
+    ROS_INFO("----------------------%d",imageCnt);
+    if(imageCnt < imagesNum - 1){
     imageCnt++;
   }
-  return res;
-  // return Frame(static_cast<uint8_t*>(res.data), 1920, 1080);
+//  return res;
+  return Frame(res, res.size().width, res.size().height);
 }
-
-
 }

@@ -1,10 +1,11 @@
 <launch>
   <node
     pkg="dbehavior"
-    name="dbehavior_node"
-    type="dbehavior.py"
+    name="getImg_node"
+    type="getImg.py"
     output="screen"
     respawn="false"
+    required="true"
     cwd="node"
     args=""
     />

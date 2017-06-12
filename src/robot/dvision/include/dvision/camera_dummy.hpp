@@ -1,26 +1,30 @@
 #pragma once
 #include <opencv2/opencv.hpp>
-#include "dvision/frame.hpp"
 #include <dirent.h>
 #include <string>
 #include <vector>
+#include "dvision/frame.hpp"
 
 
 namespace dvision{
 class CameraDummy
 {
 public:
-  CameraDummy(std::string imageFolder){
+  CameraDummy(std::string imageFolder)
+  :imageCnt(0),
+   imagesNum(0)
+  {
       init(imageFolder);
   }
   bool init(std::string imageFolder);
-  cv::Mat capture();
+  Frame capture();
 
 private:
   std::vector<std::string> imagesName;
   int imagesNum;
-  int imageCnt = 0;
+  int imageCnt;
   std::string path;
+
 
 };
 }

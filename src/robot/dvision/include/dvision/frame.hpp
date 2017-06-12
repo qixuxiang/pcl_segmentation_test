@@ -19,6 +19,16 @@ class Frame
         m_timeStamp = ros::Time::now();
     }
 
+    inline explicit Frame(cv::Mat& mat, int width, int height)
+            : m_rgb(mat)
+            , m_width(width)
+            , m_height(height)
+            , m_converted(true)
+    {
+        m_timeStamp = ros::Time::now();
+    }
+
+
     inline ~Frame(){};
 
     inline cv::Mat& getRGB()
