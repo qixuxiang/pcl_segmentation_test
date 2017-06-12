@@ -18,10 +18,9 @@ def mainloop():
     # init node
     rospy.init_node("dbehavior_node", anonymous=True, log_level=rospy.DEBUG)
     rospy.loginfo("dbehavior node started")
-    print "fuck"
 
     # init blackboard
-    bb = BlackBoard()
+    global bb = BlackBoard()
 
     # start loop
     rospy.spin()
