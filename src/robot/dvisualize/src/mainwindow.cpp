@@ -5,6 +5,10 @@
 #include <QFileDialog>
 #include <QListView>
 
+#include "dvision/parameters.hpp"
+#include "dvision/distortionModel.hpp"
+using namespace dvision;
+
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow), m_model(new MyModel(this))
 {
     ui->setupUi(this);
@@ -53,14 +57,20 @@ void MainWindow::init()
     foreach(const QPoint& p, m_realPoints){
        box->addItem(QString("%1, %2").arg(p.x()).arg(p.y()));
     }
+
+    ros::NodeHandle nh;
+    parameters.init(&nh);
+
+    m_distmodel= new DistortionModel();
+    m_distmodel->init();
+
 }
 
 QPoint MainWindow::undistPoint(int x, int y)
 {
-   return QPoint(x, y);
+    auto p = m_distmodel->undistort(x, y);
+    return QPoint(p.x, p.y);
 }
-
-
 
 
 void MainWindow::on_currentChanged(QModelIndex current)
@@ -117,8 +127,6 @@ void MainWindow::on_actionSave_triggered()
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
                                QDir::homePath(),
                                tr("Plain text (*.txt)"));
-
-    qDebug() << fileName << endl;
 
     if(fileName == NULL)
         return;

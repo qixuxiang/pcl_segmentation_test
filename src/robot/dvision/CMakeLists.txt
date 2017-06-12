@@ -26,8 +26,8 @@ find_package(Eigen3 REQUIRED)
 #)
 
 catkin_package(
-  INCLUDE_DIRS include
-  #  LIBRARIES dmotion
+    INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIR}
+    LIBRARIES dvisionlib
   #  CATKIN_DEPENDS dprocess
   #  DEPENDS system_lib
 )

@@ -152,6 +152,16 @@ DistortionModel::undistort(const vector<Point>& points, vector<Point>& res)
     return true;
 }
 
+cv::Point2f DistortionModel::undistort(int x, int y) {
+    int W = parameters.camera.width;
+    int H = parameters.camera.height;
+    if(x < 0 || x >= W || y < 0 || y >= H) {
+        ROS_ERROR("error in undistort: (%d, %d)", x, y);
+        return Point2f(-9999, -9999);
+    }
+    return m_distortionVector[y * W + x];
+}
+
 bool
 DistortionModel::undistort_slow(const vector<Point>& points, vector<Point>& resPoints)
 {

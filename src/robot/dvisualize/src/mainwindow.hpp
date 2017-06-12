@@ -7,6 +7,8 @@
 #include <QKeyEvent>
 #include "mymodel.hpp"
 #include "clabel.hpp"
+#include "dvision/parameters.hpp"
+#include "dvision/distortionModel.hpp"
 
 namespace Ui {
     class MainWindow;
@@ -46,6 +48,8 @@ private:
 
     QVector<QPoint> m_realPoints;
     QApplication* m_app;
+
+    dvision::DistortionModel* m_distmodel;
 };
 
 #endif // MAINWINDOW_H

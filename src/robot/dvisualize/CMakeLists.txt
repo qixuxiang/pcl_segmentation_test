@@ -5,7 +5,8 @@ project(dvisualize)
 add_definitions(-std=c++11 -g -Wall -Wextra -Wfloat-equal -Wno-unused-result) #-Weffc++ -pedantic
 
 find_package(catkin REQUIRED
-  COMPONENTS roscpp
+  COMPONENTS 
+  roscpp
   dvision
 )
 
@@ -32,18 +33,13 @@ include_directories(include src ${catkin_INCLUDE_DIRS})
 
 add_executable(dvisualize src/main.cpp
     src/mainwindow.cpp
-    src/mainwindow.hpp
-
-    src/mymodel.hpp
     src/mymodel.cpp
-
     src/dvis.qrc
-
     src/clabel.cpp
-    src/clabel.hpp
-
     ${UI_SRC}
     )
 
 
-target_link_libraries(dvisualize Qt5::Core Qt5::Widgets)
+target_link_libraries(dvisualize 
+    ${catkin_LIBRARIES}
+    Qt5::Core Qt5::Widgets)
