@@ -1,18 +1,21 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(dvision)
-#LIST(APPEND CMAKE_MODULE_PATH ${dvision_SOURCE_DIR}/cmake_modules)
 
+add_definitions(-std=c++11 -Wall -Wextra -Wno-unused-result) #-Wfloat-equal -Weffc++ -pedantic
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake_modules/")
 add_definitions(-std=c++11 -Wall -Wextra -Wfloat-equal -Wno-unused-result) #-Weffc++ -pedantic
 
 find_package(catkin REQUIRED
   COMPONENTS roscpp
   geometry_msgs
   message_generation
-  dprocess)
+  dprocess
+  darknetcxx)
 
 find_package(OpenCV 3 REQUIRED)
 find_package(Eigen3 REQUIRED)
-
+find_package(G2O REQUIRED)
 
 #find_package(Boost REQUIRED COMPONENTS system)
 
@@ -34,6 +37,11 @@ catkin_package(
 
 include_directories(include ${catkin_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR}) #${Boost_INCLUDE_DIRS})
 
+SET (G2O_LIBS csparse cxsparse g2o_csparse_extension g2o_cli g2o_core g2o_interface g2o_parser g2o_solver_cholmod
+g2o_solver_csparse g2o_solver_dense g2o_solver_pcg g2o_stuff g2o_types_icp
+g2o_types_sba g2o_types_sim3 g2o_types_slam2d g2o_types_slam3d)
+
+
 add_library(dvisionlib
   src/dvision.cpp
   src/frame.cpp
@@ -43,8 +51,17 @@ add_library(dvisionlib
   src/camera/distortionModel.cpp
   src/camera/ipm.cpp
   src/camera/projection.cpp
+  src/detector/ball_detector.cpp
+  src/detector/circle_detector.cpp
+  src/detector/field_detector.cpp
+  src/detector/goal_detector.cpp
+  src/detector/line_detector.cpp
+  src/localization/localization.cpp
+  src/tools/line_segment.cpp
+  src/tools/utils.cpp
+  src/tools/kalman.cpp
   )
-target_link_libraries(dvisionlib ${catkin_LIBRARIES} ${OpenCV_LIBS}) # ${Boost_LIBRARIES})
+target_link_libraries(dvisionlib ${catkin_LIBRARIES} ${OpenCV_LIBS} ${G2O_LIBS}) # ${Boost_LIBRARIES})
 #add_dependencies(dvisionlib ${PROJECT_NAME}_generate_messages_cpp)
 
 add_executable(dvision_node src/main.cpp)
@@ -68,3 +85,11 @@ target_link_libraries(test_distortionModel ${catkin_LIBRARIES})
 catkin_add_gtest(test_projection test/test_projection.cpp)
 target_link_libraries(test_projection dvisionlib)
 target_link_libraries(test_projection ${catkin_LIBRARIES})
+
+catkin_add_gtest(test_localization test/test_localization.cpp)
+target_link_libraries(test_localization dvisionlib)
+target_link_libraries(test_localization ${catkin_LIBRARIES})
+
+catkin_add_gtest(test_ball_detector test/test_ball_detector.cpp)
+target_link_libraries(test_ball_detector dvisionlib)
+target_link_libraries(test_ball_detector ${catkin_LIBRARIES})

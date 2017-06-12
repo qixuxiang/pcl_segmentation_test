@@ -15,7 +15,9 @@ build*
 .#*
 *.png
 
+.ftpconfig
+.tags
+
 # vim stuff
 *.swp
-
 *.autosave
