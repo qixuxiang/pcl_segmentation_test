@@ -1,6 +1,6 @@
 """TrackBall headskill."""
 
-from ...misc.bt import Action
+from misc.bt import Action
 
 
 class TrackBall(Action):

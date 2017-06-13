@@ -7,8 +7,8 @@ from ..game.Ready import Ready
 from ..game.Play import Play
 from ..game.Finish import Finish
 from ..game.Penalised import Penalised
-from ...misc.bt import Action, condition, ev_selector, ev_sequence, parallel
-from ...misc.types.constant import (STATE_INITIAL, STATE_READY, STATE_SET,
+from misc.bt import Action, condition, ev_selector, ev_sequence, parallel
+from misc.types.constant import (STATE_INITIAL, STATE_READY, STATE_SET,
                                     STATE_PLAYING, STATE_FINISHED,
                                     STATE_INVALID)
 

@@ -1,8 +1,8 @@
 """TurnAround skill."""
 
 import rospy
-from ...misc.bt import Action
-from ...misc.utils.mathutil import get_angle
+from misc.bt import Action
+from misc.utils.mathutil import get_angle
 
 
 class TurnAround(Action):

@@ -3,12 +3,12 @@ from geometry_msgs.msg import Vector3
 from .Role import Role
 from ..skills.Attack import Attack
 from ..skills.SeekBall import SeekBall
-from ..headskill.ScanField import ScanField
-from ...misc.bt import sequence, ev_sequence
-from ...misc.bt import Action
-from ...misc.types.constant import (LEFT, RIGHT, ROLE_MIDFIELDER,
+from ..headskills.ScanField import ScanField
+from misc.bt import sequence, ev_sequence
+from misc.bt import Action
+from misc.types.constant import (LEFT, RIGHT, ROLE_MIDFIELDER,
                                     ROLE_STRIKER, X, Y)
-from ...misc.types.field_geometry import (get_attack_goal, set_attack_target,
+from misc.types.field_geometry import (get_attack_goal, set_attack_target,
                                           LEFT_ATTACK_POS_DOWN,
                                           RIGHT_ATTACK_POS_DOWN,
                                           HALF_FIELD_LENGTH,
@@ -18,7 +18,7 @@ from ...misc.types.field_geometry import (get_attack_goal, set_attack_target,
                                           attacking_right)
 # if ball is at our half, and there is no obstacle, then kick
 # Brain class setting attack target
-from ...misc.utils.mathutil import get_dis, get_magnitude
+from misc.utils.mathutil import get_dis, get_magnitude
 
 THRE = 100
 

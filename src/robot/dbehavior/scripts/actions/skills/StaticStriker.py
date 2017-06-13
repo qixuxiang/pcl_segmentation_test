@@ -3,9 +3,9 @@
 from geometry_msgs.msg import Vector3
 from ..headskills.ScanField import ScanField
 from ..roles.Striker import Striker
-from ...misc.bt import Action, sequence, ev_sequence
-from ...misc.types.field_geometry import attacking_left
-from ...misc.utils.mathutil import get_magnitude
+from misc.bt import Action, sequence, ev_sequence
+from misc.types.field_geometry import attacking_left
+from misc.utils.mathutil import get_magnitude
 
 sc = ScanField()
 

@@ -3,12 +3,12 @@
 from math import degrees, cos, sin
 from geometry_msgs.msg import Vector3
 from ..headskills.TrackBall import TrackBall
-from ...misc.bt import Action, parallel, see_ball
-from ...misc.types.FieldGeometry import get_attack_goal
-from ...misc.types.VecPos import VecPos
-from ...misc.utils.CalcAttackPoint import get_rub
-from ...misc.utils.calc_walk_engine import get_walk
-from ...misc.utils.mathutil import (angle_between, PI_2, get_dis,
+from misc.bt import Action, parallel, see_ball
+from misc.types.FieldGeometry import get_attack_goal
+from misc.types.VecPos import VecPos
+from misc.utils.CalcAttackPoint import get_rub
+from misc.utils.calc_walk_engine import get_walk
+from misc.utils.mathutil import (angle_between, PI_2, get_dis,
                                     abs_angle_diff, get_magnitude)
 
 # Avoid

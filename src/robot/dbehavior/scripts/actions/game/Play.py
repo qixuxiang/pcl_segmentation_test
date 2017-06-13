@@ -6,8 +6,8 @@ from ..roles.MidFielder import MidFielder
 from ..roles.Goalie import Goalie
 from ..roles.Defender import Defender
 from ..skills.ReEntry import ReEntry
-from ...misc.bt import Action, condition, ev_sequence, ev_selector
-from ...misc.types.constant import (ROLE_GOALIE, ROLE_STRIKER, ROLE_DEFENDER,
+from misc.bt import Action, condition, ev_sequence, ev_selector
+from misc.types.constant import (ROLE_GOALIE, ROLE_STRIKER, ROLE_DEFENDER,
                                     ROLE_MIDFIELDER, GOALIE, STRIKER, DEFENDER)
 
 

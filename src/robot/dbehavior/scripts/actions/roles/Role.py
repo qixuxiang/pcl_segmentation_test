@@ -1,6 +1,6 @@
 """Role."""
-from ...misc.bt import Action
-from ...misc.utils.mathutil import get_dis
+from misc.bt import Action
+from misc.utils.mathutil import get_dis
 
 MAX_DIS_START_POS = 100
 

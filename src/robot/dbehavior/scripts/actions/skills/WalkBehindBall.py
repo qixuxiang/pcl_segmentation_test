@@ -2,11 +2,11 @@
 
 from math import degrees, atan2, radians, cos, sin
 
-from ...misc.bt import Action, see_ball
-from ...misc.types.vec_pos import VecPos
-from ...misc.utils.mathutil import angle_normalization, get_dis, abs_angle_diff
-from ...misc.utils.calc_attack_point import get_attack_result, get_rub
-from ...misc.utils.calc_walk_engine import get_walk_field
+from misc.bt import Action, see_ball
+from misc.types.vec_pos import VecPos
+from misc.utils.mathutil import angle_normalization, get_dis, abs_angle_diff
+from misc.utils.calc_attack_point import get_attack_result, get_rub
+from misc.utils.calc_walk_engine import get_walk_field
 
 SAFE_DIST = 30
 ANGLE_PER_TICK = 20

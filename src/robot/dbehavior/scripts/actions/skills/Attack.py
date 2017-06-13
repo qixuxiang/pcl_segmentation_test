@@ -4,8 +4,8 @@ from .ApproachBall import ApproachBall
 from .Dribble import Dribble
 from .Kick import Kick
 from ..headskills.SearchGoal import SearchGoal
-from ..headskill.ScanField import ScanField
-from ...misc.bt import Action, sequence, condition
+from ..headskills.ScanField import ScanField
+from misc.bt import Action, sequence, condition
 
 
 class not_my_kickoff(Action):

@@ -2,13 +2,13 @@
 
 import rospy
 from math import degrees, atan2
-from ...misc.bt import Action, see_ball
-from ...misc.types.constant import LEFT, ONLY_KICK
-from ...misc.types.field_geometry import (attacking_right, attacking_left,
+from misc.bt import Action, see_ball
+from misc.types.constant import LEFT, ONLY_KICK
+from misc.types.field_geometry import (attacking_right, attacking_left,
                                           get_attack_goal, facing_goal)
-from ...misc.utils.calc_attack_point import get_rub, get_attack_result
-from ...misc.utils.timer import Timer
-from ...misc.utils.mathutil import get_dis
+from misc.utils.calc_attack_point import get_rub, get_attack_result
+from misc.utils.timer import Timer
+from misc.utils.mathutil import get_dis
 
 DRIBBLE_THRES = 30
 EPSO = 1e-10

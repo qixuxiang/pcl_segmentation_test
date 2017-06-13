@@ -3,13 +3,13 @@
 import rospy
 from .WalkBehindBall import WalkBehindBall
 from ..headskills.TrackBall import TrackBall
-from ...misc.bt import Action, parallel, selector, see_ball
-from ...misc.types.field_geometry import (get_attack_goal, attacking_left,
+from misc.bt import Action, parallel, selector, see_ball
+from misc.types.field_geometry import (get_attack_goal, attacking_left,
                                           attacking_right)
-from ...misc.types.vec_pos import VecPos
-from ...misc.utils.calc_attack_point import get_attack_result
-from ...misc.utils.calc_walk_engine import get_walk
-from ...misc.utils.mathutil import (get_dis, abs_angle_diff,
+from misc.types.vec_pos import VecPos
+from misc.utils.calc_attack_point import get_attack_result
+from misc.utils.calc_walk_engine import get_walk
+from misc.utils.mathutil import (get_dis, abs_angle_diff,
                                     calc_field_position,
                                     get_magnitude)
 

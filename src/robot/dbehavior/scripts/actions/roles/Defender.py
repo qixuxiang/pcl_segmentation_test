@@ -2,11 +2,11 @@
 from geometry_msgs.msg import Vector3
 from .Role import Role
 from .Striker import Striker
-from ..headskill.ScanField import ScanField
-from ...misc.bt import sequence, ev_sequence
-from ...misc.types.constant import ROLE_DEFENDER, X, Y
-from ...misc.types.field_geometry import attacking_left
-from ...misc.utils.mathutil import get_magnitude
+from ..headskills.ScanField import ScanField
+from misc.bt import sequence, ev_sequence
+from misc.types.constant import ROLE_DEFENDER, X, Y
+from misc.types.field_geometry import attacking_left
+from misc.utils.mathutil import get_magnitude
 
 sc = ScanField()
 

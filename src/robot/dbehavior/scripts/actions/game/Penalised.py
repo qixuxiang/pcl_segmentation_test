@@ -1,7 +1,7 @@
 """Penalised state."""
 
 from ..skills.ReEntry import ReEntry
-from ...misc.bt import Action, parallel, sequence
+from misc.bt import Action, parallel, sequence
 
 
 class _Penalised(Action):

@@ -1,11 +1,11 @@
 """Invalid state."""
 
-from ...misc.bt import Action
-from ...misc.bt import sequence
-from ...misc.types.constant import ROLE_DEFENDER
+from misc.bt import Action
+from misc.bt import sequence
+from misc.types.constant import ROLE_DEFENDER
 # from roles.Striker import Striker
 from headskill.ScanField import ScanField
-from ...misc.utils.mathutil import get_dis, abs_angle_diff
+from misc.utils.mathutil import get_dis, abs_angle_diff
 
 sc = ScanField()
 

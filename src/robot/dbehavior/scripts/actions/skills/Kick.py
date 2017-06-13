@@ -7,8 +7,8 @@ import rospy
 from .Lineup import Lineup
 from .ApproachBall import ApproachBall
 from ..headskills.TrackBall import TrackBall
-from ...misc.bt import Action, sequence, parallel
-from ...misc.utils.Timer import Timer
+from misc.bt import Action, sequence, parallel
+from misc.utils.timer import Timer
 
 DEBUG = False
 

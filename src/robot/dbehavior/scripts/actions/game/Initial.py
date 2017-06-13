@@ -1,12 +1,12 @@
 """Initial state."""
 
 import rospy
-from ...misc.bt import Action
-from ...misc.bt import parallel
-from ...misc.types.constant import (ROLE_NONE, ROLE_GOALIE, ROLE_DEFENDER,
+from misc.bt import Action
+from misc.bt import parallel
+from misc.types.constant import (ROLE_NONE, ROLE_GOALIE, ROLE_DEFENDER,
                                     ROLE_MIDFIELDER, ROLE_STRIKER, GOALIE_ID,
                                     LEFT, RIGHT, STATE_INITIAL)
-from ...misc.types.field_geometry import (LEFT_START_POS, RIGHT_START_POS,
+from misc.types.field_geometry import (LEFT_START_POS, RIGHT_START_POS,
                                           LEFT_START_POS_UP,
                                           RIGHT_START_POS_UP,
                                           MID_START_POS, MID_START_POS_UP)

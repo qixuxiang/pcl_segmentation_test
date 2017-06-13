@@ -1,8 +1,8 @@
 """ScanField headskill."""
 
-from ...misc.bt import Action
-from ...misc.utils.timer import Timer
-from ...misc.types.vec_pos import VecPos
+from misc.bt import Action
+from misc.utils.timer import Timer
+from misc.types.vec_pos import VecPos
 
 GazePlats = [
     VecPos(60, 15),

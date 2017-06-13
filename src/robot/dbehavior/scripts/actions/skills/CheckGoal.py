@@ -1,6 +1,6 @@
 """CheckGoal skill."""
 
-from ...misc.bt import Action, parallel
+from misc.bt import Action, parallel
 from ..headskills.SearchGoal import SearchGoal
 
 

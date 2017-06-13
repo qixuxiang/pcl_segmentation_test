@@ -2,11 +2,11 @@
 from geometry_msgs.msg import Vector3
 from .Role import Role
 from .Striker import Striker, sc
-from ..headskill.ScanField import ScanField
-from ...misc.bt import Action, ev_sequence
-from ...misc.types.constant import ROLE_DEFENDER, ROLE_GOALIE, X, Y
-from ...misc.types.field_geometry import attacking_left
-from ...misc.utils.mathutil import get_magnitude
+from ..headskills.ScanField import ScanField
+from misc.bt import Action, ev_sequence
+from misc.types.constant import ROLE_DEFENDER, ROLE_GOALIE, X, Y
+from misc.types.field_geometry import attacking_left
+from misc.utils.mathutil import get_magnitude
 
 
 class _Striker(Role):

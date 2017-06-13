@@ -1,7 +1,7 @@
 """Finish state."""
 
-from ...misc.bt import Action
-from ...misc.bt import parallel
+from misc.bt import Action
+from misc.bt import parallel
 
 
 class _Finish(Action):

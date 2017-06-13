@@ -1,11 +1,11 @@
 """Lineup skill."""
 
-import rospy
 from __future__ import division
-from ...misc.bt import Action
-from ...misc.types.field_geometry import inside_view
-from ...misc.utils.timer import Timer
-from ...misc.types.constant import LEFT, RIGHT
+import rospy
+from misc.bt import Action
+from misc.types.field_geometry import inside_view
+from misc.utils.timer import Timer
+from misc.types.constant import LEFT, RIGHT
 
 
 class Lineup(Action):

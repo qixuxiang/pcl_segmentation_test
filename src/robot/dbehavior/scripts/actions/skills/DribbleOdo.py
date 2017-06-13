@@ -1,6 +1,6 @@
 """DribbleOdo skill."""
 
-from ...misc.bt import Action, see_ball
+from misc.bt import Action, see_ball
 
 DRIBBLE_THRES = 30
 EPSO = 1e-10

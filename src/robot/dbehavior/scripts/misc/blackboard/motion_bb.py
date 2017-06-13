@@ -30,4 +30,4 @@ class MotionBlackBoard(StatusBlackBoard):
         self.lower_board_connected = False
         self.deltaData = Vector3(0, 0, 0)
         self.actions = None
-        self.uptime = None
+        self.uptime = 0

@@ -1,9 +1,9 @@
 """FindBall headskill."""
 
-from ...misc.bt import Action
-from ...misc.types.vec_pos import VecPos
-from ...misc.utils.timer import Timer
-from ...misc.utils.mathutil import get_magnitude
+from misc.bt import Action
+from misc.types.vec_pos import VecPos
+from misc.utils.timer import Timer
+from misc.utils.mathutil import get_magnitude
 
 GazePlats = [
     VecPos(0, 0),

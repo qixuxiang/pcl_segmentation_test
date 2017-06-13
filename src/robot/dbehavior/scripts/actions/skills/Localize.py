@@ -4,7 +4,7 @@ Search landmark to localize.
 """
 
 from ..headskills.ScanField import ScanField
-from ...misc.bt import Action, parallel
+from misc.bt import Action, parallel
 
 sc = ScanField()
 

@@ -1,9 +1,9 @@
 """MidFielder role."""
 from .Role import Role
 from ..skills.AvoidBall import AvoidBall
-from ..headskill.ScanField import ScanField
-from ...misc.types.constant import ROLE_MIDFIELDER
-from ...misc.bt import sequence
+from ..headskills.ScanField import ScanField
+from misc.types.constant import ROLE_MIDFIELDER
+from misc.bt import sequence
 
 sc = ScanField()
 

@@ -2,8 +2,8 @@
 
 import rospy
 from ..headskills.ScanField import ScanField
-from ...misc.bt import Action, parallel
-from ...misc.utils.field_geometry import (UP_PICKUP_ENTRY_POINT,
+from misc.bt import Action, parallel
+from misc.utils.field_geometry import (UP_PICKUP_ENTRY_POINT,
                                           DOWN_PICKUP_ENTRY_POINT)
 
 sc = ScanField()

@@ -1,8 +1,8 @@
 """RoleChange state."""
 import rospy
-from ...misc.bt import Action
-from ...misc.types.constant import get_role_str, GOALIE_ID, GOALIE
-from ...misc.utils.timer import Timer, get_current_time
+from misc.bt import Action
+from misc.types.constant import get_role_str, GOALIE_ID, GOALIE
+from misc.utils.timer import Timer, get_current_time
 
 
 class RoleChange(Action):

@@ -1,8 +1,8 @@
 """SearchGoal headskill."""
-from ...misc.bt import Action
-from ...misc.bt import sequence, selector
-from ...misc.utils.timer import Timer
-from ...misc.types.vec_pos import VecPos
+from misc.bt import Action
+from misc.bt import sequence, selector
+from misc.utils.timer import Timer
+from misc.types.vec_pos import VecPos
 
 # first look at localized goal position, until see both goal
 # calc another goal
