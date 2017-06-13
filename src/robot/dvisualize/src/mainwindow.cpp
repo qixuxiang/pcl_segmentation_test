@@ -9,12 +9,13 @@
 #include "dvision/distortionModel.hpp"
 using namespace dvision;
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow), m_model(new MyModel(this))
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow), m_model(new MyModel(this)), m_undist(new Undist(this))
 {
     ui->setupUi(this);
     init();
     ui->listView->setModel(m_model);
     ui->listView->setViewMode(QListView::IconMode);
+    m_undist->setVisible(false);
 
     connect(ui->listView->selectionModel(), &QItemSelectionModel::currentChanged,
             this, &MainWindow::on_currentChanged);
@@ -22,8 +23,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->imagePanel, &CLabel::clicked,
             this, &MainWindow::updateView);
 
+
+    connect(ui->imagePanel, &CLabel::clicked,
+            m_undist, &Undist::onOriginalClicked);
     // debug
-    m_model->loadImages("/home/mwx/Pictures/calibration/1496034577976886624.png");
+//    m_model->loadImages("/home/mwx/Pictures/calibration/1496034577976886624.png");
+
 }
 
 void MainWindow::init()
@@ -77,6 +82,20 @@ void MainWindow::on_currentChanged(QModelIndex current)
 {
     m_model->setCurrentIndex(current.row());
     ui->imagePanel->setPixmap(m_model->getImage());
+    m_undist->setPixmap(m_model->getImage());
+    m_undist->setVisible(true);
+
+    // update H and V
+    auto pitchyaw = m_model->getPlatAngle(current.row());
+
+    m_pitch = pitchyaw.x();
+    m_yaw = pitchyaw.y();
+
+    qDebug() << m_pitch << " " << m_yaw;
+
+    ui->pitch->setText(QString::number(m_pitch));
+    ui->yaw->setText(QString::number(m_yaw));
+
     updateView();
 //    auto size = ui->imagePanel->pixmap()->size();
     //    ui->imagePanel->setFixedSize(size.width(), size.height());
@@ -109,17 +128,27 @@ void MainWindow::appendText()
     x = p.x();
     y = p.y();
 
-    textEdit->append(QString("%1 %2 %3 %4")
-            .arg(x)
-            .arg(y)
-            .arg(real.x())
-            .arg(real.y()));
+    textEdit->append(QString("%1 %2 %3 %4 %5 %6")
+                     .arg(m_yaw)
+                     .arg(m_pitch)
+                     .arg(x)
+                     .arg(y)
+                     .arg(real.x())
+                     .arg(real.y())
+//            .arg(x)
+//            .arg(y)
+//            .arg(real.x())
+//            .arg(real.y())
+//            .arg(m_pitch)
+//            .arg(m_yaw)
+                     );
 }
 
 void MainWindow::updateView()
 {
     QString imgpos = QString("%1, %2").arg(m_imgPanel->x()).arg(m_imgPanel->y());
     ui->labelImagePosition->setText(imgpos);
+
 }
 
 void MainWindow::on_actionSave_triggered()

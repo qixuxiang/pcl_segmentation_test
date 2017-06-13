@@ -18,7 +18,7 @@ void CLabel::mouseReleaseEvent(QMouseEvent *ev)
     mouseX = ev->x();
     mouseY = ev->y();
 
-    emit clicked();
+    emit clicked(ev);
 }
 
 void CLabel::mouseMoveEvent(QMouseEvent *ev)
@@ -27,6 +27,6 @@ void CLabel::mouseMoveEvent(QMouseEvent *ev)
     mouseX = ev->x();
     mouseY = ev->y();
 
-    emit clicked();
+    emit clicked(ev);
 }
 

@@ -25,9 +25,12 @@ public:
 
     void setCurrentIndex(int);
 
+    QPoint getPlatAngle(int index);
+
 private:
     QVector<QPixmap> m_pictures;
     QVector<QIcon> m_pics;
+    QVector<QString> m_picname;
     int m_currentIndex;
 };
 

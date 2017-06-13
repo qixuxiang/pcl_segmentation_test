@@ -1,7 +1,13 @@
+clear;
+clc;
+close all;
+A = load('bot4.txt');
+
 fx = 360.591090231311;
 fy = 360.4918824799427;
-cx = 310.7131585594641;
-cy = 252.0890520277582;
+cx = 624.7131585594641;
+cy = 496.0890520277582;
+
 
 
 % Xw2p
@@ -25,16 +31,23 @@ cy = 252.0890520277582;
 % biasYaw
 % biasPitch
 
-%             x y z,   rx ry rz,  x y z, rx ry rz, s s b b
-Parameters = [0 0 100,  0  0  0,  0 0 0,  0  0  0, 1 1 0 0];
+%             x         y       z       rx        ry      rz        x        y        z     rx      ry       rz     s    s     b     b
+para0      = [  0;      0;     50;       0;       0;       0;       0;       0;     8;      0;       0;       0;    1;   1;    0;    0];    
+lb         = [-20;    -10;     40;    -0.6;    -0.6;    -0.6;     -10;     -10;     7;   -0.6;    -0.6;    -0.6;    1;   1;    0;    0];
+ub         = [ 20;     10;     70;     0.6;     0.6;     0.6;      10;      10;    15;    0.6;     0.6;     0.6;    1;   1;    0;    0];
+
 
 
 % TODO(MWX): How to test correctness of projection function
 
-uv = projection(Parameters, 0, 0, 600, 0);
+uv = projection(para0, 0, 0, 600, 0);
 disp(uv);
 
 options = optimset('Display','iter-detailed','Algorithm','interior-point','FunValCheck','on',...
     'TolFun',10^-6,'LargeScale','off','TolX',10^-6,'MaxFunEvals',10^6,...
+   'MaxIter',10000);
+ 
 
-[respara reserror exitflag output] = fmincon(@errorfunc, para0, [], [], [], [], lb, ub, options);
+[respara, reserror, exitflag, output] = fmincon(@errorfunc, para0, [], [], [], [], lb, ub, [], options);
+
+disp(respara);

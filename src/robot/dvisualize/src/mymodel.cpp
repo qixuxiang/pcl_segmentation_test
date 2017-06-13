@@ -60,9 +60,13 @@ void MyModel::loadImages(QString filename)
 
     m_pictures.resize(allfiles.size());
     m_pics.resize(allfiles.size());
+    m_picname.resize(allfiles.size());
     for(int i = 0; i < allfiles.size(); ++i) {
        m_pictures[i] = QPixmap(allfiles[i].absoluteFilePath());
+       m_picname[i] = allfiles[i].fileName();
+
     }
+
 
 
     insertRows(0, allfiles.size(), QModelIndex());
@@ -85,5 +89,21 @@ const QPixmap MyModel::getImage() const
 void MyModel::setCurrentIndex(int idx)
 {
     m_currentIndex = idx;
+}
+
+QPoint MyModel::getPlatAngle(int index)
+{
+    // extremly ugly
+    QString filename = m_picname.at(index);
+//    "p_60_y_45 1497349252533223778.png"
+
+
+    auto list = filename.split(' ');
+    auto s = list[0].split('_');
+
+    auto pitch = s[1].toInt();
+    auto yaw = s[3].toInt();
+
+    return QPoint(pitch, yaw);
 }
 

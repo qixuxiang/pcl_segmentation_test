@@ -11,7 +11,7 @@ class CLabel : public QLabel
 {
     Q_OBJECT
 signals:
-    void clicked();
+    void clicked(QMouseEvent* ev);
 
 public:
     CLabel(QWidget* parent);

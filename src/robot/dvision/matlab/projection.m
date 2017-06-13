@@ -1,6 +1,6 @@
 % Created on: June 2, 2017
 %    Author: Wenxing Mei <mwx36mwx@gmail.com>
-function [PointImage] = projection(Parameters, yaw, pitch, x, y)
+function [PointImage] = projection(Parameters, yaw, pitch, x, y) % xreal, yreal
 % Project a point from world onto image plane
 
 % world to plat, R means rotate
@@ -21,8 +21,7 @@ RZp2c = Parameters(12);
 
 scaleYaw = Parameters(13);
 scalePitch = Parameters(14);
-biasYaw = Parameters(15);
-biasPitch = Parameters(16);
+biasYaw = Parameters(15); biasPitch = Parameters(16);
 
 fx = evalin('base', 'fx');
 fy = evalin('base', 'fy'); cx = evalin('base', 'cx');
@@ -46,8 +45,8 @@ Mp2c = rotateZ(RZp2c) ...
 
 PC = Mp2c * Mw2p * PointWorld; % PC = PointCamera
 
-PC = [ 0  0 -1  0;
-       0  1  0  0;
+PC = [ 0  1  0  0;
+       0  0 -1  0;
        1  0  0  0;
        0  0  0  1;] * PC;
 

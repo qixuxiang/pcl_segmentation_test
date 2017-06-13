@@ -65,6 +65,9 @@ DistortionModel::init()
     }
 
     initUndistortRectifyMap(parameters.camera.cameraMatrix, parameters.camera.distCoeff, Mat(), parameters.camera.undistCameraMatrix, parameters.camera.undistImageSize, CV_16SC2, m_map1, m_map2);
+
+    cout << "Undist camera matrix" << endl;
+    cout << parameters.camera.undistCameraMatrix << endl;
 }
 
 void
