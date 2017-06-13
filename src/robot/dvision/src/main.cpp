@@ -2,13 +2,19 @@
 //     Author: Wenxing Mei <mwx36mwx@gmail.com>
 
 #include "dvision/dvision.hpp"
-#include <ros/ros.h>
+#include <signal.h>
+
+void signalHandler(int sig) {
+    ROS_WARN("Trying to exit!");
+    std::terminate();
+}
 
 int
 main(int argc, char** argv)
 {
     ros::init(argc, argv, "dmotion_node");
     ros::NodeHandle nh;
+    signal(SIGINT, signalHandler);
     dvision::DVision v(&nh);
     v.spin();
     v.join();

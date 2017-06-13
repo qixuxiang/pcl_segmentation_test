@@ -30,6 +30,11 @@ class DProcess
                 static_cast<T*>(this)->tick();
                 ros::spinOnce();
                 r.sleep();
+
+                if(m_attemptShutdown) {
+                    prepareShutdown();
+                    break;
+                }
             }
         });
 
@@ -62,8 +67,21 @@ class DProcess
         m_thread.join();
     }
 
+    void attemptShutdown() {
+        m_attemptShutdown = true;
+    }
+
+
     virtual void tick()
     {
+    }
+
+  protected:
+    bool m_attemptShutdown = false;
+
+    virtual void prepareShutdown() {
+        m_attemptShutdown = true;
+        // do stuff before shutdown
     }
 
   private:

@@ -7,15 +7,8 @@ usage: ./sync.py [robotId]
 import os
 import sys
 
-username = 'zjudancer'
-passwd = "'"
-
-wireless_ipbase = '192.168.0.21'
-lan_ipbase = '192.168.100.'
-robot_num = -1
-
 def help():
-    print 'usage:', sys.argv[0], ' <bot number>'
+    print 'usage:', sys.argv[0], ' xxx@xxx'
 
     
 def main():
@@ -23,15 +16,9 @@ def main():
         usage()
         return
 
-    num = int(sys.argv[1])
-    
+    robot = sys.argv[1]
 
-    ipbase = wireless_ipbase 
-    if num > 10:
-        num = num % 10
-        ipbase = lan_ipbase
-
-    cmd = "rsync -avz --exclude '.git' --exclude 'dconfig' --exclude 'devel' --exclude 'build' --exclude 'cmake-build-debug' --exclude '.idea' ~/humanoid {}@{}{}:~/".format(username, ipbase, num)
+    cmd = "rsync -avz --exclude '.git' --exclude 'dconfig' --exclude 'devel' --exclude 'build' --exclude 'cmake-build-debug' --exclude '.idea' ~/humanoid {}:~/".format(robot)
 
     print cmd
 

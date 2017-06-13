@@ -20,7 +20,7 @@ DVision::DVision(ros::NodeHandle* n)
     m_concurrent.push([] {
         //     ROS_INFO("concurrent");
     });
-    m_sub_action_cmd = m_nh->subscribe("/humanoid/ActionCmd", 1, &DVision::motionCallback, this);
+    m_sub_action_cmd = m_nh->subscribe("/humanoid/ActionCommand", 1, &DVision::motionCallback, this);
     m_sub_save_img = m_nh->subscribe("/humanoid/SaveImg", 1, &DVision::saveImgCallback, this);
 }
 
@@ -348,8 +348,6 @@ DVision::motionCallback(const dmotion::ActionCmd::ConstPtr& motion_msg) {
   std::cout << "fuck: " << m_action_cmd.cmd_head.y << " " <<m_action_cmd.cmd_head.z << std::endl;
   m_pitch = static_cast<int>(m_action_cmd.cmd_head.y);
   m_yaw = static_cast<int>(m_action_cmd.cmd_head.z);
-
-
 }
 
 void

@@ -74,7 +74,7 @@ def callback(joy):
     if abs(x) > 1 or abs(y) > 1 or abs(t) > 1:
         cmd.gait_type = ActionCmd.WENXI
         cmd.cmd_vel.linear = Vector3(x, y, 0)
-        cmd.cmd_vel.angular = Vector3(0, 0, t)
+        # cmd.cmd_vel.angular = Vector3(0, 0, t)
         rospy.loginfo("(x: %lf y: %lf t: %lf | pitch: %lf yaw: %lf" %(x, y, t, pitch, yaw))
     else:
         cmd.gait_type = ActionCmd.CROUCH
