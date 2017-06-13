@@ -69,15 +69,15 @@ class WalkToPoint(object):
         for i in range(0, 4):
             if r <= rec[i]:
                 if abs(a_norm[1][i]) < epso:
-                    gait_sx = r * pi * walkAbility[1][i] / 180
-                    gait_st = walkAbility[1][i]
+                    x = r * pi * walkAbility[1][i] / 180
+                    z = walkAbility[1][i]
                 else:
-                    gait_st = b[i] / a_norm[1][i] / \
+                    z = b[i] / a_norm[1][i] / \
                               (pi * r / 180 + a_norm[0][i] / a_norm[1][i])
-                    gait_sx = (b[i] - a_norm[0][i] * gait_st) / a_norm[1][i]
+                    x = (b[i] - a_norm[0][i] * z) / a_norm[1][i]
 
-        gait_sy = 0
-        return gait_sx, gait_sy, gait_st
+        y = 0
+        return x, y, z
 
     def run_all_direc(self, d_pos, d_angle):
         """Run in all direction low speed ok."""
@@ -117,7 +117,7 @@ class WalkToPoint(object):
             m_d_angle = - m_d_angle
             mirror_flag = True
 
-        x_input = self.robotCtrl.gait_sx
+        x_input = self.robotCtrl.x
         theta_p = m_d_pos.get_angle()
         theta_attack = m_d_angle
         theta_safe = min(theta_p, THETA_SAFE)

@@ -19,7 +19,7 @@ class MotionBlackBoard(StatusBlackBoard):
         """Init MotionBlackBoard."""
         super(MotionBlackBoard, self).__init__()
 
-        self.robotCtrl = None
+        self.robotCtrl = Vector3(0, 0, 0)
         self.fieldAngle = 0
         self.eular = None
         self.curPlat = None

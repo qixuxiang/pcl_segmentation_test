@@ -2,6 +2,7 @@
 
 from .world import World
 from .team import Team
+from ..blackboard.gc_bb import get_gc
 from ..types.behaviour_request import BehaviourRequest
 
 _blackboard = None
@@ -15,6 +16,7 @@ def update_bb(bb):
     global _blackboard
     global _world
     global _team
+    _gc = get_gc()
     _blackboard = bb
 
     if not _world:
@@ -24,6 +26,8 @@ def update_bb(bb):
     if not _team:
         _team = Team(_blackboard, _world, _b_req)
     _team.update()
+
+    _gc.update()
 
 
 def get_team():

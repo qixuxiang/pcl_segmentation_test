@@ -309,12 +309,12 @@ class Action(Node):
     # methods for motion
     def walk(self, sx, sy, st):
         """Walk."""
-        self.req.actions.body = walk(sx, sy, st)
+        walk(self.req.actions, sx, sy, st)
 
     def kick(self, left=0):
         """Kick."""
         self.req.kick = True
-        self.req.actions.body = kick(left)
+        kick(self.req.actions, left)
 
     # def update_vec(self, list_):
     #     """Update Gait Vec."""
@@ -323,7 +323,7 @@ class Action(Node):
 
     def enable_vec(self):
         """Enable Vec."""
-        self.req.actions.body = wenxi_gaits()
+        wenxi_gaits(self.req.actions)
 
     def goto(self, destination):
         """Goto position."""
@@ -354,11 +354,11 @@ class Action(Node):
 
     def crouch(self):
         """Crouch."""
-        self.req.actions.body = crouch()
+        crouch(self.req.actions)
 
     def stand(self):
         """Stand."""
-        self.req.actions.body = standup()
+        standup(self.req.actions)
 
     def step(self):
         """Step."""
@@ -366,7 +366,7 @@ class Action(Node):
 
     def turn(self, st):
         """Turn."""
-        self.req.actions.body = walk(0, 0, st)
+        walk(self.req.actions, 0, 0, st)
 
     def turn_right(self):
         """Turn right."""
@@ -378,7 +378,7 @@ class Action(Node):
 
     def lookat(self, yaw, pitch, yaw_speed=2, pitch_speed=2):
         """Look at somewhere with given yaw and pitch."""
-        self.req.actions.head = look_at(yaw, pitch, yaw_speed, pitch_speed)
+        look_at(self.req.actions, yaw, pitch, yaw_speed, pitch_speed)
 
     def face(self, field):
         """Face an object."""

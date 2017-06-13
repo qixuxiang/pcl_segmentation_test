@@ -45,6 +45,15 @@ class GameControllerBlackBoard(StatusBlackBoard):
         self.subscribe("/humanoid/game_controller/connected", String,
                        self, "connected")
 
+    def update(self):
+        """Update GameControllerBlackBoard."""
+        self.cycle += 1
+        if self.secsSincePlay is None:
+            self.secsSincePlay = Timer()
+
+        if self.secsSinceUnpenalised is None:
+            self.secsSinceUnpenalised = Timer()
+
 
 _gc = GameControllerBlackBoard()
 

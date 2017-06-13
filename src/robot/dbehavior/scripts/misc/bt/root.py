@@ -31,12 +31,12 @@ class Root(Node):
             raise Exception('Root should have only 1 child')
 
         self._children[0].tick()
-        self.update_graph()
+        # self.update_graph()
 
-    def update_graph(self):
-        """Update graphviz."""
-        if self.bb.dashmean.updateGraph:
-            self.req.btGraph = self.generate_dot()
+    # def update_graph(self):
+    #     """Update graphviz."""
+    #     if self.bb.dashmean.updateGraph:
+    #         self.req.btGraph = self.generate_dot()
 
     def check_reentry(self):
         """Check re-entry."""
