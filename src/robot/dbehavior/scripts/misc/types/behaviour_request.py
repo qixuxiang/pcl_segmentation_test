@@ -11,16 +11,19 @@
 from geometry_msgs.msg import Vector3
 from dmotion.msg import ActionCmd
 from ..types.constant import UNKNOWN
+from ..types.action_command import crouch, head
 
 
-class BehvaviourRequest(object):
+class BehaviourRequest(object):
     """BehaviourRequest."""
 
     def __init__(self):
         """Init."""
-        super(BehvaviourRequest, self).__init__()
+        super(BehaviourRequest, self).__init__()
         self.update_gait_vec = False
-        self.actions = None
+        self.actions = ActionCmd()
+        crouch(self.actions)
+        head(self.actions, 0, 70)
         self.enable_localization = False
         self.destination = Vector3(UNKNOWN, UNKNOWN, 0)
         self.kick = False
