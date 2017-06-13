@@ -10,7 +10,7 @@
 # @Copyright: ZJUDancer
 
 import rospy
-from misc.blackboard import BlackBoard
+# from misc.blackboard import BlackBoard
 
 
 def mainloop():
@@ -20,9 +20,12 @@ def mainloop():
     rospy.loginfo("dbehavior node started")
 
     # init blackboard
-    bb = BlackBoard()
+    # bb = BlackBoard()
 
     # start loop
+    # rate = rospy.Rate(1)
+    # while not rospy.is_shutdown():
+    #     rate.sleep()
     rospy.spin()
 
 
