@@ -12,6 +12,7 @@
 import os
 import rospy
 import pkgutil
+import misc.init_path
 import misc.status.gglobal as gglobal
 from misc.blackboard import BlackBoard
 from misc.bt import Node, Root
@@ -33,7 +34,7 @@ def find_skill(skill):
         if skill not in all_name:
             continue
 
-        skill_module = __import__("{}.{}".format(package, skill),
+        skill_module = __import__("{}.{}.{}".format("actions", package, skill),
                                   fromlist=[skill])
         skill_class = getattr(skill_module, skill)
         found_skill = True
