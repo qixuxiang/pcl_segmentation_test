@@ -1,10 +1,10 @@
 """Root Node."""
 
 import rospy
-from node import Node
+from .node import Node
 from ..types.constant import STATE_INITIAL, STATE_READY
-from Global import get_req, get_world
-from util.GameControl import get_gc
+from ..status.gglobal import get_req, get_world
+from ..blackboard.gc_bb import get_gc
 
 
 class Root(Node):

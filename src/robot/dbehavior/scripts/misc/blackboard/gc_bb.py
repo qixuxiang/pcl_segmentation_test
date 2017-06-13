@@ -44,3 +44,12 @@ class GameControllerBlackBoard(StatusBlackBoard):
         # subscribe
         self.subscribe("/humanoid/game_controller/connected", String,
                        self, "connected")
+
+
+_gc = GameControllerBlackBoard()
+
+
+def get_gc():
+    """Get GameControllerBlackBoard."""
+    global _gc
+    return _gc

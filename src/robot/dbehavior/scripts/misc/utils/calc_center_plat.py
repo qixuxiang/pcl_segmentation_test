@@ -9,7 +9,7 @@
 # @Copyright: ZJUDancer
 
 import rospy
-from ..type.constant import (VIEW_CENTER, MAX_PLAT_YAW,
+from ..types.constant import (VIEW_CENTER, MAX_PLAT_YAW,
                              MIN_PLAT_PITCH, MAX_PLAT_PITCH)
 from ..types.vec_pos import VecPos
 from ..utils.mathutil import get_dis

@@ -1,8 +1,8 @@
 """Get global variables."""
 
-from world import World
-from team import Team
-from types.behaviour_request import BehaviourRequest
+from .world import World
+from .team import Team
+from ..types.behaviour_request import BehaviourRequest
 
 _blackboard = None
 _world = None

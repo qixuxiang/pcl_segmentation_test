@@ -59,7 +59,8 @@ class ParamsBlackBoard(StatusBlackBoard):
         self.gparam_vecpos("/dbehaviour/robot_{}/DOGE_POINT_DOWN"
                            .format(robot_id),
                            "DOGE_POINT_DOWN", self.robot_config)
-        self.doge_angle = degree_between(self.DOGE_POINT, VecPos(0, 50))
+        self.doge_angle = degree_between(self.robot_config.DOGE_POINT,
+                                         VecPos(0, 50))
         self.gparam("/dbehaviour/robot_{}/LINE_UP_TIMEOUT".format(robot_id),
                     "LINE_UP_TIMEOUT", self.robot_config)
         self.gparam("/dbehaviour/robot_{}/DEST_REGION".format(robot_id),

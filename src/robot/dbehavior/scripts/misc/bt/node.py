@@ -10,15 +10,14 @@ from enum import Enum
 from inspect import isclass
 
 
-from ..gglobal import get_req, get_bb, get_world, get_team, get_cfg
+from ..status.gglobal import get_req, get_bb, get_world, get_team
+from ..types.vec_pos import VecPos
+from ..types.action_command import (walk, look_at, crouch, standup,
+                                    wenxi_gaits, kick)
 from ..utils.mathutil import get_dis, abs_angle_diff, get_magnitude, get_angle
 from ..utils.calc_walk_engine import get_walk, get_walk_field
-from ..types.vec_pos import VecPos
-from util.GameControl import get_gc
-from util.actioncommand import walk, look_at, crouch, \
-    standup, wenxi_gaits, kick
-from util.calc_center_plat import calc_center_plat
-from util.list_to_gaitvec import list_to_gaitvec
+from ..utils.calc_center_plat import calc_center_plat
+from ..blackboard.gc_bb import get_gc
 
 
 # color for graphviz
@@ -87,7 +86,7 @@ class Node(object):
         # every node has the same blackboard
         self.bb = get_bb()
         self.world = get_world()
-        self.cfg = get_cfg()
+        self.cfg = self.bb.params.robot_config
         self.team = get_team()
         # shape for graphviz
         self.color = LightGrey
@@ -317,10 +316,10 @@ class Action(Node):
         self.req.kick = True
         self.req.actions.body = kick(left)
 
-    def update_vec(self, list_):
-        """Update Gait Vec."""
-        self.req.update_gait_vec = True
-        self.req.gaitVec = list_to_gaitvec(list_)
+    # def update_vec(self, list_):
+    #     """Update Gait Vec."""
+    #     self.req.update_gait_vec = True
+    #     self.req.gaitVec = list_to_gaitvec(list_)
 
     def enable_vec(self):
         """Enable Vec."""

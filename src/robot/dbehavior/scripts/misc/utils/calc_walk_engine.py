@@ -4,7 +4,7 @@ import copy
 from math import pi, cos, sin
 from ..utils.mathutil import calc_field_position, sign, angle_normalization
 from ..types.vec_pos import VecPos
-from Global import get_bb
+from ..status.gglobal import get_bb
 
 # __all__ = ['get_walk']
 

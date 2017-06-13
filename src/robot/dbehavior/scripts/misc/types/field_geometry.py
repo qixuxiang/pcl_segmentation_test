@@ -14,7 +14,7 @@ from math import atan2, degrees
 from ..utils.mathutil import angle_normalization, degree_between
 from ..types.vec_pos import VecPos
 from ..types.constant import MAX_VIEW_DIST, LEFT
-from GameControl import get_gc
+from ..blackboard.gc_bb import get_gc
 
 
 # field model

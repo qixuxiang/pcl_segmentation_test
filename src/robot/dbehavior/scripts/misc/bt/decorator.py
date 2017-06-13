@@ -1,6 +1,6 @@
 """Decorator Node."""
 
-from node import Node, Condition, Status
+from .node import Node, Condition, Status
 from ..utils.timer import Timer
 
 

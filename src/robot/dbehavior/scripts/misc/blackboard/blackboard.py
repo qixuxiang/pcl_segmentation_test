@@ -11,7 +11,7 @@
 from .motion_bb import MotionBlackBoard
 from .vision_bb import VisionBlackBoard
 from .params_bb import ParamsBlackBoard
-from .gc_bb import GameControllerBlackBoard;
+from .gc_bb import GameControllerBlackBoard
 
 
 class BlackBoard(object):
@@ -20,8 +20,8 @@ class BlackBoard(object):
     def __init__(self):
         """Init BlackBoard."""
         super(BlackBoard, self).__init__()
-        self.gc = GameControllerBlackBoard()
+        # self.gc = GameControllerBlackBoard()
         self.motion = MotionBlackBoard()
         self.vision = VisionBlackBoard()
         # TODO(corenel) get robot id from GameController
-        self.params = ParamsBlackBoard(0)
+        self.params = ParamsBlackBoard()

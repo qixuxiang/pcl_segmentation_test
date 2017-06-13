@@ -19,6 +19,7 @@ from ..types.field_geometry import (STRIKER_POS_KICKOFF,
                                     STRIKER_POS_NONE_KICK_OFF,
                                     DEFENDER_POS, MIDFIELDER_POS, GOALIE_POS,
                                     inverse_global_pos_by_side)
+from ..blackboard.gc_bb import get_gc
 
 
 class Team(object):
@@ -45,7 +46,7 @@ class Team(object):
 
     def update(self):
         """Update."""
-        gc = self.bb.gc
+        gc = get_gc()
         self.id = gc.player_id
 
         self.cycle += 1
@@ -105,7 +106,7 @@ class Team(object):
 
     def get_start_pos(self, role):
         """Get start pos."""
-        gc = self.bb.gc
+        gc = get_gc()
         kick_direction = gc.kick_direction
 
         if gc.kickoff:

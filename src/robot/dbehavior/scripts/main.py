@@ -12,7 +12,7 @@
 import os
 import rospy
 import pkgutil
-import misc.gglobal as gglobal
+import misc.status.gglobal as gglobal
 from misc.blackboard import BlackBoard
 from misc.bt import Node, Root
 
