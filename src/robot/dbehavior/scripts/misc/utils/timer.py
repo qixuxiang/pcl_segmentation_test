@@ -38,7 +38,6 @@ class Timer(object):
         self.timeTarget = rospy.Duration.from_sec(time_target)
         self.running = False
         self.elapsedTime = rospy.Duration.from_sec(0)
-        # self.startTime = blackboard.behaviour.timestamp
         self.startTime = rospy.get_rostime()
         self.restart()
 

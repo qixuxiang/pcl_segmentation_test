@@ -52,7 +52,7 @@ def init_skill():
     if skill_instance:
         return
     blackboard = gglobal.get_bb()
-    skill = blackboard.behaviour.skill
+    skill = blackboard.params.skill
     skill_class = find_skill(skill)
     if issubclass(skill_class, Node):
         skill_instance = Root()

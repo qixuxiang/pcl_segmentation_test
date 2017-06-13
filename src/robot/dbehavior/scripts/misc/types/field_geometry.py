@@ -142,7 +142,7 @@ def facing_goal(robot_pos):
 
     # print diff
 
-    angle = robot_pos.anglez
+    angle = robot_pos.z
 
     if angle_normalization(angle - left) < 0 and \
             angle_normalization(angle - right) > 0:
@@ -194,4 +194,4 @@ def inside_view(field_position):
 
 def inverse_global_pos_by_side(pos):
     """Convert a pos in left side to red side by mirror."""
-    return Vector3(-pos.x, pos.y, angle_normalization(180 - pos.anglez))
+    return Vector3(-pos.x, pos.y, angle_normalization(180 - pos.z))

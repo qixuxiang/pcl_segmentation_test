@@ -193,7 +193,7 @@ def get_walk(dest_global_pos, robot_pos, force_all_direc=False):
     bb = get_bb()
     robot_ctrl = bb.motion.robotCtrl
     dest_pos = calc_field_position(dest_global_pos, robot_pos)
-    dest_angle = angle_normalization(dest_global_pos.anglez - robot_pos.anglez)
+    dest_angle = angle_normalization(dest_global_pos.z - robot_pos.z)
     w_instance.update(dest_pos, dest_angle, robot_ctrl)
     return w_instance.run_geom(force_all_direc)
 

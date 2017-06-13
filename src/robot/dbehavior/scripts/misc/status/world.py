@@ -89,12 +89,12 @@ class World(object):
 
         # vision
         self.vision_ball_field = _blackboard.vision.ball_field
-        self.left_goal = _blackboard.recognition.est_goal_left
-        self.right_goal = _blackboard.recognition.est_goal_right
-        self.unknown_goal = _blackboard.recognition.est_goal_unknown
+        self.left_goal = _blackboard.vision.est_goal_left
+        self.right_goal = _blackboard.vision.est_goal_right
+        self.unknown_goal = _blackboard.vision.est_goal_unknown
 
         # localization
-        self.robot_pos = _blackboard.localization.robotPos
+        self.robot_pos = _blackboard.vision.robotPos
         self.field_angle = _blackboard.motion.fieldAngle
 
         if inside_view(self.left_goal) and inside_view(self.right_goal):
@@ -133,10 +133,10 @@ class World(object):
 
         # vision/recognition
         # todo continue
-        self.obstalce = _blackboard.recognition.obstacle
+        self.obstalce = _blackboard.vision.obstacle
 
-        ball_global = _blackboard.recognition.ballest_global
-        ball_field = _blackboard.recognition.ballest
+        ball_global = _blackboard.vision.ballest_global
+        ball_field = _blackboard.vision.ballest
 
         if inside_field(ball_global) and inside_view(ball_field):
             if False:  # ball_field.x < 0:

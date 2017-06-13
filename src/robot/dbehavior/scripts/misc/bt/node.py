@@ -341,7 +341,7 @@ class Action(Node):
     def got_dest(self, pos):
         """Check if getting to dest."""
         dis = get_dis(pos, self.world.robot_pos)
-        diff_angle = abs_angle_diff(pos.anglez - self.world.robot_pos.anglez)
+        diff_angle = abs_angle_diff(pos.z - self.world.robot_pos.z)
 
         if dis < 35 and diff_angle < 15:
             return True

@@ -11,7 +11,8 @@
 from .motion_bb import MotionBlackBoard
 from .vision_bb import VisionBlackBoard
 from .params_bb import ParamsBlackBoard
-from .gc_bb import GameControllerBlackBoard
+from .receiver_bb import ReceiverBlackBoard
+# from .gc_bb import GameControllerBlackBoard
 
 
 class BlackBoard(object):
@@ -23,5 +24,5 @@ class BlackBoard(object):
         # self.gc = GameControllerBlackBoard()
         self.motion = MotionBlackBoard()
         self.vision = VisionBlackBoard()
-        # TODO(corenel) get robot id from GameController
         self.params = ParamsBlackBoard()
+        self.receiver = ReceiverBlackBoard()

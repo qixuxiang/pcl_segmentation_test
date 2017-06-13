@@ -392,5 +392,5 @@ class Team(object):
 def calc_time_to_reach_pos(robot_pos, dest_pos):
     """Calculate time to reach pos."""
     dis = get_dis(robot_pos, dest_pos)
-    angle = abs(angle_normalization(robot_pos.anglez - dest_pos.anglez))
+    angle = abs(angle_normalization(robot_pos.z - dest_pos.z))
     return dis / WALK_SPEED + angle / TURN_SPEED / 2
