@@ -15,7 +15,6 @@ import pkgutil
 import misc.gglobal as gglobal
 from misc.blackboard import BlackBoard
 from misc.bt import Node, Root
-from misc.utils.timer import Timer
 
 
 skill_instance = None
@@ -84,6 +83,8 @@ def mainloop():
         # tick skill
         skill_instance.tick()
         # publish behaviour request
+        req = gglobal.get_req()
+        req.publish()
         # sleep
         rate.sleep()
 

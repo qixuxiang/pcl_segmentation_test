@@ -20,4 +20,4 @@ class VisionBlackBoard(StatusBlackBoard):
         super(VisionBlackBoard, self).__init__()
 
         # subscribe
-        self.subscribe('dvision', 'ball', String, self)
+        self.subscribe('/dvision/ball', String, self, 'ball')

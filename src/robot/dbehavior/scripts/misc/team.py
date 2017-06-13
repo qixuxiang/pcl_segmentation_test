@@ -19,7 +19,6 @@ from ..types.field_geometry import (STRIKER_POS_KICKOFF,
                                     STRIKER_POS_NONE_KICK_OFF,
                                     DEFENDER_POS, MIDFIELDER_POS, GOALIE_POS,
                                     inverse_global_pos_by_side)
-from util.GameControl import get_gc
 
 
 class Team(object):
@@ -44,15 +43,15 @@ class Team(object):
         self.incapacitated = None
         self.last_received = None
 
-    def update(self, bb):
+    def update(self):
         """Update."""
-        gc = get_gc()
+        gc = self.bb.gc
         self.id = gc.player_id
 
         self.cycle += 1
-        self.data = bb.receiver.data
-        self.last_received = bb.receiver.last_received
-        self.incapacitated = bb.receiver.incapacitated
+        self.data = self.bb.receiver.data
+        self.last_received = self.bb.receiver.last_received
+        self.incapacitated = self.bb.receiver.incapacitated
 
         self.update_times()
 
@@ -67,8 +66,6 @@ class Team(object):
             self.req.currentRole = self.currentRole
 
         self.req.goalieAttacking = self.goalieAttacking
-
-        # self.test_recv()
 
     def update_times(self):
         """Update time."""
@@ -108,7 +105,7 @@ class Team(object):
 
     def get_start_pos(self, role):
         """Get start pos."""
-        gc = get_gc()
+        gc = self.bb.gc
         kick_direction = gc.kick_direction
 
         if gc.kickoff:
@@ -307,7 +304,8 @@ class Team(object):
     def goalie_incapacitated(self):
         """Check if Goalie is incapacitated."""
         for i in xrange(ROBOTS_PER_TEAM):
-            if self.get_role(i) is ROLE_GOALIE and not self.is_teammate_active(i):
+            if self.get_role(i) is ROLE_GOALIE and \
+                    not self.is_teammate_active(i):
                 return True
         return False
 

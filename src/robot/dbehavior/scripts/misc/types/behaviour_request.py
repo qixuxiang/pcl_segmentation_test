@@ -8,6 +8,7 @@
 # @Last modified time: 2017-06-13T10:43:52+08:00
 # @Copyright: ZJUDancer
 
+import rospy
 from geometry_msgs.msg import Vector3
 from dmotion.msg import ActionCmd
 from ..types.constant import UNKNOWN
@@ -30,3 +31,16 @@ class BehaviourRequest(object):
         self.saveimage = False
         self.resetLocalization = False
         self.reset_point = Vector3(UNKNOWN, UNKNOWN, 0)
+        self.goalieAttacking = False
+        self.timeToReachBall = 9999.0
+        self.timeToReachStriker = 9999.0
+        self.timeToReachMidFielder = 9999.0
+        self.timeToReachDefender = 9999.0
+        self.currentRole = None
+        # publish node
+        self.dmotion_pub = rospy.Publisher('/humanoid/ActionCommand',
+                                           ActionCmd, queue_size=1)
+
+    def publish(self):
+        """Publish messages."""
+        self.dmotion_pub.publish(self.actions)

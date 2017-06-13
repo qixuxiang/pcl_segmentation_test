@@ -11,7 +11,7 @@ _b_req = BehaviourRequest()
 
 
 def update_bb(bb):
-    """Init global variables with BlackBoard."""
+    """Update global variables with BlackBoard."""
     global _blackboard
     global _world
     global _team
@@ -19,11 +19,11 @@ def update_bb(bb):
 
     if not _world:
         _world = World(_blackboard)
-    # _world.update(_blackboard)
+    _world.update()
 
     if not _team:
         _team = Team(_blackboard, _world, _b_req)
-    # _team.update(_blackboard)
+    _team.update()
 
 
 def get_team():

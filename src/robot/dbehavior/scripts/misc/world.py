@@ -71,13 +71,14 @@ class World(object):
         # flag for reentry
         self.enable_reentry = False
 
-    def update(self, _blackboard):
+    def update(self):
         """Update.
 
         1. consider ball is hided by obstacle
         2. when ball is near left or right to robot's foot,
         very easily it disappears, so we need to remember it for 2 seconds
         """
+        _blackboard = self.bb
         # motion
         self.uptime = _blackboard.motion.uptime
         self.lower_board_connected = _blackboard.motion.lower_board_connected
