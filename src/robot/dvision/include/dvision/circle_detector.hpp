@@ -21,6 +21,7 @@ class CircleDetector : public IDetector
     explicit CircleDetector();
     ~CircleDetector();
     bool Init();
+    bool Process(bool& confused, cv::Point2d& result_circle, std::vector<LineSegment>& clustered_lines);
 
     bool GetCircle(const double& H2, std::vector<LineSegment>& clustered_lines, bool& confiused, cv::Point2d& result_circle);
 

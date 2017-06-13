@@ -96,10 +96,12 @@ class Localization
                    const bool& circle_detected,
                    const cv::Point2f& field_hull_real_center,
                    const std::vector<cv::Point2f>& field_hull_real,
-                   const cv::Point2d& result_circle_rotated,
+                   std::vector<cv::Point2f>& m_field_hull_real_rotated,
+                   const cv::Point2d& result_circle,
                    const std::vector<cv::Point2f>& goal_position,
                    std::vector<LineContainer>& all_lines,
-                   std::vector<FeatureContainer>& all_features);
+                   std::vector<FeatureContainer>& all_features,
+                   Projection& m_projection);
 
     // graph
     void InitG2OGraph();

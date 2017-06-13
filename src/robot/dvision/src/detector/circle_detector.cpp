@@ -17,6 +17,10 @@ CircleDetector::CircleDetector()
 {
 }
 
+CircleDetector::~CircleDetector()
+{
+}
+
 bool
 CircleDetector::Init()
 {
@@ -24,8 +28,13 @@ CircleDetector::Init()
     return true;
 }
 
-CircleDetector::~CircleDetector()
+bool
+CircleDetector::Process(bool& confused, cv::Point2d& result_circle, std::vector<LineSegment>& clustered_lines)
 {
+    if (parameters.circle.enable)
+        return GetCircle(parameters.field_model.center_circle_diameter / 2, clustered_lines, confused, result_circle);
+    else
+        return false;
 }
 
 bool

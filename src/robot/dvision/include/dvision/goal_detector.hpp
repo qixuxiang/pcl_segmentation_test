@@ -22,6 +22,14 @@ class GoalDetector : public IDetector
     explicit GoalDetector();
     ~GoalDetector();
     bool Init();
+    bool Process(std::vector<cv::Point2f>& goal_position_real,
+                 cv::Mat& m_canny_img,
+                 cv::Mat& m_hsv_img,
+                 cv::Mat& m_gui_img,
+                 cv::Mat& m_gray_img,
+                 cv::Mat& m_goal_binary,
+                 std::vector<cv::Point>& hull_field,
+                 Projection& m_projection);
 
     bool GetPosts(cv::Mat& canny_img,
                   cv::Mat& raw_hsv,
@@ -36,19 +44,18 @@ class GoalDetector : public IDetector
                   cv::Mat& gui_img);
 
     bool CheckDistanceBox(cv::Point2f down_point_in_real, double length);
-    bool CheckDownPointDistance(const cv::Point &down, double &jump_double, Projection &projection,
-                                std::vector<cv::Point> field_hull);
-    bool VoteGoalPostPoint(LineSegment &tmp_line,
-                           const cv::Point2d &point,
-                           const double &jump_double,
-                           const bool &SHOWGUI,
-                           cv::Mat &gui_img,
-                           const cv::Mat &raw_hsv,
-                           const cv::Mat &canny_img,
-                           double &left_avg,
-                           double &right_avg,
-                           int &vote_for_double_left,
-                           int &vote_for_double_right);
+    bool CheckDownPointDistance(const cv::Point& down, double& jump_double, Projection& projection, std::vector<cv::Point> field_hull);
+    bool VoteGoalPostPoint(LineSegment& tmp_line,
+                           const cv::Point2d& point,
+                           const double& jump_double,
+                           const bool& SHOWGUI,
+                           cv::Mat& gui_img,
+                           const cv::Mat& raw_hsv,
+                           const cv::Mat& canny_img,
+                           double& left_avg,
+                           double& right_avg,
+                           int& vote_for_double_left,
+                           int& vote_for_double_right);
 
   private:
 };

@@ -11,6 +11,7 @@
 
 #pragma once
 #include "dvision/idetector.hpp"
+#include "dvision/projection.hpp"
 #include <ros/ros.h>
 #include <vector>
 
@@ -21,6 +22,16 @@ class FieldDetector : public IDetector
     explicit FieldDetector();
     ~FieldDetector();
     bool Init();
+    bool Process(std::vector<cv::Point2f>& m_field_hull_real,
+                 std::vector<cv::Point2f>& m_field_hull_real_rotated,
+                 std::vector<cv::Point>& hull_field,
+                 cv::Mat& m_field_binary,
+                 cv::Mat& field_binary_raw,
+                 cv::Mat& m_field_convex_hull,
+                 cv::Mat& m_hsv_img,
+                 cv::Mat& m_gui_img,
+                 cv::Point2f& m_field_hull_real_center,
+                 Projection& m_projection);
 
     bool GetPoints(cv::Mat& binary_frame, std::vector<cv::Point>& res_points, std::vector<std::vector<cv::Point>>& all_field_contours);
     void FindInField(const cv::Mat& src_hsv_img, const cv::Mat& template_gray_img, cv::Mat* dst_gray_imgs, HSVRange* ranges, bool* in_template, int size = 1);

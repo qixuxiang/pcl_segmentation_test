@@ -17,6 +17,10 @@ GoalDetector::GoalDetector()
 {
 }
 
+GoalDetector::~GoalDetector()
+{
+}
+
 bool
 GoalDetector::Init()
 {
@@ -24,8 +28,40 @@ GoalDetector::Init()
     return true;
 }
 
-GoalDetector::~GoalDetector()
+bool
+GoalDetector::Process(std::vector<cv::Point2f>& goal_position_real,
+                      cv::Mat& m_canny_img,
+                      cv::Mat& m_hsv_img,
+                      cv::Mat& m_gui_img,
+                      cv::Mat& m_gray_img,
+                      cv::Mat& m_goal_binary,
+                      std::vector<cv::Point>& hull_field,
+                      Projection& m_projection)
 {
+    bool goal_detection_OK = false;
+    if (parameters.goal.enable) {
+        std::vector<LineSegment> result_lines, all_lines;
+        // detect goal position
+        goal_detection_OK =
+          GetPosts(m_canny_img, m_hsv_img, m_gray_img, m_goal_binary.clone(), m_projection, hull_field, result_lines, all_lines, goal_position_real, parameters.monitor.update_gui_img, m_gui_img);
+
+        // draw all possible goal lines
+        if (parameters.goal.showAllLines && parameters.monitor.update_gui_img) {
+            for (auto line : all_lines) {
+                cv::line(m_gui_img, line.P1, line.P2, blueMeloColor(), 2, 8);
+            }
+        }
+
+        if (goal_detection_OK) {
+            // draw selected goal lines
+            if (parameters.goal.showResLine && parameters.monitor.update_gui_img) {
+                for (auto line : result_lines) {
+                    cv::line(m_gui_img, line.P1, line.P2, blueMeloColor(), 2, 8);
+                }
+            }
+        }
+    }
+    return goal_detection_OK;
 }
 
 bool
