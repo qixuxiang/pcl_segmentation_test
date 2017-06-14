@@ -81,7 +81,8 @@ IPM::calculatePoints(vector<Point2f>& contour, vector<Point2f>& resContour)
         double y = (contour[i].y - parameters.camera.undistCy) / parameters.camera.fy;
 
         MatrixXd solve_A(2, 2);
-        solve_A << mMat(0, 0) - mMat(2, 0) * x, mMat(0, 1) - mMat(2, 1) * x, mMat(1, 0) - mMat(2, 0) * y, mMat(1, 1) - mMat(2, 1) * y;
+        solve_A << mMat(0, 0) - mMat(2, 0) * x, mMat(0, 1) - mMat(2, 1) * x,
+            mMat(1, 0) - mMat(2, 0) * y, mMat(1, 1) - mMat(2, 1) * y;
 
         // Check if solve_A doesn't has a inverse matrix, means that solve_A is linear correlation
         if (solve_A(0, 0) * solve_A(1, 1) == solve_A(0, 1) * solve_A(1, 0)) {

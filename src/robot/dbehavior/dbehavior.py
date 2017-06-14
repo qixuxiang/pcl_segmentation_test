@@ -21,7 +21,7 @@ def main():
     while not rospy.is_shutdown():
         cmd = ActionCmd()
 
-        cmd.gait_type = ActionCmd.CROUCH
+        cmd.gait_type = ActionCmd.STANDUP
         cmd.cmd_head_speed = Vector3(0, 1, 1)
         cmd.cmd_head = Vector3(0, 0, 0)
 

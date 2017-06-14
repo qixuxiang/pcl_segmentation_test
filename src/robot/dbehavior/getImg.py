@@ -52,9 +52,10 @@ def main():
         pitch_now = pitch_yaw[play_cnt][0]
         yaw_now = pitch_yaw[play_cnt][1]
 
-        # cmd.gait_type = ActionCmd.CROUCH
+        cmd.gait_type = ActionCmd.STANDUP
         # cmd.cmd_head = Vector3(0, pitch_now, yaw_now)
-        # pub_action_cmd.publish(cmd)
+        cmd.cmd_head = Vector3(0, 45, 0)
+        pub_action_cmd.publish(cmd)
         
         # time.sleep(1)
         pub_save_img.publish(save_img)

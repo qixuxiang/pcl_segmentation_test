@@ -45,7 +45,7 @@ void CLabel::updateView()
     // paint
     QPainter painter(&tmp);
     QPen pen(Qt::red);
-    pen.setWidth(10);
+    pen.setWidth(3);
     QPoint p1;
     p1.setX(mouseX);
     p1.setY(mouseY);
