@@ -20,8 +20,8 @@ TEST(distortionModel, main)
         frame.show();
 
         Mat dst1, dst2;
-        dist.undistortImage(frame.getRGB(), dst1);
-        dist.undistortImage2(frame.getRGB(), dst2);
+        dist.undistortImage(frame.getBGR(), dst1);
+        dist.undistortImage2(frame.getBGR(), dst2);
 
         namedWindow("undist1", CV_WINDOW_NORMAL);
         imshow("undist1", dst1);

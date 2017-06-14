@@ -1,9 +1,9 @@
 #include "mymodel.hpp"
 #include <QtCore>
+using namespace dvision;
 
 MyModel::MyModel(QObject* parent) : QAbstractListModel(parent)
 {
-
 }
 
 int MyModel::rowCount(const QModelIndex &parent) const
@@ -44,32 +44,29 @@ QVariant MyModel::data(const QModelIndex &index, int role) const
 
 void MyModel::loadImages(QString filename)
 {
-    QFileInfoList allfiles;
     QFileInfo info;
     info.setFile(filename);
     QDir dir = info.dir();
 
     QStringList filter;
     filter << "*.png" << "*.jpg";
-    allfiles = dir.entryInfoList(filter, QDir::Files, QDir::Name);
+    m_allfilesInfo = dir.entryInfoList(filter, QDir::Files, QDir::Name);
 
 //    foreach (const QFileInfo& info, m_fileinfo) {
 //        qDebug() << info.absoluteFilePath();
 //        m_pictures.push_back(QPixmap(info.absoluteFilePath()).scaledToHeight(100));
 //    }
 
-    m_pictures.resize(allfiles.size());
-    m_pics.resize(allfiles.size());
-    m_picname.resize(allfiles.size());
-    for(int i = 0; i < allfiles.size(); ++i) {
-       m_pictures[i] = QPixmap(allfiles[i].absoluteFilePath());
-       m_picname[i] = allfiles[i].fileName();
+    m_pictures.resize(m_allfilesInfo.size());
+    m_pics.resize(m_allfilesInfo.size());
+    m_picname.resize(m_allfilesInfo.size());
+    for(int i = 0; i < m_allfilesInfo.size(); ++i) {
+       m_pictures[i] = QPixmap(m_allfilesInfo[i].absoluteFilePath());
+       m_picname[i] = m_allfilesInfo[i].fileName();
 
     }
 
-
-
-    insertRows(0, allfiles.size(), QModelIndex());
+    insertRows(0, m_allfilesInfo.size(), QModelIndex());
 }
 
 const QPixmap MyModel::getImage(int row) const
@@ -81,15 +78,19 @@ const QPixmap MyModel::getImage(int row) const
     return m_pictures.at(row);
 }
 
+
+
+
 const QPixmap MyModel::getImage() const
 {
     return getImage(m_currentIndex);
 }
 
-void MyModel::setCurrentIndex(int idx)
+dvision::Frame MyModel::getFrame() const
 {
-    m_currentIndex = idx;
+    return Frame(m_allfilesInfo[m_currentIndex].absoluteFilePath().toStdString());
 }
+
 
 QPoint MyModel::getPlatAngle(int index)
 {
@@ -105,5 +106,10 @@ QPoint MyModel::getPlatAngle(int index)
     auto yaw = s[3].toInt();
 
     return QPoint(pitch, yaw);
+}
+
+void MyModel::onCurrentIndexChanged(QModelIndex current)
+{
+    m_currentIndex = current.row();
 }
 

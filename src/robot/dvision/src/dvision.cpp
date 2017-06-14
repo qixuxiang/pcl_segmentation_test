@@ -57,7 +57,7 @@ DVision::tick()
     }
 
     // get image in BGR and HSV color space
-    m_gui_img = frame.getRGB();
+    m_gui_img = frame.getBGR();
     cv::cvtColor(m_gui_img, m_hsv_img, CV_BGR2HSV);
 
     /******************

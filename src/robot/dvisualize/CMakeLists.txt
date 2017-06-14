@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(dvisualize)
 #LIST(APPEND CMAKE_MODULE_PATH ${dvision_SOURCE_DIR}/cmake_modules)
 
-add_definitions(-std=c++11 -Wall -Wextra -Wfloat-equal -Wno-unused-result) #-Weffc++ -pedantic
+add_definitions(-std=c++11 -Wall  -Wextra -Wfloat-equal -Wno-unused-result) #-Weffc++ -pedantic
 
 find_package(catkin REQUIRED
   COMPONENTS 
@@ -10,6 +10,7 @@ find_package(catkin REQUIRED
   dvision
 )
 
+find_package(OpenCV 3 REQUIRED)
 catkin_package(
 #  INCLUDE_DIRS include
   #  LIBRARIES dmotion
@@ -43,4 +44,5 @@ add_executable(dvisualize src/main.cpp
 
 target_link_libraries(dvisualize 
     ${catkin_LIBRARIES}
+    ${OpenCV_LIBS}
     Qt5::Core Qt5::Widgets)

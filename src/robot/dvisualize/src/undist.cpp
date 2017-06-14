@@ -1,40 +1,68 @@
 #include <QDebug>
 #include <QMouseEvent>
+#include <QPainter>
+#include <QPen>
 #include "undist.hpp"
 #include "ui_undist.h"
+#include "dvision/frame.hpp"
+#include "dvision/parameters.hpp"
 
+using namespace dvision;
 Undist::Undist(QWidget *parent) : QDialog(parent), ui(new Ui::Undist) {
     ui->setupUi(this);
+
+    ros::NodeHandle nh;
+    parameters.init(&nh);
+
+    m_distmodel= new DistortionModel();
+    m_distmodel->init();
 }
 
 Undist::~Undist() {
-
 }
 
-void Undist::setPixmap(QPixmap img)
+void Undist::setModel(MyModel *model)
 {
-   m_currentImg = img;
-   m_height = img.height();
-   m_width = img.width();
-   ui->img->setPixmap(img);
+   m_listmodel = model;
 }
 
 void Undist::onOriginalClicked(QMouseEvent *ev)
 {
    m_x = ev->x();
    m_y = ev->y();
-   qDebug() << "ori x: " << m_x << " y: " << m_y;
-
-   update();
+   updateView();
 }
 
-
-void Undist::update()
+void Undist::updateView()
 {
-    // draw img;
-    this->resize(m_currentImg.width(), m_currentImg.height());
-    ui->img->resize(m_currentImg.width(), m_currentImg.height());
+    // get undist image
+    auto frame = m_listmodel->getFrame();
+    cv::Mat mat;
+    m_distmodel->undistortImage2(frame.getRGB(), mat);
+    m_undistImg = QPixmap::fromImage(QImage(mat.data, mat.cols, mat.rows, mat.step, QImage::Format_RGB888));
+
+    this->resize(m_undistImg.width(), m_undistImg.height());
+    ui->img->resize(m_undistImg.width(), m_undistImg.height());
+
+    // undist point
+    auto point = m_distmodel->undistort(m_x, m_y);
+    m_x = point.x;
+    m_y = point.y;
 
 
-    // draw point !?
+    // paint point
+    QPainter painter(&m_undistImg);
+    QPen pen(Qt::red);
+    pen.setWidth(10);
+
+    QPoint p1;
+    p1.setX(m_x);
+    p1.setY(m_y);
+
+    painter.setPen(pen);
+    painter.drawPoint(p1);
+
+    ui->img->setPixmap(m_undistImg);
+    setVisible(true);
 }
+

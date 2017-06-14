@@ -1,5 +1,9 @@
 #pragma once
 #include <QDialog>
+#include <QPixmap>
+#include "dvision/frame.hpp"
+#include "dvision/distortionModel.hpp"
+#include "mymodel.hpp"
 
 namespace Ui {
    class Undist;
@@ -11,24 +15,30 @@ class Undist : public QDialog {
 public:
     Undist(QWidget* parent);
     ~Undist();
-
-    void setPixmap(QPixmap img);
+    void setModel(MyModel*);
 
  public slots:
     void onOriginalClicked(QMouseEvent* ev);
-    void update();
+    void updateView();
 
 private:
+
     Ui::Undist* ui;
 
     int m_height;
     int m_width;
 
-    int m_x;
-    int m_y;
+    int m_x = 0;
+    int m_y = 0;
 
     int m_undistx;
     int m_undisty;
-    QPixmap m_currentImg;
+    QPixmap m_originImg;
+
+    dvision::DistortionModel* m_distmodel;
+    QPixmap m_undistImg;
+
+
+    MyModel* m_listmodel;
 };
 

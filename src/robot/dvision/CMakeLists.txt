@@ -32,7 +32,7 @@ generate_messages(
 
 catkin_package(
     INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIR}
-    LIBRARIES dvisionlib
+    LIBRARIES dvisionlib ${OpenCV_LIBS}
   #  CATKIN_DEPENDS dprocess
   #  DEPENDS system_lib
 )
