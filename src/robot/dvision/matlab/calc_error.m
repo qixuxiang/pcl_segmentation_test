@@ -13,7 +13,7 @@ for i = 1 : n(1)
     x_real = data(i, 3);
     y_real = data(i, 4);
 
-    [UV] = projection(P, yaw, pitch, x_real, y_real);
+    [UV] = projection(P, pitch, yaw, x_real, y_real);
 
     err(i) = sqrt((u - UV(1))^2 + (v - UV(2))^2);
     error = error + err(i);

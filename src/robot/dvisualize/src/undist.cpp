@@ -49,6 +49,8 @@ void Undist::updateView()
     m_x = point.x;
     m_y = point.y;
 
+    qDebug() << "Undist: (" << m_x << ", " << m_y << ")";
+
 
     // paint point
     QPainter painter(&m_undistImg);

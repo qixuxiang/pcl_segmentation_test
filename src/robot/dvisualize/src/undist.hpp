@@ -1,6 +1,7 @@
 #pragma once
 #include <QDialog>
 #include <QPixmap>
+#include <QDockWidget>
 #include "dvision/frame.hpp"
 #include "dvision/distortionModel.hpp"
 #include "mymodel.hpp"
@@ -17,28 +18,20 @@ public:
     ~Undist();
     void setModel(MyModel*);
 
+    inline int x() const { return m_x; }
+    inline int y() const { return m_y; }
+
  public slots:
     void onOriginalClicked(QMouseEvent* ev);
     void updateView();
 
 private:
-
     Ui::Undist* ui;
-
-    int m_height;
-    int m_width;
-
     int m_x = 0;
     int m_y = 0;
 
-    int m_undistx;
-    int m_undisty;
-    QPixmap m_originImg;
-
     dvision::DistortionModel* m_distmodel;
     QPixmap m_undistImg;
-
-
     MyModel* m_listmodel;
 };
 

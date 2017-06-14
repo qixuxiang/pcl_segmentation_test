@@ -1,4 +1,4 @@
-function [extrinsic] = calc_extrinsic(Parameters)
+function [extrinsic] = calc_extrinsic(Parameters, pitchRad, yawRad)
 
 % world to plat, R means rotate
 Xw2p = Parameters(1);
@@ -21,9 +21,9 @@ scalePitch = Parameters(14);
 biasYaw = Parameters(15);
 biasPitch = Parameters(16);
 
-yaw = (yaw + biasYaw) * scaleYaw;
-pitch = (pitch + biasPitch) * scalePitch;
-PointWorld = [x; y; 0; 1];
+pitch = (pitchRad + biasPitch) * scalePitch;
+yaw = (yawRad + biasYaw) * scaleYaw;
+
 
 w2p = rotateZ(RZw2p) ...
     * rotateY(RYw2p) ...
@@ -37,12 +37,9 @@ p2c = rotateZ(RZp2c) ...
     * rotateY(-pitch) ...
     * rotateZ(-yaw);
 
-PC = p2c * w2p * PointWorld; % PC = PointCamera
-
-PC = [ 0  0 -1  0;
-       0  1  0  0;
-       1  0  0  0;
-       0  0  0  1;] * PC;
-
+extrinsic = [ 0 -1  0  0;
+              0  0 -1  0;
+              1  0  0  0;
+              0  0  0  1;] * p2c * w2p;
 
 end

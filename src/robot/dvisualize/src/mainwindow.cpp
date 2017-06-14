@@ -7,7 +7,7 @@
 
 using namespace dvision;
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), m_ui(new Ui::MainWindow), m_listmodel(new MyModel(this)), m_undist(new Undist(this))
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), m_ui(new Ui::MainWindow), m_listmodel(new MyModel(this)), m_undist(new Undist(parent))
 {
     m_ui->setupUi(this);
     init();
@@ -18,23 +18,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), m_ui(new Ui::Main
     m_undist->setVisible(false);
 
 
-    connect(m_ui->listView->selectionModel(), &QItemSelectionModel::currentChanged,
-            m_listmodel, &MyModel::onCurrentIndexChanged);
-
-    connect(m_ui->listView->selectionModel(), &QItemSelectionModel::currentChanged,
-            m_orignial, &CLabel::updateView);
-
-    connect(m_ui->listView->selectionModel(), &QItemSelectionModel::currentChanged,
-            m_undist, &Undist::updateView);
-
-//    connect(m_ui->listView->selectionModel(), &QItemSelectionModel::currentChanged,
-//            this, &MainWindow::on_currentChanged);
-
-    connect(m_ui->imagePanel, &CLabel::clicked,
-            this, &MainWindow::onOriginalClicked);
-
-    connect(m_ui->imagePanel, &CLabel::clicked,
-            m_undist, &Undist::onOriginalClicked);
 
 
 //    m_model->loadImages("/home/mwx/Pictures/calibration/1496034577976886624.png");
@@ -75,6 +58,28 @@ void MainWindow::init()
 
 }
 
+void MainWindow::connectSignals()
+{
+    connect(m_ui->listView->selectionModel(), &QItemSelectionModel::currentChanged,
+            m_listmodel, &MyModel::onCurrentIndexChanged);
+
+    connect(m_ui->listView->selectionModel(), &QItemSelectionModel::currentChanged,
+            m_orignial, &CLabel::updateView);
+
+    connect(m_ui->listView->selectionModel(), &QItemSelectionModel::currentChanged,
+            m_undist, &Undist::updateView);
+
+    connect(m_ui->listView->selectionModel(), &QItemSelectionModel::currentChanged,
+            this, &MainWindow::on_currentChanged);
+
+    connect(m_ui->imagePanel, &CLabel::clicked,
+            this, &MainWindow::onOriginalClicked);
+
+    connect(m_ui->imagePanel, &CLabel::clicked,
+            m_undist, &Undist::onOriginalClicked);
+
+}
+
 void MainWindow::onOriginalClicked(QMouseEvent *ev)
 {
     QString imgpos = QString("%1, %2").arg(ev->x()).arg(ev->y());
@@ -101,11 +106,7 @@ void MainWindow::on_currentChanged(QModelIndex current)
     m_ui->yaw->setText(QString::number(m_yaw));
 
     updateView();
-//    auto size = ui->imagePanel->pixmap()->size();
-    //    ui->imagePanel->setFixedSize(size.width(), size.height());
 }
-
-
 
 void MainWindow::keyReleaseEvent(QKeyEvent *ev)
 {
@@ -124,7 +125,6 @@ void MainWindow::appendText()
 {
     auto* textEdit = m_ui->textEdit;
     auto real = m_realPoints.at(m_ui->candidateReal->currentIndex());
-
     // !? todo, calc undistorted img position
 //    int x = m_orignial->x();
 //    int y = m_orignial->y();
@@ -132,21 +132,21 @@ void MainWindow::appendText()
 //    x = p.x();
 //    y = p.y();
 
-//    textEdit->append(QString("%1 %2 %3 %4 %5 %6")
-//                     .arg(m_yaw)
-//                     .arg(m_pitch)
-//                     .arg(x)
-//                     .arg(y)
-//                     .arg(real.x())
-//                     .arg(real.y())
+    textEdit->append(QString("%1 %2 %3 %4 %5 %6")
+                     .arg(m_yaw)
+                     .arg(m_pitch)
+                     .arg(m_undist->x())
+                     .arg(m_undist->y())
+                     .arg(real.x())
+                     .arg(real.y())
 
-////            .arg(x)
-////            .arg(y)
-////            .arg(real.x())
-////            .arg(real.y())
-////            .arg(m_pitch)
-////            .arg(m_yaw)
-//                     );
+//            .arg(x)
+//            .arg(y)
+//            .arg(real.x())
+//            .arg(real.y())
+//            .arg(m_pitch)
+//            .arg(m_yaw)
+                     );
 }
 
 
@@ -170,6 +170,7 @@ void MainWindow::on_actionSave_triggered()
 
 void MainWindow::on_actionOpen_triggered()
 {
+    connectSignals();
     QString filename = QFileDialog::getOpenFileName(this, tr("Open Image"), "/home/", tr("Image files (*.png *.jpg)"));
     if(filename != NULL) {
         m_listmodel->loadImages(filename);

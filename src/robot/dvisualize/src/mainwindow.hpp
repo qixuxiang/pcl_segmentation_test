@@ -24,6 +24,7 @@ public:
     inline void setApp(QApplication* app) { m_app = app; }
 private:
     void init();
+    void connectSignals();
 
 public slots:
     void onOriginalClicked(QMouseEvent*);

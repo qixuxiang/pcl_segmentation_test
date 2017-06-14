@@ -52,5 +52,7 @@ void CLabel::updateView()
     painter.setPen(pen);
     painter.drawPoint(p1);
     setPixmap(tmp);
+
+    qDebug() << "Original: (" << mouseX << ", " << mouseY << ")";
 }
 
