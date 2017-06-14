@@ -32,7 +32,6 @@ bool
 LineDetector::Process(cv::Mat& m_canny_img,
                       cv::Mat& m_hsv_img,
                       cv::Mat& m_gui_img,
-                      cv::Mat& m_canny_img_in_field,
                       cv::Mat& m_field_convex_hull,
                       cv::Mat& field_binary_raw,
                       std::vector<LineSegment>& clustered_lines,
@@ -42,7 +41,7 @@ LineDetector::Process(cv::Mat& m_canny_img,
 
     cv::Mat channels[3];
     cv::split(m_hsv_img, channels);
-    m_canny_img_in_field = cv::Mat::zeros(m_canny_img_in_field.size(), CV_8UC1);
+    cv::Mat m_canny_img_in_field = cv::Mat::zeros(m_canny_img_in_field.size(), CV_8UC1);
     // 对v进行模糊,模糊结果存在m_canny_img中
     cv::blur(channels[2], m_canny_img, cv::Size(parameters.line.blurSize, parameters.line.blurSize));
     cv::Canny(m_canny_img, m_canny_img, parameters.line.cannyThreadshold, parameters.line.cannyThreadshold * 3, parameters.line.cannyaperture);

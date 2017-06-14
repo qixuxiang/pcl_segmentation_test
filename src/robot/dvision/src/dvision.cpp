@@ -83,7 +83,7 @@ DVision::tick()
     // calculate canny image
     std::vector<LineSegment> clustered_lines;
 
-    line_detection_OK = m_line.Process(m_canny_img, m_hsv_img, m_gui_img, m_canny_img_in_field, m_field_convex_hull, field_binary_raw, clustered_lines, m_projection);
+    line_detection_OK = m_line.Process(m_canny_img, m_hsv_img, m_gui_img, m_field_convex_hull, field_binary_raw, clustered_lines, m_projection);
 
     if (parameters.line.enable && !line_detection_OK) {
         ROS_ERROR("Detecting lines failed.");
