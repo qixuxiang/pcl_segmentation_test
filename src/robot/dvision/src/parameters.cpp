@@ -24,6 +24,7 @@ Parameters::init(ros::NodeHandle* nh)
     GPARAM("/dvision/projection/cx", parameters.camera.cx);
     GPARAM("/dvision/projection/cy", parameters.camera.cy);
     GPARAM("/dvision/projection/dist_coeff", dist_coeff);
+    GPARAM("/dvision/projection/extrinsic_para", parameters.camera.extrinsic_para);
     GPARAM("/dvision/camera/width", parameters.camera.width);
     GPARAM("/dvision/camera/height", parameters.camera.height);
 

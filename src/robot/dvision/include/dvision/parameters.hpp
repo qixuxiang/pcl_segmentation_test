@@ -31,7 +31,8 @@ struct CameraParameters
     int undistWidth;
     int undistHeight;
 
-    // TODO(MWX): Extrinsic parameters
+    // 16 extrinsic parameters, see meaning in Matlab code: main.m
+    std::vector<double> extrinsic_para;
 };
 
 struct BallDetectorParameters
