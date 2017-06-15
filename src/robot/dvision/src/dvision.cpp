@@ -38,9 +38,7 @@ DVision::tick()
     /**********
      * Update *
      **********/
-    // TODO(mwx) get yaw and pitch from motor
-    double pitch = 0;
-    double yaw = 0;
+    m_projection.updateExtrinsic(m_pitch, m_yaw);
 
     if (!m_loc.Update(m_projection)) {
         ROS_ERROR("Cannot update localization!");
@@ -127,7 +125,6 @@ void
 DVision::motionCallback(const dmotion::ActionCmd::ConstPtr& motion_msg)
 {
     m_action_cmd = *motion_msg;
-    std::cout << "fuck: " << m_action_cmd.cmd_head.y << " " << m_action_cmd.cmd_head.z << std::endl;
     m_pitch = static_cast<int>(m_action_cmd.cmd_head.y);
     m_yaw = static_cast<int>(m_action_cmd.cmd_head.z);
 }

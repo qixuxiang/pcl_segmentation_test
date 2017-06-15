@@ -7,7 +7,7 @@
 
 using namespace dvision;
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), m_ui(new Ui::MainWindow), m_listmodel(new MyModel(this)), m_undist(new Undist(parent))
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), m_ui(new Ui::MainWindow), m_listmodel(new MyModel(this)), m_undist(new Undist(this))
 {
     m_ui->setupUi(this);
     init();
@@ -17,10 +17,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), m_ui(new Ui::Main
     m_ui->listView->setViewMode(QListView::IconMode);
     m_undist->setVisible(false);
 
-
-
-
-//    m_model->loadImages("/home/mwx/Pictures/calibration/1496034577976886624.png");
 }
 
 void MainWindow::init()
@@ -82,8 +78,17 @@ void MainWindow::connectSignals()
 
 void MainWindow::onOriginalClicked(QMouseEvent *ev)
 {
-    QString imgpos = QString("%1, %2").arg(ev->x()).arg(ev->y());
+    int u = ev->x();
+    int v = ev->y();
+
+    QString imgpos = QString("%1, %2").arg(u).arg(v);
     m_ui->labelImagePosition->setText(imgpos);
+
+    cv::Point2f real;
+    m_undist->projection()->getOnRealCoordinate(cv::Point(u, v), real);
+
+    QString realpos = QString("%1 %2").arg(real.x).arg(real.y);
+    m_ui->labelReal->setText(realpos);
 }
 
 void MainWindow::updateView()
@@ -100,7 +105,8 @@ void MainWindow::on_currentChanged(QModelIndex current)
     m_pitch = pitchyaw.x();
     m_yaw = pitchyaw.y();
 
-    qDebug() << m_pitch << " " << m_yaw;
+    m_undist->projection()->updateExtrinsic(m_pitch, m_yaw);
+//    m_undist->projection()->updateExtrinsic(60, 0);
 
     m_ui->pitch->setText(QString::number(m_pitch));
     m_ui->yaw->setText(QString::number(m_yaw));

@@ -86,21 +86,27 @@ DistortionModel::init()
             int index = y * parameters.camera.undistWidth + x;
 
             if(m_distortionVector[index].x == INVALID && m_distortionVector[index].y == INVALID) {
-                bool found = false;
-                int find_region = 5; // pixel
-                for(int dx = -find_region; dx <= find_region && !found; ++dx) {
+                int find_region = 2; // pixel
+                int cnt = 0;
+                int sumx = 0;
+                int sumy = 0;
+                for(int dx = find_region; dx >= -find_region; --dx) {
                     for(int dy = -find_region; dy <= find_region; ++dy) {
                         int nx = x + dx;
                         int ny = y + dy;
                         if(0 <= nx && nx < parameters.camera.undistWidth && 0 <= ny && ny < parameters.camera.undistHeight) {
                             int idx = ny * parameters.camera.undistWidth + nx;
-                            if(m_distortionVector[idx].x != -1 && m_distortionVector[idx].y != -1) {
-                                found = true;
-                                m_distortionVector[index] = m_distortionVector[idx];
-                                break;
+                            if(m_distortionVector[idx].x != INVALID && m_distortionVector[idx].y != -INVALID) {
+                                ++cnt;
+                                sumx += m_distortionVector[idx].x;
+                                sumy += m_distortionVector[idx].y;
                             }
                         }
                     }
+                }
+                if(cnt != 0) {
+                    m_distortionVector[index].x = sumx / cnt;
+                    m_distortionVector[index].y = sumy / cnt;
                 }
             }
         }

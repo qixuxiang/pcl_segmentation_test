@@ -17,8 +17,8 @@ Projection::init(ros::NodeHandle* nh)
     m_ipm.Init(parameters.camera.extrinsic_para,
                parameters.camera.fx,
                parameters.camera.fy,
-               parameters.camera.cx,
-               parameters.camera.cy);
+               parameters.camera.undistCx,
+               parameters.camera.undistCy);
 }
 
 Projection::~Projection() = default;
