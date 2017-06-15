@@ -21,7 +21,7 @@ class Projection
     void init(ros::NodeHandle*);
 
   public:
-    bool updateExtrinsic(double yaw, double pitch);
+    void updateExtrinsic(double yaw, double pitch);
 
     inline bool undistort(const std::vector<cv::Point>& points, std::vector<cv::Point>& res)
     {
@@ -53,7 +53,7 @@ class Projection
     inline double GetHeading()
     {
         // In Radian
-        if (abs(Radian2Degree(m_heading_offset)) > 90) {
+        if (std::abs(Radian2Degree(m_heading_offset)) > 90) {
             ROS_WARN("Heading offset flip prevented!");
             m_heading_offset = 0;
         }

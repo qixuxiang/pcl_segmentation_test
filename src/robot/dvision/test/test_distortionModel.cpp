@@ -19,15 +19,20 @@ TEST(distortionModel, main)
         auto frame = c.capture();
         frame.show();
 
-        Mat dst1, dst2;
+        Mat dst1, dst2, dst3;
         dist.undistortImage(frame.getBGR(), dst1);
         dist.undistortImage2(frame.getBGR(), dst2);
+        dist.undistortImage3(frame.getBGR(), dst3);
 
         namedWindow("undist1", CV_WINDOW_NORMAL);
         imshow("undist1", dst1);
 
         namedWindow("undist2", CV_WINDOW_NORMAL);
         imshow("undist2", dst2);
+
+        namedWindow("undist3", CV_WINDOW_NORMAL);
+        imshow("undist3", dst3);
+
         waitKey(1);
     }
 }

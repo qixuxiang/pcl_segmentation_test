@@ -18,27 +18,12 @@ void IPM::Init(std::vector<double> extrinsic_para, double fx, double fy, double 
 
 void IPM::update(double pitch, double yaw) {
     calc_extrinsic(pitch, yaw);
-
-
     m_A = m_cameraMatrix * m_extrinsic;
     m_invA = m_A.inverse();
-
-//    cout << "exc: " << endl;
-//    cout << m_extrinsic << endl;
-//
-//    cout << "cam: " << endl;
-//    cout << m_cameraMatrix << endl;
-//
-//    cout << "A: " << endl;
-//    cout << m_A << endl;
-//
-//    cout << "inv A " << endl;
-//    cout << m_invA << endl;
 }
 
 void IPM::updateDeg(double pitch, double yaw) {
     update(pitch / 180.0 * M_PI, yaw / 180.0 * M_PI);
-
 }
 
 Point2d IPM::project(double x_real, double y_real, double z_real) {
@@ -94,15 +79,12 @@ void IPM::calc_extrinsic(double pitchRad, double yawRad) {
 
     double pitch = (pitchRad + biasPitch) * scalePitch;
     double yaw = (yawRad + biasYaw) * scaleYaw;
-//    cout << "pitch : "<<  pitch << " yaw:" << yaw << endl;
 
     MatrixXd w2p(4, 4);
     w2p = rotateZ(RZw2p)
         * rotateY(RYw2p)
         * rotateX(RXw2p)
         * dtranslate(-Xw2p, -Yw2p, -Zw2p);
-
-//    cout << "w2p: " << endl << w2p << endl;
 
     MatrixXd p2c(4,4);
     p2c = rotateZ(RZp2c)
@@ -111,8 +93,6 @@ void IPM::calc_extrinsic(double pitchRad, double yawRad) {
         * dtranslate(-Xp2c, -Yp2c, -Zp2c)
         * rotateY(-pitch)
         * rotateZ(-yaw);
-
-//    cout << "p2c: " << endl << p2c << endl;
 
     MatrixXd c2i(4, 4);// camera to image
     c2i <<
@@ -123,9 +103,5 @@ void IPM::calc_extrinsic(double pitchRad, double yawRad) {
 
     MatrixXd extrinsic(4, 4);
     m_extrinsic = c2i * p2c * w2p;
-
-//    cout << "extrinsic: " << endl;
-//    cout << m_extrinsic << endl;
-
 }
 } // namespace dvision
