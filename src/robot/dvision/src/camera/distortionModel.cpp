@@ -81,30 +81,37 @@ DistortionModel::init()
     }
 
     // init distortion vector, from undist point to dist point
-    for (int y = 0; y < parameters.camera.undistHeight; ++y) {
-        for (int x = 0; x < parameters.camera.undistWidth; ++x) {
+    for(int y = 0; y < parameters.camera.undistHeight; ++y) {
+        for(int x = 0; x < parameters.camera.undistWidth; ++x) {
             int index = y * parameters.camera.undistWidth + x;
 
-            if (m_distortionVector[index].x == INVALID && m_distortionVector[index].y == INVALID) {
-                bool found = false;
-                int find_region = 5; // pixel
-                for (int dx = -find_region; dx <= find_region && !found; ++dx) {
-                    for (int dy = -find_region; dy <= find_region; ++dy) {
+            if(m_distortionVector[index].x == INVALID && m_distortionVector[index].y == INVALID) {
+                int find_region = 2; // pixel
+                int cnt = 0;
+                int sumx = 0;
+                int sumy = 0;
+                for(int dx = find_region; dx >= -find_region; --dx) {
+                    for(int dy = -find_region; dy <= find_region; ++dy) {
                         int nx = x + dx;
                         int ny = y + dy;
-                        if (0 <= nx && nx < parameters.camera.undistWidth && 0 <= ny && ny < parameters.camera.undistHeight) {
+                        if(0 <= nx && nx < parameters.camera.undistWidth && 0 <= ny && ny < parameters.camera.undistHeight) {
                             int idx = ny * parameters.camera.undistWidth + nx;
-                            if (m_distortionVector[idx].x != -1 && m_distortionVector[idx].y != -1) {
-                                found = true;
-                                m_distortionVector[index] = m_distortionVector[idx];
-                                break;
+                            if(m_distortionVector[idx].x != INVALID && m_distortionVector[idx].y != -INVALID) {
+                                ++cnt;
+                                sumx += m_distortionVector[idx].x;
+                                sumy += m_distortionVector[idx].y;
                             }
                         }
                     }
                 }
+                if(cnt != 0) {
+                    m_distortionVector[index].x = sumx / cnt;
+                    m_distortionVector[index].y = sumy / cnt;
+                }
             }
         }
     }
+
 
     initUndistortRectifyMap(parameters.camera.cameraMatrix, parameters.camera.distCoeff, Mat(), parameters.camera.undistCameraMatrix, parameters.camera.undistImageSize, CV_16SC2, m_map1, m_map2);
 
@@ -161,8 +168,7 @@ DistortionModel::undistortImage2(const Mat& rawImg, Mat& res)
 }
 
 void
-DistortionModel::undistortImage3(const cv::Mat& rawImg, cv::Mat& res)
-{
+DistortionModel::undistortImage3(const cv::Mat &rawImg, cv::Mat &res) {
     const int siX = parameters.camera.undistImageSize.width;
     const int siY = parameters.camera.undistImageSize.height;
     res = Mat::zeros(Size(siX, siY), CV_8UC3);
@@ -171,10 +177,10 @@ DistortionModel::undistortImage3(const cv::Mat& rawImg, cv::Mat& res)
     uchar* raw_D = rawImg.data;
     uchar* tmp_D = res.data;
 
-    for (int y = 0; y < siY; ++y) {
-        for (int x = 0; x < siX; ++x) {
+    for(int y = 0; y < siY; ++y) {
+        for(int x = 0; x < siX; ++x) {
             Point origin = m_distortionVector[y * siX + x];
-            if (origin.x != INVALID && origin.y != INVALID) {
+            if(origin.x != INVALID && origin.y != INVALID) {
                 uchar* currentP_tmp_D = tmp_D + ((y * siX) + x) * rawChannels;
                 uchar* current_raw_D = raw_D + ((origin.y * parameters.camera.width) + origin.x) * rawChannels;
                 currentP_tmp_D[0] = current_raw_D[0];
@@ -221,12 +227,10 @@ DistortionModel::undistort(const vector<Point>& points, vector<Point>& res)
     return true;
 }
 
-cv::Point2f
-DistortionModel::undistort(int x, int y)
-{
+cv::Point2f DistortionModel::undistort(int x, int y) {
     int W = parameters.camera.width;
     int H = parameters.camera.height;
-    if (x < 0 || x >= W || y < 0 || y >= H) {
+    if(x < 0 || x >= W || y < 0 || y >= H) {
         ROS_ERROR("error in undistort: (%d, %d)", x, y);
         return Point2f(-9999, -9999);
     }
@@ -255,11 +259,9 @@ DistortionModel::undistort_slow(const vector<Point>& points, vector<Point>& resP
     return true;
 }
 
-void
-DistortionModel::distort(const std::vector<cv::Point>& points, std::vector<cv::Point>& res)
-{
+void DistortionModel::distort(const std::vector<cv::Point> &points, std::vector<cv::Point> &res) {
     res.resize(points.size());
-    for (uint32_t i = 0; i < points.size(); ++i) {
+    for(uint32_t i = 0; i < points.size(); ++i) {
         res[i] = distort(points[i].x, points[i].y);
     };
 }

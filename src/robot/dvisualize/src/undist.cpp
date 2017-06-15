@@ -5,17 +5,14 @@
 #include "undist.hpp"
 #include "ui_undist.h"
 #include "dvision/frame.hpp"
-#include "dvision/parameters.hpp"
+#include "dvision/projection.hpp"
 
 using namespace dvision;
 Undist::Undist(QWidget *parent) : QDialog(parent), ui(new Ui::Undist) {
     ui->setupUi(this);
 
     ros::NodeHandle nh;
-    parameters.init(&nh);
-
-    m_distmodel= new DistortionModel();
-    m_distmodel->init();
+    m_projection.init(&nh);
 }
 
 Undist::~Undist() {
@@ -38,18 +35,18 @@ void Undist::updateView()
     // get undist image
     auto frame = m_listmodel->getFrame();
     cv::Mat mat;
-    m_distmodel->undistortImage2(frame.getRGB(), mat);
+    m_projection.dist()->undistortImage2(frame.getRGB(), mat);
     m_undistImg = QPixmap::fromImage(QImage(mat.data, mat.cols, mat.rows, mat.step, QImage::Format_RGB888));
 
     this->resize(m_undistImg.width(), m_undistImg.height());
     ui->img->resize(m_undistImg.width(), m_undistImg.height());
 
     // undist point
-    auto point = m_distmodel->undistort(m_x, m_y);
+    auto point = m_projection.dist()->undistort(m_x, m_y);
     m_x = point.x;
     m_y = point.y;
 
-    qDebug() << "Undist: (" << m_x << ", " << m_y << ")";
+//    qDebug() << "Undist: (" << m_x << ", " << m_y << ")";
 
 
     // paint point

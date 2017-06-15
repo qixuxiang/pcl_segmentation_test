@@ -21,7 +21,7 @@ class Projection
     void init(ros::NodeHandle*);
 
   public:
-    void updateExtrinsic(double yaw, double pitch);
+    void updateExtrinsic(double pitch, double yaw);
 
     inline bool undistort(const std::vector<cv::Point>& points, std::vector<cv::Point>& res)
     {
@@ -66,6 +66,10 @@ class Projection
         // TODO(corenel) how to get heading offset?
         return CorrectAngleRadian360(0 + m_heading_offset);
         // return CorrectAngleRadian360(headingData.heading + m_heading_offset);
+    }
+
+    inline DistortionModel* dist() {
+        return &m_dist;
     }
 
   private:

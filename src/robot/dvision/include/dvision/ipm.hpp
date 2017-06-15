@@ -1,6 +1,7 @@
 // Created on: May 13, 2017
 //     Author: Yujie Yang <meetyyj@gmail.com>
 //     Author: Wenxing Mei <mwx37mwx@gmail.com>
+// Note: IPM must be inited after DistortionModel initialize
 #pragma once
 #include <Eigen/Dense>
 #include <opencv2/opencv.hpp>
@@ -15,7 +16,7 @@ class IPM
 {
   public:
     // set camera matrix and extrinsic parameters
-    void Init(std::vector<double> extrinsic_para, double fx, double fy, double cx, double cy);
+    void Init(std::vector<double> extrinsic_para, double undistFx, double undistFy, double undistCx, double undistCy);
 
     // update yaw and pitch, then first calculate extrinsic and then calculate m_A and m_invA
     void update(double pitch, double yaw);

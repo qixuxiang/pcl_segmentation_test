@@ -14,6 +14,14 @@ void IPM::Init(std::vector<double> extrinsic_para, double fx, double fy, double 
                    0, fy, cy, 0,
                    0, 0,   1, 0,
                    0, 0,   0, 1;
+
+    // debug
+    cout << "camera matrix: \n" << m_cameraMatrix << endl;
+    cout << "extrinsic para: [" << endl;
+    for_each(m_extrinsic_para.begin(), m_extrinsic_para.end(), [](double& x){
+        cout << x << endl;
+    });
+    cout << "]" << endl;
 }
 
 void IPM::update(double pitch, double yaw) {

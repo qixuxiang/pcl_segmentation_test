@@ -3,7 +3,7 @@
 #include <QPixmap>
 #include <QDockWidget>
 #include "dvision/frame.hpp"
-#include "dvision/distortionModel.hpp"
+#include "dvision/projection.hpp"
 #include "mymodel.hpp"
 
 namespace Ui {
@@ -21,6 +21,10 @@ public:
     inline int x() const { return m_x; }
     inline int y() const { return m_y; }
 
+    inline dvision::Projection* projection() {
+       return &m_projection;
+    }
+
  public slots:
     void onOriginalClicked(QMouseEvent* ev);
     void updateView();
@@ -30,7 +34,7 @@ private:
     int m_x = 0;
     int m_y = 0;
 
-    dvision::DistortionModel* m_distmodel;
+    dvision::Projection m_projection;
     QPixmap m_undistImg;
     MyModel* m_listmodel;
 };
