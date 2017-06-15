@@ -2,7 +2,7 @@
   <node
     pkg="dbehavior"
     name="dbehavior_node"
-    type="dbehavior.py"
+    type="main.py"
     output="screen"
     respawn="false"
     cwd="node"
