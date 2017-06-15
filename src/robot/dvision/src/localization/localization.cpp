@@ -37,7 +37,6 @@ Localization::Localization()
   , global_pos_(0, 0, 0)
   , last_odom_(0, 0, 0)
   , last_odom_id_(0)
-  , ball_pos_(0, 0)
   , current_vertex_id_(0)
   , previous_vertex_id_(0)
   , landmark_count_(0)
@@ -124,7 +123,7 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
                         std::vector<FeatureContainer>& all_features,
                         Projection& m_projection)
 {
-    if (camera_projections_ == NULL) {
+    if (camera_projections_ == NULL || !parameters.loc.enable) {
         // ROS_ERROR("Error in programming");
         return false;
     }
@@ -349,8 +348,8 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
             location_.x = tmpV(0);
             location_.y = tmpV(1);
 
-            std::cout << "Localization: (" << location_.x << ", " << location_.y << ")" << std::endl;
-            std::cout << "-----------------------------------------------------" << std::endl;
+            // std::cout << "Localization: (" << location_.x << ", " << location_.y << ")" << std::endl;
+            // std::cout << "-----------------------------------------------------" << std::endl;
         }
     }
     return true;
@@ -502,12 +501,6 @@ Localization::AddObservation(cv::Point2d observation, const double& x_fasher, co
 }
 
 // getter
-cv::Point2f
-Localization::ball()
-{
-    return ball_pos_;
-}
-
 cv::Point3d
 Localization::location()
 {
@@ -544,13 +537,6 @@ Localization::odom_last_get()
     } else {
         return cv::Point2d(0, 0);
     }
-}
-
-// setter
-void
-Localization::ball(const cv::Point2f& _in)
-{
-    ball_pos_ = _in;
 }
 
 double

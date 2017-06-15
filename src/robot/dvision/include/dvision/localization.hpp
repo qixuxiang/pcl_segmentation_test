@@ -109,12 +109,8 @@ class Localization
     bool AddObservation(cv::Point2d observation, const double& x_fasher, const double& y_fasher, const LandmarkType& type);
 
     // getter
-    cv::Point2f ball();
     cv::Point3d location();
     cv::Point2d odom_last_get();
-
-    // setter
-    void ball(const cv::Point2f& _in);
 
   private:
     double A_;
@@ -141,7 +137,6 @@ class Localization
     cv::Point3d global_pos_;
     cv::Point3d last_odom_;
     uint32_t last_odom_id_;
-    cv::Point2f ball_pos_;
     g2o::BlockSolverX::LinearSolverType* linear_solver_;
     g2o::BlockSolverX* block_solver_;
     g2o::OptimizationAlgorithmLevenberg* opt_algo_;

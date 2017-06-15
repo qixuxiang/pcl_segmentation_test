@@ -61,22 +61,41 @@ BallDetector::~BallDetector()
 }
 
 bool
-BallDetector::GetBall(cv::Mat& frame, std::vector<darknet::bbox>& ball_position)
+BallDetector::GetBall(cv::Mat& frame, VisionShareData& m_data, Projection& m_projection)
 {
     darknet::Image raw_img(frame);
     darknet::params p = net_->get_params();
     ROS_DEBUG("darknet resize image to %d x %d x %d", p.h, p.w, p.c);
     raw_img.resize_neo(p.h, p.w, p.c);
 
+    std::vector<darknet::bbox> ball_position;
     std::vector<darknet::RelateiveBBox> ball_position_relative;
     darknet::obj_detection(net_, &raw_img, parameters.ball.low_thresh, ball_position_relative);
     if (CvtRelativePosition(ball_position_relative, ball_position)) {
+        float max_prob = 0.0;
         for (auto bbox : ball_position) {
             ROS_DEBUG("find %5d - %5f - (%d, %d) && (%d, %d)", bbox.m_label, bbox.m_prob, bbox.m_left, bbox.m_top, bbox.m_right, bbox.m_bottom);
+            if (bbox.m_label == 0 && bbox.m_prob > max_prob) {
+                m_data.see_ball = true;
+                m_data.ball_image.x = (bbox.m_left + bbox.m_right) / 2.0;
+                m_data.ball_image.y = (bbox.m_top + bbox.m_bottom) / 2.0;
+                max_prob = bbox.m_prob;
+            }
         }
-        return true;
+        cv::Point2f ball_field, ball_global;
+        if (m_projection.getOnRealCoordinate(cv::Point(m_data.ball_image.x, m_data.ball_image.y), ball_field)) {
+            m_data.ball_field.x = ball_field.x;
+            m_data.ball_field.y = ball_field.y;
+        }
+        if (m_data.loc_ok) {
+            // TODO(corenel) Rotate angle is correct?
+            ball_global = m_projection.RotateTowardHeading(ball_field);
+            ball_global += cv::Point2f(m_data.robot_pos.x, m_data.robot_pos.y);
+            m_data.ball_global.x = ball_global.x;
+            m_data.ball_global.y = ball_global.y;
+        }
     }
-    return false;
+    return m_data.see_ball;
 }
 
 bool

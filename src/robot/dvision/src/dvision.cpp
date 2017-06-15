@@ -22,6 +22,7 @@ DVision::DVision(ros::NodeHandle* n)
     });
     m_sub_action_cmd = m_nh->subscribe("/humanoid/ActionCommand", 1, &DVision::motionCallback, this);
     m_sub_save_img = m_nh->subscribe("/humanoid/SaveImg", 1, &DVision::saveImgCallback, this);
+    m_pub = m_nh->advertise<VisionShareData>("/humanoid/VisionShareData", 1);
 }
 
 DVision::~DVision()
@@ -93,40 +94,44 @@ DVision::tick()
      * Circle detector *
      *******************/
 
-    bool circle_detected = false;
-    bool confused = false;
     cv::Point2d result_circle;
 
     if (field_detection_OK) {
-        circle_detected = m_circle.Process(confused, result_circle, clustered_lines);
+        m_data.see_circle = m_circle.Process(result_circle, clustered_lines);
     }
 
     /*****************
      * Goal Detector *
      *****************/
 
-    bool goal_detection_OK = false;
-
     std::vector<cv::Point2f> goal_position_real;
 
     if (field_detection_OK) {
-        goal_detection_OK = m_goal.Process(goal_position_real, m_canny_img, m_hsv_img, m_gui_img, m_gray_img, m_goal_binary, hull_field, m_projection);
+        m_data.see_goal = m_goal.Process(goal_position_real, m_canny_img, m_hsv_img, m_gui_img, m_gray_img, m_goal_binary, hull_field, m_projection);
     }
 
     /****************
      * Localization *
      ****************/
-    bool loc_detection_OK = false;
 
     std::vector<LineContainer> all_lines;
     std::vector<FeatureContainer> all_features;
 
-    if (parameters.loc.enable) {
-        if (m_loc.Calculate(
-              clustered_lines, circle_detected, m_field_hull_real_center, m_field_hull_real, m_field_hull_real_rotated, result_circle, goal_position_real, all_lines, all_features, m_projection)) {
-            loc_detection_OK = true;
-        }
-    }
+    m_data.loc_ok = m_loc.Calculate(
+      clustered_lines, m_data.see_circle, m_field_hull_real_center, m_field_hull_real, m_field_hull_real_rotated, result_circle, goal_position_real, all_lines, all_features, m_projection);
+
+    /*****************
+     * Ball Detector *
+     *****************/
+
+    m_ball.GetBall(frame.getRGB(), m_data, m_projection);
+
+    /***********
+     * Publish *
+     ***********/
+
+    prepareVisionShareData(goal_position_real);
+    m_pub.publish(m_data);
 
     /****************
      * Post process *
@@ -154,6 +159,30 @@ DVision::saveImgCallback(const SaveImg::ConstPtr& save_img_msg)
         std::string path_str;
         path_str = "p_" + std::to_string(m_pitch) + "_y_" + std::to_string(m_yaw) + " ";
         frame.save(path_str);
+    }
+}
+
+void
+DVision::prepareVisionShareData(const std::vector<cv::Point2f>& goal_position_real)
+{
+    // localization
+    m_data.robot_pos.x = m_loc.location().x;
+    m_data.robot_pos.y = m_loc.location().y;
+    m_data.robot_pos.z = m_loc.location().z;
+    // goal
+    if (goal_position_real.size() >= 1) {
+        m_data.see_goal = true;
+        m_data.left_goal.x = goal_position_real[0].x;
+        m_data.left_goal.y = goal_position_real[0].y;
+        if (goal_position_real.size() == 2) {
+            m_data.see_both_goal = true;
+            m_data.right_goal.x = goal_position_real[1].x;
+            m_data.right_goal.y = goal_position_real[1].y;
+        } else {
+            m_data.see_unknown_goal = true;
+            m_data.unknown_goal.x = goal_position_real[1].x;
+            m_data.unknown_goal.y = goal_position_real[1].y;
+        }
     }
 }
 

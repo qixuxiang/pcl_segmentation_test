@@ -1,4 +1,5 @@
 """Striker role."""
+import rospy
 from geometry_msgs.msg import Vector3
 from .Role import Role
 from ..skills.Attack import Attack
@@ -125,7 +126,7 @@ class _Striker(Role):
                 self.goto(Vector3(X, Y, 0))
                 if self.got_dest(Vector3(X, Y, 0)):
                     self.world.reentry = False
-            print '_Striker running 2'
+            rospy.loginfo('_Striker running 2')
             return self.running()
 
         elif not self.world.see_ball and \
@@ -137,7 +138,7 @@ class _Striker(Role):
             else:
 
                 self.goto(Vector3(-75, 0, 0))
-            print '_Striker running 1'
+            rospy.loginfo('_Striker running 1')
             return self.running()
 
         else:

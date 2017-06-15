@@ -6,6 +6,7 @@
 #include "dprocess/dconcurrent.hpp"
 #include "dprocess/dprocess.hpp"
 #include "dvision/SaveImg.h"
+#include "dvision/VisionShareData.h"
 #include "dvision/ball_detector.hpp"
 #include "dvision/camera.hpp"
 #include "dvision/circle_detector.hpp"
@@ -29,6 +30,7 @@ class DVision : public dprocess::DProcess<DVision>
     ros::NodeHandle* m_nh;
     ros::Subscriber m_sub_action_cmd;
     ros::Subscriber m_sub_save_img;
+    ros::Publisher m_pub;
     Camera m_camera;
     Projection m_projection;
     dprocess::DConcurrent m_concurrent;
@@ -40,6 +42,7 @@ class DVision : public dprocess::DProcess<DVision>
     GoalDetector m_goal;
     FieldDetector m_field;
     Localization m_loc;
+    VisionShareData m_data;
 
     // field hull
     std::vector<cv::Point2f> m_field_hull_real;
@@ -58,5 +61,6 @@ class DVision : public dprocess::DProcess<DVision>
     SaveImg m_save_img;
     void motionCallback(const dmotion::ActionCmd::ConstPtr& msg);
     void saveImgCallback(const SaveImg::ConstPtr& save_img_msg);
+    void prepareVisionShareData(const std::vector<cv::Point2f>& goal_position_real);
 };
 } // namespace dvision

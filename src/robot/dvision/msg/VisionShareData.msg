@@ -1,3 +1,4 @@
+bool loc_ok
 bool see_ball
 bool see_circle
 bool see_goal

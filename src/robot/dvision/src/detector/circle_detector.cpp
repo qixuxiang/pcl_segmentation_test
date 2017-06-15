@@ -29,16 +29,16 @@ CircleDetector::Init()
 }
 
 bool
-CircleDetector::Process(bool& confused, cv::Point2d& result_circle, std::vector<LineSegment>& clustered_lines)
+CircleDetector::Process(cv::Point2d& result_circle, std::vector<LineSegment>& clustered_lines)
 {
     if (parameters.circle.enable)
-        return GetCircle(parameters.field_model.center_circle_diameter / 2, clustered_lines, confused, result_circle);
+        return GetCircle(parameters.field_model.center_circle_diameter / 2, clustered_lines, result_circle);
     else
         return false;
 }
 
 bool
-CircleDetector::GetCircle(const double& H2, std::vector<LineSegment>& clustered_lines, bool& confiused, cv::Point2d& result_circle)
+CircleDetector::GetCircle(const double& H2, std::vector<LineSegment>& clustered_lines, cv::Point2d& result_circle)
 {
     // H2 1.5 / 2 = 0.75 貌似是圆的半径
     std::vector<cv::Point2d> circle_point;
@@ -93,11 +93,11 @@ CircleDetector::GetCircle(const double& H2, std::vector<LineSegment>& clustered_
         cv::Point2d sum;
         for (size_t cCounter = 0; cCounter < circle_point.size(); cCounter++) {
             sum += circle_point[cCounter];
-            for (size_t cCounter2 = cCounter + 1; cCounter2 < circle_point.size(); cCounter2++) {
-                if (GetDistance(circle_point[cCounter], circle_point[cCounter2]) > parameters.circle.confiusedDist) {
-                    confiused = true;
-                }
-            }
+            // for (size_t cCounter2 = cCounter + 1; cCounter2 < circle_point.size(); cCounter2++) {
+            //     if (GetDistance(circle_point[cCounter], circle_point[cCounter2]) > parameters.circle.confiusedDist) {
+            //         confiused = true;
+            //     }
+            // }
         }
         result_circle.x = sum.x / circle_point.size();
         result_circle.y = sum.y / circle_point.size();
