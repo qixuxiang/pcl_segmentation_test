@@ -53,6 +53,11 @@ class Frame
         return m_bgr;
     }
 
+    inline cv::Mat getBGR_raw() {
+        cvt();
+        return m_bgr;
+    }
+
     inline void cvt()
     {
         if (m_converted)
@@ -69,7 +74,7 @@ class Frame
   private:
     uint8_t* m_yuv; // raw yuv image
     cv::Mat m_bgr;
-    
+
     ros::Time m_timeStamp;
     int m_width;
     int m_height;

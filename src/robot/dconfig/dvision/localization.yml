@@ -31,7 +31,7 @@ dvision:
     dilate:                     1
     erode2:                     3
     dilate2:                    0
-    maxContourCount:            5
+    maxContourCount:            3
     minArea:                    0
     maxDownDiffPixel:           700
     approxPoly:                 0.02

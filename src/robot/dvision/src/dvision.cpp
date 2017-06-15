@@ -45,38 +45,38 @@ DVision::tick()
     }
 
     // get image in BGR and HSV color space
-    m_gui_img = frame.getBGR();
-    // cv::cvtColor(m_gui_img, m_hsv_img, CV_BGR2HSV);
+    m_gui_img = frame.getBGR_raw();
+    cv::cvtColor(m_gui_img, m_hsv_img, CV_BGR2HSV);
 
     /******************
      * Field Detector *
      ******************/
 
     // TODO(corenel) move it ro m_field
-    // cv::Mat field_binary_raw;
-    // std::vector<cv::Point> hull_field;
-    //
-    // m_data.see_field =
-    //   m_field.Process(m_field_hull_real, m_field_hull_real_rotated, hull_field, m_field_binary, field_binary_raw, m_field_convex_hull, m_hsv_img, m_gui_img, m_field_hull_real_center, m_projection);
-    //
-    // if (parameters.field.enable && !m_data.see_field) {
-    //     ROS_ERROR("Detecting field failed.");
-    // }
-    // ROS_INFO("line detected %d.", m_data.see_field);
+    cv::Mat field_binary_raw;
+    std::vector<cv::Point> hull_field;
+
+    m_data.see_field =
+      m_field.Process(m_field_hull_real, m_field_hull_real_rotated, hull_field, m_field_binary, field_binary_raw, m_field_convex_hull, m_hsv_img, m_gui_img, m_field_hull_real_center, m_projection);
+
+    if (parameters.field.enable && !m_data.see_field) {
+        ROS_ERROR("Detecting field failed.");
+    }
+    ROS_INFO("line detected %d.", m_data.see_field);
 
     /*****************
      * Line Detector *
      *****************/
 
     // TODO(corenel) move it ro m_line
-    // std::vector<LineSegment> clustered_lines;
-    //
-    // m_data.see_line = m_line.Process(m_canny_img, m_hsv_img, m_gui_img, m_field_convex_hull, field_binary_raw, clustered_lines, m_projection);
-    //
-    // if (!m_data.see_line) {
-    //     ROS_ERROR("Detecting lines failed.");
-    // }
-    // ROS_INFO("line detected %d.", m_data.see_line);
+    std::vector<LineSegment> clustered_lines;
+
+    m_data.see_line = m_line.Process(m_canny_img, m_hsv_img, m_gui_img, m_field_convex_hull, field_binary_raw, clustered_lines, m_projection);
+
+    if (!m_data.see_line) {
+        ROS_ERROR("Detecting lines failed.");
+    }
+    ROS_INFO("line detected %d.", m_data.see_line);
 
     /*******************
      * Circle detector *
@@ -112,7 +112,7 @@ DVision::tick()
      * Ball Detector *
      *****************/
 
-    // m_ball.GetBall(frame.getBGR(), m_data, m_projection);
+    // m_ball.GetBall(frame.getBGR_raw(), m_data, m_projection);
 
     /***********
      * Publish *
@@ -125,7 +125,8 @@ DVision::tick()
      * Post process *
      ****************/
 
-    frame.show();
+    cv::namedWindow("gui_img", CV_WINDOW_NORMAL);
+    cv::imshow("gui_img", m_gui_img);
     cv::waitKey(1);
 
     m_concurrent.spinOnce();
