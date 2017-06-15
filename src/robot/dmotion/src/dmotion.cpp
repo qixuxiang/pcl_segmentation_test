@@ -9,6 +9,7 @@ DMotion::DMotion(ros::NodeHandle* nh)
   , m_manager(nh)
 {
     m_sub = m_nh->subscribe("/humanoid/ActionCommand", 1, &DMotion::callback, this);
+    // TODO(MWX): feedback topic
 }
 
 DMotion::~DMotion() = default;
@@ -30,8 +31,9 @@ void
 DMotion::prepareShutdown() {
     m_sub.shutdown();
     m_cmd.gait_type = ActionCmd::STANDUP;
-    for(int i = 0; i < 3; ++i) {
-        printf("shuting down >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
+    m_cmd.cmd_head.y = m_cmd.cmd_head.z = 0;
+    for(int i = 0; i < 2; ++i) {
+        printf("DMotion shutting down >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
         tick();
     }
 }

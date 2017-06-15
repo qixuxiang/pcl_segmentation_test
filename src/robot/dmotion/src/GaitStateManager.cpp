@@ -4,6 +4,7 @@
 #include "dmotion/MotionData.hpp"
 
 using namespace std;
+using dmotion::ActionCmd;
 
 GaitStateManager::GaitStateManager(ros::NodeHandle* nh)
   : m_nh(nh)
@@ -14,6 +15,8 @@ GaitStateManager::GaitStateManager(ros::NodeHandle* nh)
     goal_gaitState = crouch;
     prior_gaitState = crouch;
     last_unstable_timestamp = ros::Time::now();
+
+    m_pub = m_nh->advertise<ActionCmd>("/humanoid/MotionFeedback", 1);
 }
 
 GaitStateManager::~GaitStateManager() = default;
@@ -145,7 +148,7 @@ GaitStateManager::platCtrl(double& targetYaw, double& targetPitch)
     auto timestamp = ros::Time::now();
 
     // head protect
-    auto angle = 15; // TODO(MWX): not implemented
+    auto angle = 15;
 
     auto current_gait = m_cmd.gait_type;
 
@@ -171,6 +174,9 @@ GaitStateManager::platCtrl(double& targetYaw, double& targetPitch)
         //     }
     }
 
+    m_destCmd.cmd_head.y = targetPitch;
+    m_destCmd.cmd_head.z = targetYaw;
+    m_pub.publish(m_destCmd);
 // TODO(MWX): angle feedback
 // todo, magic number , maybe different with different type of dynamixel servo
 // TODO(mwx): add this if required by behaviour
@@ -198,7 +204,6 @@ void
 GaitStateManager::checkNewCommand(const dmotion::ActionCmd& request)
 {
     m_cmd = request;
-    using dmotion::ActionCmd;
     switch (request.gait_type) {
         case ActionCmd::WENXI:
             goal_gaitState = walk;

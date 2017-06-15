@@ -22,12 +22,10 @@ class GoalDetector : public IDetector
     explicit GoalDetector();
     ~GoalDetector();
     bool Init();
-    bool Process(cv::Mat& m_canny_img, cv::Mat& m_hsv_img, cv::Mat& m_gui_img, cv::Mat& m_gray_img, cv::Mat& m_goal_binary, std::vector<cv::Point>& hull_field, Projection& m_projection);
+    bool Process(cv::Mat& m_canny_img, cv::Mat& m_hsv_img, cv::Mat& m_gui_img, std::vector<cv::Point>& hull_field, Projection& m_projection);
 
     bool GetPosts(cv::Mat& canny_img,
                   cv::Mat& raw_hsv,
-                  cv::Mat& gray,
-                  const cv::Mat& binary_frame,
                   Projection& projection,
                   const std::vector<cv::Point>& field_hull,
                   std::vector<LineSegment>& res_lines,

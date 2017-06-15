@@ -1,102 +1,107 @@
 #include "dvision/ipm.hpp"
-#include "dvision/parameters.hpp"
 using namespace cv;
 using namespace std;
 using namespace Eigen;
 
 namespace dvision {
-bool
+void IPM::Init(std::vector<double> extrinsic_para, double fx, double fy, double cx, double cy) {
+    m_extrinsic_para = extrinsic_para;
+    assert(m_extrinsic_para.size() == 16);
 
-IPM::initGetHomography(const MatrixXd& extrinsic, Mat& homoFor, Mat& homoBack)
-{
-    mMat = extrinsic;
-    //    cameraLocation.x /= 0.01;
-    //    cameraLocation.y /= 0.01;
-    //    cameraLocation.z /= 0.01;
-    //
-    //    MatrixXd tra(4, 4);
-    //    tra << 1, 0, 0, -cameraLocation.x, //
-    //      /**/ 0, 1, 0, -cameraLocation.y, //
-    //      /**/ 0, 0, 1, -cameraLocation.z, //
-    //      /**/ 0, 0, 0, 1.000000000000000; //
-    //
-    //    double sin_alpha = sin(cameraOrientation.z);
-    //    double cos_alpha = cos(cameraOrientation.z);
-    //
-    //    double sin_beta = sin(cameraOrientation.y);
-    //    double cos_beta = cos(cameraOrientation.y);
-    //
-    //    double sin_gama = sin(cameraOrientation.x);
-    //    double cos_gama = cos(cameraOrientation.x);
-    //
-    //    MatrixXd rotAroundZ(4, 4);
-    //    rotAroundZ << cos_alpha, sin_alpha, 0, 0,  //
-    //      /*********/ -sin_alpha, cos_alpha, 0, 0, //
-    //      /*********/ 0.0000000, 0.0000000, 1, 0,  //
-    //      /*********/ 0.0000000, 0.0000000, 0, 1;  //
-    //
-    //    MatrixXd rotAroundY(4, 4);
-    //    rotAroundY << cos_beta, 0, -sin_beta, 0, //
-    //      /*********/ 0.000000, 1, 0.000000, 0,  //
-    //      /*********/ sin_beta, 0, cos_beta, 0,  //
-    //      /*********/ 0.000000, 0, 0.000000, 1;  //
-    //
-    //    MatrixXd rotAroundX(4, 4);
-    //    rotAroundX << 1, 0.000000, 0.000000, 0,  //
-    //      /*********/ 0, cos_gama, sin_gama, 0,  //
-    //      /*********/ 0, -sin_gama, cos_gama, 0, //
-    //      /*********/ 0, 0.000000, 0.000000, 1;  //
-    //
-    //    mMat = rotAroundZ * rotAroundX * rotAroundY * tra;
-    //    cout << "mMat:" << endl;
-    //    cout << mMat << endl;
-
-    ROS_FATAL("Not implemented");
-    return true;
-
-    vector<Point2f> cornerUndistortImgPoint;
-    cornerUndistortImgPoint.push_back(Point2f(0, 0));
-    cornerUndistortImgPoint.push_back(Point2f(0, 1));
-    cornerUndistortImgPoint.push_back(Point2f(1, 0));
-    cornerUndistortImgPoint.push_back(Point2f(1, 1));
-
-    vector<Point2f> cornerRealPoint;
-    if (calculatePoints(cornerUndistortImgPoint, cornerRealPoint)) {
-        homoFor = findHomography(cornerUndistortImgPoint, cornerRealPoint);
-        homoBack = findHomography(cornerRealPoint, cornerUndistortImgPoint);
-    } else {
-        return false;
-    }
-    return true;
+    m_cameraMatrix = MatrixXd(4, 4);
+    m_cameraMatrix <<
+                   fx, 0, cx, 0,
+                   0, fy, cy, 0,
+                   0, 0,   1, 0,
+                   0, 0,   0, 1;
 }
 
-// fuck
+void IPM::update(double pitch, double yaw) {
+    calc_extrinsic(pitch, yaw);
+    m_A = m_cameraMatrix * m_extrinsic;
+    m_invA = m_A.inverse();
+}
 
-bool
-IPM::calculatePoints(vector<Point2f>& contour, vector<Point2f>& resContour)
-{
-    resContour.resize(contour.size());
-    for (uint32_t i = 0; i < contour.size(); ++i) {
-        double x = (contour[i].x - parameters.camera.undistCx) / parameters.camera.fx;
-        double y = (contour[i].y - parameters.camera.undistCy) / parameters.camera.fy;
+void IPM::updateDeg(double pitch, double yaw) {
+    update(pitch / 180.0 * M_PI, yaw / 180.0 * M_PI);
+}
 
-        MatrixXd solve_A(2, 2);
-        solve_A << mMat(0, 0) - mMat(2, 0) * x, mMat(0, 1) - mMat(2, 1) * x, mMat(1, 0) - mMat(2, 0) * y, mMat(1, 1) - mMat(2, 1) * y;
+Point2d IPM::project(double x_real, double y_real, double z_real) {
+    MatrixXd real(4, 1);
+    real << x_real, y_real, z_real, 1;
 
-        // Check if solve_A doesn't has a inverse matrix, means that solve_A is linear correlation
-        if (solve_A(0, 0) * solve_A(1, 1) == solve_A(0, 1) * solve_A(1, 0)) {
-            cout << " fuck " << endl;
-            return false;
-        }
-        MatrixXd solve_B(2, 1);
-        solve_B << mMat(2, 3) * x - mMat(0, 3), mMat(2, 3) * y - mMat(1, 3);
-        MatrixXd inverse2ground = solve_A.inverse() * solve_B;
-        double rx = -inverse2ground(0, 0);
-        double ry = inverse2ground(1, 0);
-        resContour[i].x = rx;
-        resContour[i].y = ry;
-    }
+    MatrixXd pointImage = m_A * real;
+    double u = pointImage(0) / pointImage(2);
+    double v = pointImage(1) / pointImage(2);
 
-    return true;
+    return Point2d(u, v);
+}
+
+Point2d IPM::inverseProject(double u, double v, double z_real) {
+    double c1 = m_invA(2, 0);
+    double c2 = m_invA(2, 1);
+    double c3 = m_invA(2, 2);
+    double c4 = m_invA(2, 3);
+
+    double s = (z_real - c4) / (u * c1 + v * c2 + c3);
+
+    MatrixXd foo(4, 1);
+    foo << s * u, s * v, s, 1;
+
+    MatrixXd res(4, 1);
+    res = m_invA * foo;
+
+    double x = res(0);
+    double y = res(1);
+    return Point2d(x, y);
+}
+
+void IPM::calc_extrinsic(double pitchRad, double yawRad) {
+    auto Xw2p = m_extrinsic_para[0];
+    auto Yw2p = m_extrinsic_para[1];
+    auto Zw2p = m_extrinsic_para[2];
+
+    auto RXw2p = m_extrinsic_para[3];
+    auto RYw2p = m_extrinsic_para[4];
+    auto RZw2p = m_extrinsic_para[5];
+    auto Xp2c = m_extrinsic_para[6];
+    auto Yp2c = m_extrinsic_para[7];
+    auto Zp2c = m_extrinsic_para[8];
+
+    auto RXp2c = m_extrinsic_para[9];
+    auto RYp2c = m_extrinsic_para[10];
+    auto RZp2c = m_extrinsic_para[11];
+
+    auto scaleYaw = m_extrinsic_para[12];
+    auto scalePitch = m_extrinsic_para[13];
+    auto biasYaw = m_extrinsic_para[14];
+    auto biasPitch = m_extrinsic_para[15];
+
+    double pitch = (pitchRad + biasPitch) * scalePitch;
+    double yaw = (yawRad + biasYaw) * scaleYaw;
+
+    MatrixXd w2p(4, 4);
+    w2p = rotateZ(RZw2p)
+        * rotateY(RYw2p)
+        * rotateX(RXw2p)
+        * dtranslate(-Xw2p, -Yw2p, -Zw2p);
+
+    MatrixXd p2c(4,4);
+    p2c = rotateZ(RZp2c)
+        * rotateY(RYp2c)
+        * rotateX(RXp2c)
+        * dtranslate(-Xp2c, -Yp2c, -Zp2c)
+        * rotateY(-pitch)
+        * rotateZ(-yaw);
+
+    MatrixXd c2i(4, 4);// camera to image
+    c2i <<
+        0, -1, 0, 0,
+        0, 0, -1, 0,
+        1, 0, 0, 0,
+        0, 0, 0, 1;
+
+    MatrixXd extrinsic(4, 4);
+    m_extrinsic = c2i * p2c * w2p;
 }
 } // namespace dvision

@@ -20,7 +20,7 @@ DVision::DVision(ros::NodeHandle* n)
     m_concurrent.push([] {
         //     ROS_INFO("concurrent");
     });
-    m_sub_action_cmd = m_nh->subscribe("/humanoid/ActionCommand", 1, &DVision::motionCallback, this);
+    m_sub_action_cmd = m_nh->subscribe("/humanoid/MotionFeedback", 1, &DVision::motionCallback, this);
     m_sub_save_img = m_nh->subscribe("/humanoid/SaveImg", 1, &DVision::saveImgCallback, this);
     m_pub = m_nh->advertise<VisionShareData>("/humanoid/VisionShareData", 1);
 }
@@ -39,25 +39,15 @@ DVision::tick()
      * Update *
      **********/
     // TODO(mwx) get yaw and pitch from motor
-
     double pitch = 0;
     double yaw = 0;
-    m_projection.updateExtrinsic(yaw, pitch);
-    m_projection.calcHomography();
 
-    if (!m_projection.updateExtrinsic(yaw, pitch)) {
-        ROS_ERROR("Cannot update extrinsic of camera!");
-    }
-
-    if (!m_projection.calcHomography()) {
-        ROS_ERROR("Cannot calculate homography!");
-    }
     if (!m_loc.Update(m_projection)) {
         ROS_ERROR("Cannot update localization!");
     }
 
     // get image in BGR and HSV color space
-    m_gui_img = frame.getRGB();
+    m_gui_img = frame.getBGR();
     cv::cvtColor(m_gui_img, m_hsv_img, CV_BGR2HSV);
 
     /******************
@@ -103,7 +93,7 @@ DVision::tick()
      *****************/
 
     if (field_detection_OK) {
-        m_data.see_goal = m_goal.Process(m_canny_img, m_hsv_img, m_gui_img, m_gray_img, m_goal_binary, hull_field, m_projection);
+        m_data.see_goal = m_goal.Process(m_canny_img, m_hsv_img, m_gui_img, hull_field, m_projection);
     }
 
     /****************
@@ -116,7 +106,7 @@ DVision::tick()
      * Ball Detector *
      *****************/
 
-    m_ball.GetBall(frame.getRGB(), m_data, m_projection);
+    m_ball.GetBall(frame.getBGR(), m_data, m_projection);
 
     /***********
      * Publish *

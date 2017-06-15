@@ -29,14 +29,14 @@ GoalDetector::Init()
 }
 
 bool
-GoalDetector::Process(cv::Mat& m_canny_img, cv::Mat& m_hsv_img, cv::Mat& m_gui_img, cv::Mat& m_gray_img, cv::Mat& m_goal_binary, std::vector<cv::Point>& hull_field, Projection& m_projection)
+GoalDetector::Process(cv::Mat& m_canny_img, cv::Mat& m_hsv_img, cv::Mat& m_gui_img, std::vector<cv::Point>& hull_field, Projection& m_projection)
 {
     bool goal_detection_OK = false;
     m_goal_position.clear();
     if (parameters.goal.enable) {
         std::vector<LineSegment> result_lines, all_lines;
         // detect goal position
-        goal_detection_OK = GetPosts(m_canny_img, m_hsv_img, m_gray_img, m_goal_binary.clone(), m_projection, hull_field, result_lines, all_lines, parameters.monitor.update_gui_img, m_gui_img);
+        goal_detection_OK = GetPosts(m_canny_img, m_hsv_img, m_projection, hull_field, result_lines, all_lines, parameters.monitor.update_gui_img, m_gui_img);
 
         // draw all possible goal lines
         if (parameters.goal.showAllLines && parameters.monitor.update_gui_img) {
@@ -60,8 +60,6 @@ GoalDetector::Process(cv::Mat& m_canny_img, cv::Mat& m_hsv_img, cv::Mat& m_gui_i
 bool
 GoalDetector::GetPosts(cv::Mat& canny_img,
                        cv::Mat& raw_hsv,
-                       cv::Mat& gray,
-                       const cv::Mat& binary_frame,
                        Projection& projection,
                        const std::vector<cv::Point>& field_hull,
                        std::vector<LineSegment>& res_lines,
@@ -69,10 +67,6 @@ GoalDetector::GetPosts(cv::Mat& canny_img,
                        const bool& SHOWGUI,
                        cv::Mat& gui_img)
 {
-    // never use
-    // if (binary_frame.empty()) {
-    //   return false;
-    // }
     cv::Rect rec;
     rec.x = 0;
     rec.y = 0;
@@ -185,11 +179,10 @@ GoalDetector::GetPosts(cv::Mat& canny_img,
     }
 
     // 线段融合
-    std::vector<LineSegment> all_ver_lines_2;
-    MergeLinesMax(all_ver_lines, 30, DistanceToMerge, all_ver_lines_2, rec);
+    MergeLinesMax(all_ver_lines, 30, DistanceToMerge, all_lines, rec);
 
-    for (size_t i = 0; i < all_ver_lines_2.size(); i++) {
-        LineSegment tmp_line = all_ver_lines_2[i];
+    for (size_t i = 0; i < all_lines.size(); i++) {
+        LineSegment tmp_line = all_lines[i];
         cv::Point up = (tmp_line.P1.y > tmp_line.P2.y) ? tmp_line.P2 : tmp_line.P1;
         cv::Point down = (tmp_line.P1.y < tmp_line.P2.y) ? tmp_line.P2 : tmp_line.P1;
 
@@ -277,8 +270,8 @@ GoalDetector::GetPosts(cv::Mat& canny_img,
     }
 
     if (SHOWGUI && parameters.goal.showVote) {
-        for (size_t i = 0; i < all_ver_lines_2.size(); i++) {
-            cv::line(gui_img, all_ver_lines_2[i].P1, all_ver_lines_2[i].P2, darkOrangeColor(), 1);
+        for (size_t i = 0; i < all_lines.size(); i++) {
+            cv::line(gui_img, all_lines[i].P1, all_lines[i].P2, darkOrangeColor(), 1);
         }
     }
     if (SHOWGUI && parameters.goal.showResult) {

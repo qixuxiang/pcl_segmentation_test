@@ -16,7 +16,7 @@ TEST(cameraDummy, main)
     dvision::CameraDummy c("/home/yyj/Pictures/calibrationimage/");
     while (ros::ok()) {
         auto frame = c.capture();
-         cv::imshow("undistorted",frame.getRGB());
+         cv::imshow("undistorted",frame.getBGR());
         // auto frame = c.capture();
         // frame.show();
         //

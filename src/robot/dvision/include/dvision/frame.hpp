@@ -19,8 +19,17 @@ class Frame
         m_timeStamp = ros::Time::now();
     }
 
+    inline Frame(std::string filepath) {
+        m_bgr = cv::imread(filepath);
+        m_width = m_bgr.size().width;
+        m_height = m_bgr.size().height;
+        m_converted = true;
+    }
+
+    inline Frame() {}
+
     inline explicit Frame(cv::Mat& mat, int width, int height)
-            : m_rgb(mat)
+            : m_bgr(mat)
             , m_width(width)
             , m_height(height)
             , m_converted(true)
@@ -29,12 +38,19 @@ class Frame
     }
 
 
-    inline ~Frame(){};
+    inline ~Frame(){}
 
-    inline cv::Mat& getRGB()
+    inline cv::Mat getRGB()
     {
         cvt();
-        return m_rgb;
+        cv::Mat rgb;
+        cv::cvtColor(m_bgr, rgb, CV_BGR2RGB);
+        return rgb;
+    }
+
+    inline cv::Mat& getBGR() {
+        cvt();
+        return m_bgr;
     }
 
     inline void cvt()
@@ -42,7 +58,7 @@ class Frame
         if (m_converted)
             return;
         cv::Mat yuvMat(m_height, m_width, CV_8UC2, m_yuv);
-        cv::cvtColor(yuvMat, m_rgb, CV_YUV2BGR_YUYV);
+        cv::cvtColor(yuvMat, m_bgr, CV_YUV2BGR_YUYV);
         m_converted = true;
     }
 
@@ -52,7 +68,8 @@ class Frame
 
   private:
     uint8_t* m_yuv; // raw yuv image
-    cv::Mat m_rgb;
+    cv::Mat m_bgr;
+    
     ros::Time m_timeStamp;
     int m_width;
     int m_height;

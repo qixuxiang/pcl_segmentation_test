@@ -33,7 +33,7 @@ generate_messages(
 
 catkin_package(
     INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIR}
-    LIBRARIES dvisionlib
+    LIBRARIES dvisionlib ${OpenCV_LIBS}
   #  CATKIN_DEPENDS dprocess
   #  DEPENDS system_lib
 )
@@ -44,7 +44,7 @@ include_directories(include ${catkin_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR} ${CSPAR
 #g2o_solver_csparse g2o_solver_dense g2o_solver_pcg g2o_stuff g2o_types_icp
 #g2o_types_sba g2o_types_sim3 g2o_types_slam2d g2o_types_slam3d)
 
-SET(G2O_LIBS
+SET(G2O_LIBS 
     ${G2O_CORE_LIBRARY}
     ${G2O_STUFF_LIBRARY}
     ${G2O_CLI_LIBRARY}
@@ -87,11 +87,11 @@ add_library(dvisionlib
   src/tools/kalman.cpp
   )
 target_link_libraries(dvisionlib ${catkin_LIBRARIES} ${OpenCV_LIBS} ${G2O_LIBS}) # ${Boost_LIBRARIES})
-#add_dependencies(dvisionlib ${project_name}_generate_messages_cpp)
+add_dependencies(dvisionlib ${PROJECT_NAME}_generate_messages_cpp)
 
 add_executable(dvision_node src/main.cpp)
 target_link_libraries(dvision_node dvisionlib ${catkin_LIBRARIES})
-#add_dependencies(dmotion_node ${PROJECT_NAME}_generate_messages_cpp)
+add_dependencies(dvision_node ${PROJECT_NAME}_generate_messages_cpp)
 
 add_executable(calib src/camera/calibration.cpp)
 target_link_libraries(calib ${OpenCV_LIBS})

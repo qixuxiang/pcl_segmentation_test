@@ -31,9 +31,9 @@
     <property name="geometry">
      <rect>
       <x>770</x>
-      <y>121</y>
+      <y>151</y>
       <width>261</width>
-      <height>371</height>
+      <height>341</height>
      </rect>
     </property>
    </widget>
@@ -100,6 +100,46 @@
      </item>
     </layout>
    </widget>
+   <widget class="QWidget" name="layoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>770</x>
+      <y>100</y>
+      <width>171</width>
+      <height>42</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Pitch:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLabel" name="pitch">
+       <property name="text">
+        <string>-1</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Yaw:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLabel" name="yaw">
+       <property name="text">
+        <string>-1</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -107,7 +147,7 @@
      <x>0</x>
      <y>0</y>
      <width>1039</width>
-     <height>25</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -154,6 +194,28 @@
    <header>clabel.hpp</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>listView</tabstop>
+  <tabstop>candidateReal</tabstop>
+  <tabstop>textEdit</tabstop>
+ </tabstops>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>candidateReal</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>imagePanel</receiver>
+   <slot>setFocus()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>995</x>
+     <y>41</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>475</x>
+     <y>349</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

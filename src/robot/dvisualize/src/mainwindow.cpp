@@ -5,30 +5,27 @@
 #include <QFileDialog>
 #include <QListView>
 
-#include "dvision/parameters.hpp"
-#include "dvision/distortionModel.hpp"
 using namespace dvision;
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow), m_model(new MyModel(this))
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), m_ui(new Ui::MainWindow), m_listmodel(new MyModel(this)), m_undist(new Undist(parent))
 {
-    ui->setupUi(this);
+    m_ui->setupUi(this);
     init();
-    ui->listView->setModel(m_model);
-    ui->listView->setViewMode(QListView::IconMode);
+    m_orignial->setModel(m_listmodel);
+    m_undist->setModel(m_listmodel);
+    m_ui->listView->setModel(m_listmodel);
+    m_ui->listView->setViewMode(QListView::IconMode);
+    m_undist->setVisible(false);
 
-    connect(ui->listView->selectionModel(), &QItemSelectionModel::currentChanged,
-            this, &MainWindow::on_currentChanged);
 
-    connect(ui->imagePanel, &CLabel::clicked,
-            this, &MainWindow::updateView);
 
-    // debug
-    m_model->loadImages("/home/mwx/Pictures/calibration/1496034577976886624.png");
+
+//    m_model->loadImages("/home/mwx/Pictures/calibration/1496034577976886624.png");
 }
 
 void MainWindow::init()
 {
-    m_imgPanel = ui->imagePanel;
+    m_orignial = m_ui->imagePanel;
 
     m_realPoints << QPoint(10, 10);
     m_realPoints << QPoint(10, -10);
@@ -53,36 +50,63 @@ void MainWindow::init()
     m_realPoints << QPoint(450, -300); // right corner
 
 
-    auto* box = ui->candidateReal;
+    auto* box = m_ui->candidateReal;
     foreach(const QPoint& p, m_realPoints){
        box->addItem(QString("%1, %2").arg(p.x()).arg(p.y()));
     }
 
-    ros::NodeHandle nh;
-    parameters.init(&nh);
-
-    m_distmodel= new DistortionModel();
-    m_distmodel->init();
 
 }
 
-QPoint MainWindow::undistPoint(int x, int y)
+void MainWindow::connectSignals()
 {
-    auto p = m_distmodel->undistort(x, y);
-    return QPoint(p.x, p.y);
+    connect(m_ui->listView->selectionModel(), &QItemSelectionModel::currentChanged,
+            m_listmodel, &MyModel::onCurrentIndexChanged);
+
+    connect(m_ui->listView->selectionModel(), &QItemSelectionModel::currentChanged,
+            m_orignial, &CLabel::updateView);
+
+    connect(m_ui->listView->selectionModel(), &QItemSelectionModel::currentChanged,
+            m_undist, &Undist::updateView);
+
+    connect(m_ui->listView->selectionModel(), &QItemSelectionModel::currentChanged,
+            this, &MainWindow::on_currentChanged);
+
+    connect(m_ui->imagePanel, &CLabel::clicked,
+            this, &MainWindow::onOriginalClicked);
+
+    connect(m_ui->imagePanel, &CLabel::clicked,
+            m_undist, &Undist::onOriginalClicked);
+
+}
+
+void MainWindow::onOriginalClicked(QMouseEvent *ev)
+{
+    QString imgpos = QString("%1, %2").arg(ev->x()).arg(ev->y());
+    m_ui->labelImagePosition->setText(imgpos);
+}
+
+void MainWindow::updateView()
+{
+   // ?! update label text
 }
 
 
 void MainWindow::on_currentChanged(QModelIndex current)
 {
-    m_model->setCurrentIndex(current.row());
-    ui->imagePanel->setPixmap(m_model->getImage());
+    // update H and V
+    auto pitchyaw = m_listmodel->getPlatAngle(current.row());
+
+    m_pitch = pitchyaw.x();
+    m_yaw = pitchyaw.y();
+
+    qDebug() << m_pitch << " " << m_yaw;
+
+    m_ui->pitch->setText(QString::number(m_pitch));
+    m_ui->yaw->setText(QString::number(m_yaw));
+
     updateView();
-//    auto size = ui->imagePanel->pixmap()->size();
-    //    ui->imagePanel->setFixedSize(size.width(), size.height());
 }
-
-
 
 void MainWindow::keyReleaseEvent(QKeyEvent *ev)
 {
@@ -99,35 +123,38 @@ void MainWindow::keyReleaseEvent(QKeyEvent *ev)
 
 void MainWindow::appendText()
 {
-    auto* textEdit = ui->textEdit;
-    auto real = m_realPoints.at(ui->candidateReal->currentIndex());
-
+    auto* textEdit = m_ui->textEdit;
+    auto real = m_realPoints.at(m_ui->candidateReal->currentIndex());
     // !? todo, calc undistorted img position
-    int x = m_imgPanel->x();
-    int y = m_imgPanel->y();
-    auto p = undistPoint(x, y);
-    x = p.x();
-    y = p.y();
+//    int x = m_orignial->x();
+//    int y = m_orignial->y();
+//    auto p = undistPoint(x, y);
+//    x = p.x();
+//    y = p.y();
 
-    textEdit->append(QString("%1 %2 %3 %4")
-            .arg(x)
-            .arg(y)
-            .arg(real.x())
-            .arg(real.y()));
+    textEdit->append(QString("%1 %2 %3 %4 %5 %6")
+                     .arg(m_yaw)
+                     .arg(m_pitch)
+                     .arg(m_undist->x())
+                     .arg(m_undist->y())
+                     .arg(real.x())
+                     .arg(real.y())
+
+//            .arg(x)
+//            .arg(y)
+//            .arg(real.x())
+//            .arg(real.y())
+//            .arg(m_pitch)
+//            .arg(m_yaw)
+                     );
 }
 
-void MainWindow::updateView()
-{
-    QString imgpos = QString("%1, %2").arg(m_imgPanel->x()).arg(m_imgPanel->y());
-    ui->labelImagePosition->setText(imgpos);
-}
 
 void MainWindow::on_actionSave_triggered()
 {
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
                                QDir::homePath(),
                                tr("Plain text (*.txt)"));
-
     if(fileName == NULL)
         return;
 
@@ -137,17 +164,16 @@ void MainWindow::on_actionSave_triggered()
     }
 
     QTextStream in(&file);
-    in << ui->textEdit->toPlainText();
+    in << m_ui->textEdit->toPlainText();
     file.close();
-
-//    m_app->closeAllWindows();
 }
 
 void MainWindow::on_actionOpen_triggered()
 {
+    connectSignals();
     QString filename = QFileDialog::getOpenFileName(this, tr("Open Image"), "/home/", tr("Image files (*.png *.jpg)"));
     if(filename != NULL) {
-        m_model->loadImages(filename);
-        ui->listView->setCurrentIndex(m_model->index(0, 0));
+        m_listmodel->loadImages(filename);
+        m_ui->listView->setCurrentIndex(m_listmodel->index(0, 0));
     }
 }
