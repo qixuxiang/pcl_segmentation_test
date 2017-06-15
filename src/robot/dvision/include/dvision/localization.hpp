@@ -99,8 +99,8 @@ class Localization
                    std::vector<cv::Point2f>& m_field_hull_real_rotated,
                    const cv::Point2d& result_circle,
                    const std::vector<cv::Point2f>& goal_position,
-                   std::vector<LineContainer>& all_lines,
-                   std::vector<FeatureContainer>& all_features,
+                   //  std::vector<LineContainer>& all_lines,
+                   //  std::vector<FeatureContainer>& all_features,
                    Projection& m_projection);
 
     // graph

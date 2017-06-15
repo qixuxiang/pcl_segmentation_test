@@ -37,8 +37,12 @@ LineDetector::Process(cv::Mat& m_canny_img,
                       std::vector<LineSegment>& clustered_lines,
                       Projection& m_projection)
 {
+    if (!parameters.line.enable) {
+        return false;
+    }
     bool line_detection_OK = false;
 
+    // calculate canny image
     cv::Mat channels[3];
     cv::split(m_hsv_img, channels);
     cv::Mat m_canny_img_in_field = cv::Mat::zeros(m_canny_img_in_field.size(), CV_8UC1);
@@ -51,47 +55,45 @@ LineDetector::Process(cv::Mat& m_canny_img,
     m_canny_img.copyTo(m_canny_img_in_field, m_field_convex_hull);
 
     // detect white lines
-    if (parameters.line.enable) {
-        cv::Rect top_view_box;
-        // top_view.width = field_model.field_length = 900
-        top_view_box.x = -1 * parameters.field_model.field_length;
-        top_view_box.y = -1 * parameters.field_model.field_length;
-        top_view_box.width = 2 * parameters.field_model.field_length;
-        top_view_box.height = 2 * parameters.field_model.field_length;
-        std::vector<LineSegment> result_lines, result_lines_real;
+    cv::Rect top_view_box;
+    // top_view.width = field_model.field_length = 900
+    top_view_box.x = -1 * parameters.field_model.field_length;
+    top_view_box.y = -1 * parameters.field_model.field_length;
+    top_view_box.width = 2 * parameters.field_model.field_length;
+    top_view_box.height = 2 * parameters.field_model.field_length;
+    std::vector<LineSegment> result_lines, result_lines_real;
 
-        // get unmerged lines
-        if (GetLines(m_hsv_img,
-                     field_binary_raw,
-                     m_gui_img,
-                     // m_projection,
-                     parameters.monitor.update_gui_img,
-                     m_canny_img_in_field,
-                     // cv::Rect(0, 0, parameters.camera.width, parameters.camera.height),
-                     result_lines)) {
-            // draw unmerged lines
-            if (parameters.monitor.update_gui_img) {
-                for (auto line : result_lines) {
-                    cv::line(m_gui_img, line.P1, line.P2, blueMeloColor(), 3, 8);
-                }
+    // get unmerged lines
+    if (GetLines(m_hsv_img,
+                 field_binary_raw,
+                 m_gui_img,
+                 // m_projection,
+                 parameters.monitor.update_gui_img,
+                 m_canny_img_in_field,
+                 // cv::Rect(0, 0, parameters.camera.width, parameters.camera.height),
+                 result_lines)) {
+        // draw unmerged lines
+        if (parameters.monitor.update_gui_img) {
+            for (auto line : result_lines) {
+                cv::line(m_gui_img, line.P1, line.P2, blueMeloColor(), 3, 8);
             }
+        }
 
-            // merge lines
-            if (m_projection.getOnRealCoordinate(result_lines, result_lines_real)) {
-                if (MergeLinesMax(result_lines_real, parameters.line.AngleToMerge, parameters.line.DistanceToMerge, clustered_lines, top_view_box)) {
-                    line_detection_OK = true;
-                }
+        // merge lines
+        if (m_projection.getOnRealCoordinate(result_lines, result_lines_real)) {
+            if (MergeLinesMax(result_lines_real, parameters.line.AngleToMerge, parameters.line.DistanceToMerge, clustered_lines, top_view_box)) {
+                line_detection_OK = true;
             }
+        }
 
-            // draw merged lines
-            if (parameters.line.showResult && parameters.monitor.update_gui_img) {
-                std::vector<LineSegment> clustered_lines_img;
-                if (m_projection.getOnImageCoordinate(clustered_lines, clustered_lines_img)) {
-                    for (size_t i = 0; i < clustered_lines_img.size(); i++) {
-                        line(m_gui_img, clustered_lines_img[i].P1, clustered_lines_img[i].P2, greenColor(), 3, 8);
-                        circle(m_gui_img, clustered_lines_img[i].P1, 2, blueColor(), 2, 8);
-                        circle(m_gui_img, clustered_lines_img[i].P2, 2, blueColor(), 2, 8);
-                    }
+        // draw merged lines
+        if (parameters.line.showResult && parameters.monitor.update_gui_img) {
+            std::vector<LineSegment> clustered_lines_img;
+            if (m_projection.getOnImageCoordinate(clustered_lines, clustered_lines_img)) {
+                for (size_t i = 0; i < clustered_lines_img.size(); i++) {
+                    line(m_gui_img, clustered_lines_img[i].P1, clustered_lines_img[i].P2, greenColor(), 3, 8);
+                    circle(m_gui_img, clustered_lines_img[i].P1, 2, blueColor(), 2, 8);
+                    circle(m_gui_img, clustered_lines_img[i].P2, 2, blueColor(), 2, 8);
                 }
             }
         }

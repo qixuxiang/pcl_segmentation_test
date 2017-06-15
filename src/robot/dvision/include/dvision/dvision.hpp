@@ -61,6 +61,6 @@ class DVision : public dprocess::DProcess<DVision>
     SaveImg m_save_img;
     void motionCallback(const dmotion::ActionCmd::ConstPtr& msg);
     void saveImgCallback(const SaveImg::ConstPtr& save_img_msg);
-    void prepareVisionShareData(const std::vector<cv::Point2f>& goal_position_real);
+    void prepareVisionShareData();
 };
 } // namespace dvision

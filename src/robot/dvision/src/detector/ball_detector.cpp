@@ -82,17 +82,10 @@ BallDetector::GetBall(cv::Mat& frame, VisionShareData& m_data, Projection& m_pro
                 max_prob = bbox.m_prob;
             }
         }
-        cv::Point2f ball_field, ball_global;
+        cv::Point2f ball_field;
         if (m_projection.getOnRealCoordinate(cv::Point(m_data.ball_image.x, m_data.ball_image.y), ball_field)) {
             m_data.ball_field.x = ball_field.x;
             m_data.ball_field.y = ball_field.y;
-        }
-        if (m_data.loc_ok) {
-            // TODO(corenel) Rotate angle is correct?
-            ball_global = m_projection.RotateTowardHeading(ball_field);
-            ball_global += cv::Point2f(m_data.robot_pos.x, m_data.robot_pos.y);
-            m_data.ball_global.x = ball_global.x;
-            m_data.ball_global.y = ball_global.y;
         }
     }
     return m_data.see_ball;

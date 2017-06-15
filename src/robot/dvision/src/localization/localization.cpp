@@ -119,14 +119,17 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
                         std::vector<cv::Point2f>& m_field_hull_real_rotated,
                         const cv::Point2d& result_circle,
                         const std::vector<cv::Point2f>& goal_position,
-                        std::vector<LineContainer>& all_lines,
-                        std::vector<FeatureContainer>& all_features,
+                        // std::vector<LineContainer>& all_lines,
+                        // std::vector<FeatureContainer>& all_features,
                         Projection& m_projection)
 {
     if (camera_projections_ == NULL || !parameters.loc.enable) {
         // ROS_ERROR("Error in programming");
         return false;
     }
+
+    std::vector<LineContainer> all_lines;
+    std::vector<FeatureContainer> all_features;
 
     // Rotate everthing!
     std::vector<LineSegment> clustered_lines_rotated;

@@ -29,21 +29,14 @@ GoalDetector::Init()
 }
 
 bool
-GoalDetector::Process(std::vector<cv::Point2f>& goal_position_real,
-                      cv::Mat& m_canny_img,
-                      cv::Mat& m_hsv_img,
-                      cv::Mat& m_gui_img,
-                      cv::Mat& m_gray_img,
-                      cv::Mat& m_goal_binary,
-                      std::vector<cv::Point>& hull_field,
-                      Projection& m_projection)
+GoalDetector::Process(cv::Mat& m_canny_img, cv::Mat& m_hsv_img, cv::Mat& m_gui_img, cv::Mat& m_gray_img, cv::Mat& m_goal_binary, std::vector<cv::Point>& hull_field, Projection& m_projection)
 {
     bool goal_detection_OK = false;
+    m_goal_position.clear();
     if (parameters.goal.enable) {
         std::vector<LineSegment> result_lines, all_lines;
         // detect goal position
-        goal_detection_OK =
-          GetPosts(m_canny_img, m_hsv_img, m_gray_img, m_goal_binary.clone(), m_projection, hull_field, result_lines, all_lines, goal_position_real, parameters.monitor.update_gui_img, m_gui_img);
+        goal_detection_OK = GetPosts(m_canny_img, m_hsv_img, m_gray_img, m_goal_binary.clone(), m_projection, hull_field, result_lines, all_lines, parameters.monitor.update_gui_img, m_gui_img);
 
         // draw all possible goal lines
         if (parameters.goal.showAllLines && parameters.monitor.update_gui_img) {
@@ -73,7 +66,6 @@ GoalDetector::GetPosts(cv::Mat& canny_img,
                        const std::vector<cv::Point>& field_hull,
                        std::vector<LineSegment>& res_lines,
                        std::vector<LineSegment>& all_lines,
-                       std::vector<cv::Point2f>& goal_position,
                        const bool& SHOWGUI,
                        cv::Mat& gui_img)
 {
@@ -279,7 +271,7 @@ GoalDetector::GetPosts(cv::Mat& canny_img,
         }
 
         // 令人感动球门柱下端点加了进去
-        goal_position.push_back(down_real);
+        m_goal_position.push_back(down_real);
         // 顺便加了整个球门柱的线片段
         res_lines.push_back(LineSegment(down, up));
     }

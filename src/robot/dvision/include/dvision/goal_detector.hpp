@@ -22,14 +22,7 @@ class GoalDetector : public IDetector
     explicit GoalDetector();
     ~GoalDetector();
     bool Init();
-    bool Process(std::vector<cv::Point2f>& goal_position_real,
-                 cv::Mat& m_canny_img,
-                 cv::Mat& m_hsv_img,
-                 cv::Mat& m_gui_img,
-                 cv::Mat& m_gray_img,
-                 cv::Mat& m_goal_binary,
-                 std::vector<cv::Point>& hull_field,
-                 Projection& m_projection);
+    bool Process(cv::Mat& m_canny_img, cv::Mat& m_hsv_img, cv::Mat& m_gui_img, cv::Mat& m_gray_img, cv::Mat& m_goal_binary, std::vector<cv::Point>& hull_field, Projection& m_projection);
 
     bool GetPosts(cv::Mat& canny_img,
                   cv::Mat& raw_hsv,
@@ -39,7 +32,6 @@ class GoalDetector : public IDetector
                   const std::vector<cv::Point>& field_hull,
                   std::vector<LineSegment>& res_lines,
                   std::vector<LineSegment>& all_lines,
-                  std::vector<cv::Point2f>& goal_position,
                   const bool& SHOWGUI,
                   cv::Mat& gui_img);
 
@@ -56,7 +48,12 @@ class GoalDetector : public IDetector
                            double& right_avg,
                            int& vote_for_double_left,
                            int& vote_for_double_right);
+    inline std::vector<cv::Point2f> goal_position()
+    {
+        return m_goal_position;
+    }
 
   private:
+    std::vector<cv::Point2f> m_goal_position;
 };
 } // namespace dvision

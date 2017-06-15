@@ -65,6 +65,7 @@ DVision::tick()
      ******************/
     bool field_detection_OK = false;
 
+    // TODO(corenel) move it ro m_field
     cv::Mat field_binary_raw;
     std::vector<cv::Point> hull_field;
 
@@ -79,14 +80,10 @@ DVision::tick()
      * Line Detector *
      *****************/
 
-    bool line_detection_OK = false;
-
-    // calculate canny image
+    // TODO(corenel) move it ro m_line
     std::vector<LineSegment> clustered_lines;
 
-    line_detection_OK = m_line.Process(m_canny_img, m_hsv_img, m_gui_img, m_field_convex_hull, field_binary_raw, clustered_lines, m_projection);
-
-    if (parameters.line.enable && !line_detection_OK) {
+    if (!m_line.Process(m_canny_img, m_hsv_img, m_gui_img, m_field_convex_hull, field_binary_raw, clustered_lines, m_projection)) {
         ROS_ERROR("Detecting lines failed.");
     }
 
@@ -94,6 +91,7 @@ DVision::tick()
      * Circle detector *
      *******************/
 
+    // TODO(corenel) move it ro m_circle
     cv::Point2d result_circle;
 
     if (field_detection_OK) {
@@ -104,21 +102,15 @@ DVision::tick()
      * Goal Detector *
      *****************/
 
-    std::vector<cv::Point2f> goal_position_real;
-
     if (field_detection_OK) {
-        m_data.see_goal = m_goal.Process(goal_position_real, m_canny_img, m_hsv_img, m_gui_img, m_gray_img, m_goal_binary, hull_field, m_projection);
+        m_data.see_goal = m_goal.Process(m_canny_img, m_hsv_img, m_gui_img, m_gray_img, m_goal_binary, hull_field, m_projection);
     }
 
     /****************
      * Localization *
      ****************/
 
-    std::vector<LineContainer> all_lines;
-    std::vector<FeatureContainer> all_features;
-
-    m_data.loc_ok = m_loc.Calculate(
-      clustered_lines, m_data.see_circle, m_field_hull_real_center, m_field_hull_real, m_field_hull_real_rotated, result_circle, goal_position_real, all_lines, all_features, m_projection);
+    m_data.loc_ok = m_loc.Calculate(clustered_lines, m_data.see_circle, m_field_hull_real_center, m_field_hull_real, m_field_hull_real_rotated, result_circle, m_goal.goal_position(), m_projection);
 
     /*****************
      * Ball Detector *
@@ -130,7 +122,7 @@ DVision::tick()
      * Publish *
      ***********/
 
-    prepareVisionShareData(goal_position_real);
+    prepareVisionShareData();
     m_pub.publish(m_data);
 
     /****************
@@ -163,26 +155,37 @@ DVision::saveImgCallback(const SaveImg::ConstPtr& save_img_msg)
 }
 
 void
-DVision::prepareVisionShareData(const std::vector<cv::Point2f>& goal_position_real)
+DVision::prepareVisionShareData()
 {
     // localization
     m_data.robot_pos.x = m_loc.location().x;
     m_data.robot_pos.y = m_loc.location().y;
     m_data.robot_pos.z = m_loc.location().z;
     // goal
-    if (goal_position_real.size() >= 1) {
+    // TODO(corenel) Get global coord?
+    std::vector<cv::Point2f> goal_position = m_goal.goal_position();
+    if (goal_position.size() >= 1) {
         m_data.see_goal = true;
-        m_data.left_goal.x = goal_position_real[0].x;
-        m_data.left_goal.y = goal_position_real[0].y;
-        if (goal_position_real.size() == 2) {
+        m_data.left_goal.x = goal_position[0].x;
+        m_data.left_goal.y = goal_position[0].y;
+        if (goal_position.size() == 2) {
             m_data.see_both_goal = true;
-            m_data.right_goal.x = goal_position_real[1].x;
-            m_data.right_goal.y = goal_position_real[1].y;
+            m_data.right_goal.x = goal_position[1].x;
+            m_data.right_goal.y = goal_position[1].y;
         } else {
             m_data.see_unknown_goal = true;
-            m_data.unknown_goal.x = goal_position_real[1].x;
-            m_data.unknown_goal.y = goal_position_real[1].y;
+            m_data.unknown_goal.x = goal_position[1].x;
+            m_data.unknown_goal.y = goal_position[1].y;
         }
+    }
+    // ball
+    if (m_data.loc_ok) {
+        // TODO(corenel) Rotate angle is correct?
+        cv::Point2f ball_global;
+        ball_global = m_projection.RotateTowardHeading(cv::Point2f(m_data.ball_field.x, m_data.ball_field.y));
+        ball_global += cv::Point2f(m_data.robot_pos.x, m_data.robot_pos.y);
+        m_data.ball_global.x = ball_global.x;
+        m_data.ball_global.y = ball_global.y;
     }
 }
 
