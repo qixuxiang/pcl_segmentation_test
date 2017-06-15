@@ -34,7 +34,6 @@ DVision::tick()
 {
     ROS_INFO("dvision tick");
     auto frame = m_camera.capture();
-    frame.show();
 
     /**********
      * Update *
@@ -125,6 +124,9 @@ DVision::tick()
     /****************
      * Post process *
      ****************/
+
+    frame.show();
+    cv::waitKey(1);
 
     m_concurrent.spinOnce();
     m_concurrent.join();
