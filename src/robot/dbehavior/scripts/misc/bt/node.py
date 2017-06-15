@@ -10,15 +10,14 @@ from enum import Enum
 from inspect import isclass
 
 
-from ..gglobal import get_req, get_bb, get_world, get_team, get_cfg
+from ..status.gglobal import get_req, get_bb, get_world, get_team
+from ..types.vec_pos import VecPos
+from ..types.action_command import (walk, look_at, crouch, standup,
+                                    wenxi_gaits, kick)
 from ..utils.mathutil import get_dis, abs_angle_diff, get_magnitude, get_angle
 from ..utils.calc_walk_engine import get_walk, get_walk_field
-from ..types.vec_pos import VecPos
-from util.GameControl import get_gc
-from util.actioncommand import walk, look_at, crouch, \
-    standup, wenxi_gaits, kick
-from util.calc_center_plat import calc_center_plat
-from util.list_to_gaitvec import list_to_gaitvec
+from ..utils.calc_center_plat import calc_center_plat
+from ..blackboard.gc_bb import get_gc
 
 
 # color for graphviz
@@ -87,7 +86,7 @@ class Node(object):
         # every node has the same blackboard
         self.bb = get_bb()
         self.world = get_world()
-        self.cfg = get_cfg()
+        self.cfg = self.bb.params.robot_config
         self.team = get_team()
         # shape for graphviz
         self.color = LightGrey
@@ -310,26 +309,26 @@ class Action(Node):
     # methods for motion
     def walk(self, sx, sy, st):
         """Walk."""
-        self.req.actions.body = walk(sx, sy, st)
+        walk(self.req.actions, sx, sy, st)
 
     def kick(self, left=0):
         """Kick."""
-        self.req.kick = True
-        self.req.actions.body = kick(left)
+        self.req.behaviour.kick = True
+        kick(self.req.actions, left)
 
-    def update_vec(self, list_):
-        """Update Gait Vec."""
-        self.req.update_gait_vec = True
-        self.req.gaitVec = list_to_gaitvec(list_)
+    # def update_vec(self, list_):
+    #     """Update Gait Vec."""
+    #     self.req.update_gait_vec = True
+    #     self.req.gaitVec = list_to_gaitvec(list_)
 
     def enable_vec(self):
         """Enable Vec."""
-        self.req.actions.body = wenxi_gaits()
+        wenxi_gaits(self.req.actions)
 
     def goto(self, destination):
         """Goto position."""
         x, y, t = get_walk(destination, self.world.robot_pos)
-        self.req.destination = destination
+        self.req.behaviour.destination = destination
         # if x < 0:
         #     x = 0
         self.walk(x, y, t)
@@ -342,7 +341,7 @@ class Action(Node):
     def got_dest(self, pos):
         """Check if getting to dest."""
         dis = get_dis(pos, self.world.robot_pos)
-        diff_angle = abs_angle_diff(pos.anglez - self.world.robot_pos.anglez)
+        diff_angle = abs_angle_diff(pos.z - self.world.robot_pos.z)
 
         if dis < 35 and diff_angle < 15:
             return True
@@ -351,15 +350,15 @@ class Action(Node):
 
     def enable_localization(self):
         """Enable Localization."""
-        self.req.enable_localization = True
+        self.req.behaviour.enable_localization = True
 
     def crouch(self):
         """Crouch."""
-        self.req.actions.body = crouch()
+        crouch(self.req.actions)
 
     def stand(self):
         """Stand."""
-        self.req.actions.body = standup()
+        standup(self.req.actions)
 
     def step(self):
         """Step."""
@@ -367,7 +366,7 @@ class Action(Node):
 
     def turn(self, st):
         """Turn."""
-        self.req.actions.body = walk(0, 0, st)
+        walk(self.req.actions, 0, 0, st)
 
     def turn_right(self):
         """Turn right."""
@@ -379,7 +378,7 @@ class Action(Node):
 
     def lookat(self, yaw, pitch, yaw_speed=2, pitch_speed=2):
         """Look at somewhere with given yaw and pitch."""
-        self.req.actions.head = look_at(yaw, pitch, yaw_speed, pitch_speed)
+        look_at(self.req.actions, yaw, pitch, yaw_speed, pitch_speed)
 
     def face(self, field):
         """Face an object."""
@@ -417,12 +416,12 @@ class Action(Node):
 
     def set_position(self, robotstate):
         """Set self localization at given global position."""
-        self.req.resetLocalization = True
-        self.req.reset_point = robotstate
+        self.req.behaviour.reset_localization = True
+        self.req.behaviour.reset_point = robotstate
 
     def capture(self):
         """Capture images."""
-        self.req.saveimage = True
+        self.req.behaviour.save_image = True
 
     def debug_log(self):
         """Output debug log."""

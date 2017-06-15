@@ -9,11 +9,11 @@
 # @Copyright: ZJUDancer
 
 import rospy
-from ..types.vec_pos import VecPos
 from ..utils.mathutil import calc_global_position
+from ..utils.timer import Timer, get_current_time
+from ..types.vec_pos import VecPos
 from ..types.constant import UNKNOWN, ROLE_NONE
 from ..types.field_geometry import inside_field, inside_view
-from util.Timer import Timer, get_current_time
 
 
 class World(object):
@@ -71,13 +71,14 @@ class World(object):
         # flag for reentry
         self.enable_reentry = False
 
-    def update(self, _blackboard):
+    def update(self):
         """Update.
 
         1. consider ball is hided by obstacle
         2. when ball is near left or right to robot's foot,
         very easily it disappears, so we need to remember it for 2 seconds
         """
+        _blackboard = self.bb
         # motion
         self.uptime = _blackboard.motion.uptime
         self.lower_board_connected = _blackboard.motion.lower_board_connected
@@ -88,12 +89,12 @@ class World(object):
 
         # vision
         self.vision_ball_field = _blackboard.vision.ball_field
-        self.left_goal = _blackboard.recognition.est_goal_left
-        self.right_goal = _blackboard.recognition.est_goal_right
-        self.unknown_goal = _blackboard.recognition.est_goal_unknown
+        self.left_goal = _blackboard.vision.left_goal
+        self.right_goal = _blackboard.vision.right_goal
+        self.unknown_goal = _blackboard.vision.unknown_goal
 
         # localization
-        self.robot_pos = _blackboard.localization.robotPos
+        self.robot_pos = _blackboard.vision.robot_pos
         self.field_angle = _blackboard.motion.fieldAngle
 
         if inside_view(self.left_goal) and inside_view(self.right_goal):
@@ -132,10 +133,10 @@ class World(object):
 
         # vision/recognition
         # todo continue
-        self.obstalce = _blackboard.recognition.obstacle
+        # self.obstalce = _blackboard.vision.obstacle
 
-        ball_global = _blackboard.recognition.ballest_global
-        ball_field = _blackboard.recognition.ballest
+        ball_global = _blackboard.vision.ball_global
+        ball_field = _blackboard.vision.ball_field
 
         if inside_field(ball_global) and inside_view(ball_field):
             if False:  # ball_field.x < 0:

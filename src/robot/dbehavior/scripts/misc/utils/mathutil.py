@@ -75,7 +75,7 @@ def calc_global_position(field_pos, robot_state):
     From robot's global position and object's field position
     """
     tmp = VecPos(field_pos.x, field_pos.y)
-    tmp.rotate(robot_state.anglez)
+    tmp.rotate(robot_state.z)
     return VecPos(tmp.x + robot_state.x, tmp.y + robot_state.y)
 
 
@@ -86,5 +86,5 @@ def calc_field_position(global_pos, robot_state):
     From it's global position and robot's global position
     """
     tmp = VecPos(global_pos.x - robot_state.x, global_pos.y - robot_state.y)
-    tmp.rotate(-robot_state.anglez)
+    tmp.rotate(-robot_state.z)
     return tmp

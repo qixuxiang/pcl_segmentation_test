@@ -19,7 +19,7 @@ from ..types.field_geometry import (STRIKER_POS_KICKOFF,
                                     STRIKER_POS_NONE_KICK_OFF,
                                     DEFENDER_POS, MIDFIELDER_POS, GOALIE_POS,
                                     inverse_global_pos_by_side)
-from util.GameControl import get_gc
+from ..blackboard.gc_bb import get_gc
 
 
 class Team(object):
@@ -32,77 +32,75 @@ class Team(object):
         self.req = req
         self.cycle = 0
 
-        self.timeToReachBall = 9999
-        self.last_timeToReachBall = 9999
-        self.timeToReachDefender = 9999
-        self.timeToReachMidFielder = 9999
-        self.timeToReachStriker = 9999
-        self.currentRole = ROLE_NONE
-        self.goalieAttacking = False
+        self.time_to_reach_ball = 9999
+        self.last_time_to_reach_ball = 9999
+        self.time_to_reach_defender = 9999
+        self.time_to_reach_midfielder = 9999
+        self.time_to_reach_striker = 9999
+        self.current_role = ROLE_NONE
+        self.goalie_attacking = False
 
         self.data = None
         self.incapacitated = None
         self.last_received = None
 
-    def update(self, bb):
+    def update(self):
         """Update."""
         gc = get_gc()
         self.id = gc.player_id
 
         self.cycle += 1
-        self.data = bb.receiver.data
-        self.last_received = bb.receiver.last_received
-        self.incapacitated = bb.receiver.incapacitated
+        self.data = self.bb.receiver.data
+        self.last_received = self.bb.receiver.last_received
+        self.incapacitated = self.bb.receiver.incapacitated
 
         self.update_times()
 
-        self.req.timeToReachBall = self.timeToReachBall
-        self.req.timeToReachStriker = self.timeToReachStriker
-        self.req.timeToReachDefender = self.timeToReachDefender
-        self.req.timeToReachMidFielder = self.timeToReachMidFielder
+        self.req.team.time_to_reach_ball = self.time_to_reach_ball
+        self.req.team.time_to_reach_striker = self.time_to_reach_striker
+        self.req.team.time_to_reach_defender = self.time_to_reach_defender
+        self.req.team.time_to_reach_midfielder = self.time_to_reach_midfielder
 
-        if self.currentRole is None:
+        if self.current_role is None:
             raise Exception('CurrentRole is None')
         else:
-            self.req.currentRole = self.currentRole
+            self.req.team.current_role = self.current_role
 
-        self.req.goalieAttacking = self.goalieAttacking
-
-        # self.test_recv()
+        self.req.team.goalie_attacking = self.goalie_attacking
 
     def update_times(self):
         """Update time."""
         # 1. time to reach ball
         if not self.world.stable:
-            self.timeToReachBall = 9999.0
-            self.last_timeToReachBall = 9999.0
+            self.time_to_reach_ball = 9999.0
+            self.last_time_to_reach_ball = 9999.0
 
         if self.world.enable_checkgoal:
-            self.timeToReachBall = self.last_timeToReachBall
+            self.time_to_reach_ball = self.last_time_to_reach_ball
 
         if self.world.see_ball:
             rub = get_rub()
             angle = get_angle(rub)
             dis = get_magnitude(rub)
 
-            self.timeToReachBall = abs(angle / TURN_SPEED) + dis / WALK_SPEED
+            self.time_to_reach_ball = abs(angle / TURN_SPEED) + dis / WALK_SPEED
 
             if 0 < rub.x < 30 and -20 < rub.y < 20:
-                self.timeToReachBall = 0
+                self.time_to_reach_ball = 0
 
-            self.last_timeToReachBall = self.timeToReachBall
+            self.last_time_to_reach_ball = self.time_to_reach_ball
         else:
 
-            self.timeToReachBall = 9999.0
+            self.time_to_reach_ball = 9999.0
 
         # update time to reach role
-        self.timeToReachStriker = \
+        self.time_to_reach_striker = \
             calc_time_to_reach_pos(self.world.robot_pos,
                                    self.get_start_pos(ROLE_STRIKER))
-        self.timeToReachMidFielder = \
+        self.time_to_reach_midfielder = \
             calc_time_to_reach_pos(self.world.robot_pos,
                                    self.get_start_pos(ROLE_MIDFIELDER))
-        self.timeToReachDefender = \
+        self.time_to_reach_defender = \
             calc_time_to_reach_pos(self.world.robot_pos,
                                    self.get_start_pos(ROLE_DEFENDER))
 
@@ -160,27 +158,27 @@ class Team(object):
 
         return count
 
-    def get_timeToReachBall(self, index):
+    def get_time_to_reach_ball(self, index):
         """Get time to reach ball."""
-        return self.data[index].behaviourSharedData.timeToReachBall
+        return self.data[index].behaviourSharedData.time_to_reach_ball
 
-    def get_timeToReachStriker(self, index):
+    def get_time_to_reach_striker(self, index):
         """Get time to reach Striker."""
-        return self.data[index].behaviourSharedData.timeToReachStriker
+        return self.data[index].behaviourSharedData.time_to_reach_striker
 
-    def get_timeToReachMidFielder(self, index):
+    def get_time_to_reach_midfielder(self, index):
         """Get time to reach MidFielder."""
-        return self.data[index].behaviourSharedData.timeToReachMidFielder
+        return self.data[index].behaviourSharedData.time_to_reach_midfielder
 
-    def get_timeToReachDefender(self, index):
+    def get_time_to_reach_defender(self, index):
         """Get time to reach Defender."""
-        return self.data[index].behaviourSharedData.timeToReachDefender
+        return self.data[index].behaviourSharedData.time_to_reach_defender
 
     def has_striker(self):
         """Check if Striker exists."""
         for i in xrange(ROBOTS_PER_TEAM):
             data = self.data[i]
-            if data.behaviourSharedData.currentRole is ROLE_STRIKER and \
+            if data.behaviourSharedData.current_role is ROLE_STRIKER and \
                     self.is_teammate_active(i):
                 return True
         return False
@@ -221,7 +219,7 @@ class Team(object):
         smallest_time = 10000
         index = -1
         for i in xrange(ROBOTS_PER_TEAM):
-            t = self.get_timeToReachBall(i)
+            t = self.get_time_to_reach_ball(i)
             if self.is_teammate_active(i) and t < smallest_time:
                 index = i
                 smallest_time = t
@@ -248,7 +246,7 @@ class Team(object):
             #     else:
             #         return False
 
-            t = self.get_timeToReachDefender(i)
+            t = self.get_time_to_reach_defender(i)
             if self.is_teammate_active(i) and t < smallest_time:
                 index = i
                 smallest_time = t
@@ -269,7 +267,7 @@ class Team(object):
                 else:
                     return False
 
-            t = self.get_timeToReachStriker(i)
+            t = self.get_time_to_reach_striker(i)
             if self.is_teammate_active(i) and t < smallest_time:
                 index = i
                 smallest_time = t
@@ -290,7 +288,7 @@ class Team(object):
                 else:
                     return False
 
-            t = self.get_timeToReachMidFielder(i)
+            t = self.get_time_to_reach_midfielder(i)
             if self.is_teammate_active(i) and t < smallest_time:
                 index = i
                 smallest_time = t
@@ -307,7 +305,8 @@ class Team(object):
     def goalie_incapacitated(self):
         """Check if Goalie is incapacitated."""
         for i in xrange(ROBOTS_PER_TEAM):
-            if self.get_role(i) is ROLE_GOALIE and not self.is_teammate_active(i):
+            if self.get_role(i) is ROLE_GOALIE and \
+                    not self.is_teammate_active(i):
                 return True
         return False
 
@@ -324,39 +323,39 @@ class Team(object):
 
     def be_striker(self):
         """To be a Striker."""
-        self.currentRole = ROLE_STRIKER
+        self.current_role = ROLE_STRIKER
 
     def be_defender(self):
         """To be a Defender."""
-        self.currentRole = ROLE_DEFENDER
+        self.current_role = ROLE_DEFENDER
 
     def be_midfielder(self):
         """To be a MidFielder."""
-        self.currentRole = ROLE_MIDFIELDER
+        self.current_role = ROLE_MIDFIELDER
 
     def be_goalie(self):
         """To be a Goalie."""
-        self.currentRole = ROLE_GOALIE
+        self.current_role = ROLE_GOALIE
 
     def is_striker(self):
         """Check if self is Striker."""
-        return self.currentRole is ROLE_STRIKER
+        return self.current_role is ROLE_STRIKER
 
     def is_defender(self):
         """Check if self is Defender."""
-        return self.currentRole is ROLE_DEFENDER
+        return self.current_role is ROLE_DEFENDER
 
     def is_midfiedler(self):
         """Check if self is MidFielder."""
-        return self.currentRole is ROLE_MIDFIELDER
+        return self.current_role is ROLE_MIDFIELDER
 
     def is_goalie(self):
         """Check if self is Goalie."""
-        return self.currentRole is ROLE_GOALIE
+        return self.current_role is ROLE_GOALIE
 
     def is_none(self):
         """Check if self is None."""
-        return self.currentRole is ROLE_NONE
+        return self.current_role is ROLE_NONE
 
     def teammate_striking(self):
         """Check if teammate is striking."""
@@ -374,15 +373,15 @@ class Team(object):
 
     def get_role(self, index):
         """Get role by index."""
-        return self.data[index].behaviourSharedData.currentRole
+        return self.data[index].behaviourSharedData.current_role
 
     def get_role_str(self):
         """Get role string."""
-        return get_role_str(self.currentRole)
+        return get_role_str(self.current_role)
 
     def get_goalieattacing(self, index):
         """Get Goalie attacking."""
-        return self.data[index].behaviourSharedData.goalieAttacking
+        return self.data[index].behaviourSharedData.goalie_attacking
 
 
 # if see ball and very close but not the closet,
@@ -393,5 +392,5 @@ class Team(object):
 def calc_time_to_reach_pos(robot_pos, dest_pos):
     """Calculate time to reach pos."""
     dis = get_dis(robot_pos, dest_pos)
-    angle = abs(angle_normalization(robot_pos.anglez - dest_pos.anglez))
+    angle = abs(angle_normalization(robot_pos.z - dest_pos.z))
     return dis / WALK_SPEED + angle / TURN_SPEED / 2

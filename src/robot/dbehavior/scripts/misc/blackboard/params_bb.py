@@ -17,11 +17,22 @@ from ..utils.mathutil import degree_between
 class ParamsBlackBoard(StatusBlackBoard):
     """BlackBoard for parameters and robot configs."""
 
-    def __init__(self, robot_id):
+    def __init__(self):
         """Init ParamsBlackBoard."""
         super(ParamsBlackBoard, self).__init__()
+        # init member varibales
+        self.player_number = None
+        self.player_team = None
+        self.skill = None
         self.robot_config = RobotConfig()
+
+        # get general info
+        self.gparam("/dbehaviour/player/number", "player_number", self)
+        self.gparam("/dbehaviour/player/team", "player_team", self)
+        self.gparam("/dbehaviour/skill", "skill", self)
+
         # get robot config
+        robot_id = self.player_number
         self.gparam("/dbehaviour/robot_{}/FINAL_ATK_DIS".format(robot_id),
                     "FINAL_ATK_DIS", self.robot_config)
         self.gparam("/dbehaviour/robot_{}/LEFT_KICK".format(robot_id),
@@ -48,7 +59,8 @@ class ParamsBlackBoard(StatusBlackBoard):
         self.gparam_vecpos("/dbehaviour/robot_{}/DOGE_POINT_DOWN"
                            .format(robot_id),
                            "DOGE_POINT_DOWN", self.robot_config)
-        self.doge_angle = degree_between(self.DOGE_POINT, VecPos(0, 50))
+        self.doge_angle = degree_between(self.robot_config.DOGE_POINT,
+                                         VecPos(0, 50))
         self.gparam("/dbehaviour/robot_{}/LINE_UP_TIMEOUT".format(robot_id),
                     "LINE_UP_TIMEOUT", self.robot_config)
         self.gparam("/dbehaviour/robot_{}/DEST_REGION".format(robot_id),

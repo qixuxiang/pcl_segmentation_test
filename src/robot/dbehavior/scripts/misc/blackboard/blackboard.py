@@ -8,20 +8,29 @@
 # @Last modified time: 2017-06-11T15:08:19+08:00
 # @Copyright: ZJUDancer
 
+from dmotion.msg import MotionShareData
+from dvision.msg import VisionShareData
+from .status_bb import StatusBlackBoard
 from .motion_bb import MotionBlackBoard
 from .vision_bb import VisionBlackBoard
 from .params_bb import ParamsBlackBoard
-from .gc_bb import GameControllerBlackBoard;
+from .receiver_bb import ReceiverBlackBoard
+# from .gc_bb import GameControllerBlackBoard
 
 
-class BlackBoard(object):
+class BlackBoard(StatusBlackBoard):
     """BlackBoard for subscribing and publishing robot status."""
 
     def __init__(self):
         """Init BlackBoard."""
         super(BlackBoard, self).__init__()
-        self.gc = GameControllerBlackBoard()
+        # self.gc = GameControllerBlackBoard()
         self.motion = MotionBlackBoard()
         self.vision = VisionBlackBoard()
-        # TODO(corenel) get robot id from GameController
-        self.params = ParamsBlackBoard(0)
+        self.params = ParamsBlackBoard()
+        self.receiver = ReceiverBlackBoard()
+        # subscribe
+        self.subscribe("/humanoid/VisionShareData", VisionShareData,
+                       self, "vision")
+        self.subscribe("/humanoid/MotionShareData", MotionShareData,
+                       self, "motion")

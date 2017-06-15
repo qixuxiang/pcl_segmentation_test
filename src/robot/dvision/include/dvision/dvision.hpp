@@ -2,8 +2,11 @@
 //     Author: Wenxing Mei <mwx36mwx@gmail.com>
 
 #pragma once
+#include "dmotion/ActionCmd.h"
 #include "dprocess/dconcurrent.hpp"
 #include "dprocess/dprocess.hpp"
+#include "dvision/SaveImg.h"
+#include "dvision/VisionShareData.h"
 #include "dvision/ball_detector.hpp"
 #include "dvision/camera.hpp"
 #include "dvision/circle_detector.hpp"
@@ -14,8 +17,6 @@
 #include "dvision/projection.hpp"
 #include "dvision/utils.hpp"
 #include <vector>
-#include "dvision/SaveImg.h"
-#include "dmotion/ActionCmd.h"
 
 namespace dvision {
 class DVision : public dprocess::DProcess<DVision>
@@ -29,6 +30,7 @@ class DVision : public dprocess::DProcess<DVision>
     ros::NodeHandle* m_nh;
     ros::Subscriber m_sub_action_cmd;
     ros::Subscriber m_sub_save_img;
+    ros::Publisher m_pub;
     Camera m_camera;
     Projection m_projection;
     dprocess::DConcurrent m_concurrent;
@@ -40,6 +42,7 @@ class DVision : public dprocess::DProcess<DVision>
     GoalDetector m_goal;
     FieldDetector m_field;
     Localization m_loc;
+    VisionShareData m_data;
 
     // field hull
     std::vector<cv::Point2f> m_field_hull_real;
@@ -47,10 +50,10 @@ class DVision : public dprocess::DProcess<DVision>
     cv::Point2f m_field_hull_real_center;
 
     // img
-    cv::Mat m_hsv_img, m_gray_img;
-    cv::Mat m_gui_top_view_rotate, m_gui_img, m_gui_undist;
+    cv::Mat m_hsv_img, m_gray_img, m_canny_img, m_gui_img;
+    // cv::Mat m_gui_top_view_rotate, m_gui_img, m_gui_undist;
     cv::Mat m_ball_binary, m_field_binary, m_goal_binary;
-    cv::Mat m_field_convex_hull, m_canny_img_in_field;
+    cv::Mat m_field_convex_hull;
     // added by yyj
     int m_yaw;
     int m_pitch;
@@ -58,5 +61,6 @@ class DVision : public dprocess::DProcess<DVision>
     SaveImg m_save_img;
     void motionCallback(const dmotion::ActionCmd::ConstPtr& msg);
     void saveImgCallback(const SaveImg::ConstPtr& save_img_msg);
+    void prepareVisionShareData();
 };
 } // namespace dvision

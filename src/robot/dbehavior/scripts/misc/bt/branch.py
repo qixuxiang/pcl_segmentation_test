@@ -4,7 +4,7 @@ Including selector, ev_selector, sequence, ev_sequence and parallel.
 """
 
 # Node tick must return status
-from node import Node, Status
+from .node import Node, Status
 
 
 def selector(*args):

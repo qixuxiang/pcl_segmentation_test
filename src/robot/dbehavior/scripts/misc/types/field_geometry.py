@@ -14,7 +14,7 @@ from math import atan2, degrees
 from ..utils.mathutil import angle_normalization, degree_between
 from ..types.vec_pos import VecPos
 from ..types.constant import MAX_VIEW_DIST, LEFT
-from GameControl import get_gc
+from ..blackboard.gc_bb import get_gc
 
 
 # field model
@@ -142,7 +142,7 @@ def facing_goal(robot_pos):
 
     # print diff
 
-    angle = robot_pos.anglez
+    angle = robot_pos.z
 
     if angle_normalization(angle - left) < 0 and \
             angle_normalization(angle - right) > 0:
@@ -194,4 +194,4 @@ def inside_view(field_position):
 
 def inverse_global_pos_by_side(pos):
     """Convert a pos in left side to red side by mirror."""
-    return Vector3(-pos.x, pos.y, angle_normalization(180 - pos.anglez))
+    return Vector3(-pos.x, pos.y, angle_normalization(180 - pos.z))

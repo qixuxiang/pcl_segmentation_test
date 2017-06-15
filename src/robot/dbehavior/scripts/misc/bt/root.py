@@ -1,10 +1,10 @@
 """Root Node."""
 
 import rospy
-from node import Node
+from .node import Node
 from ..types.constant import STATE_INITIAL, STATE_READY
-from Global import get_req, get_world
-from util.GameControl import get_gc
+from ..status.gglobal import get_req, get_world
+from ..blackboard.gc_bb import get_gc
 
 
 class Root(Node):
@@ -31,12 +31,12 @@ class Root(Node):
             raise Exception('Root should have only 1 child')
 
         self._children[0].tick()
-        self.update_graph()
+        # self.update_graph()
 
-    def update_graph(self):
-        """Update graphviz."""
-        if self.bb.dashmean.updateGraph:
-            self.req.btGraph = self.generate_dot()
+    # def update_graph(self):
+    #     """Update graphviz."""
+    #     if self.bb.dashmean.updateGraph:
+    #         self.req.btGraph = self.generate_dot()
 
     def check_reentry(self):
         """Check re-entry."""

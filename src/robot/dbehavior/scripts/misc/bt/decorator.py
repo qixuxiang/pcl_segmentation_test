@@ -1,7 +1,7 @@
 """Decorator Node."""
 
-from node import Node, Condition, Status
-from util.Timer import Timer
+from .node import Node, Condition, Status
+from ..utils.timer import Timer
 
 
 class Decorator(Node):

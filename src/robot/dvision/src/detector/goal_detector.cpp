@@ -17,6 +17,10 @@ GoalDetector::GoalDetector()
 {
 }
 
+GoalDetector::~GoalDetector()
+{
+}
+
 bool
 GoalDetector::Init()
 {
@@ -24,27 +28,45 @@ GoalDetector::Init()
     return true;
 }
 
-GoalDetector::~GoalDetector()
+bool
+GoalDetector::Process(cv::Mat& m_canny_img, cv::Mat& m_hsv_img, cv::Mat& m_gui_img, std::vector<cv::Point>& hull_field, Projection& m_projection)
 {
+    bool goal_detection_OK = false;
+    m_goal_position.clear();
+    if (parameters.goal.enable) {
+        std::vector<LineSegment> result_lines, all_lines;
+        // detect goal position
+        goal_detection_OK = GetPosts(m_canny_img, m_hsv_img, m_projection, hull_field, result_lines, all_lines, parameters.monitor.update_gui_img, m_gui_img);
+
+        // draw all possible goal lines
+        if (parameters.goal.showAllLines && parameters.monitor.update_gui_img) {
+            for (auto line : all_lines) {
+                cv::line(m_gui_img, line.P1, line.P2, blueMeloColor(), 2, 8);
+            }
+        }
+
+        if (goal_detection_OK) {
+            // draw selected goal lines
+            if (parameters.goal.showResLine && parameters.monitor.update_gui_img) {
+                for (auto line : result_lines) {
+                    cv::line(m_gui_img, line.P1, line.P2, blueMeloColor(), 2, 8);
+                }
+            }
+        }
+    }
+    return goal_detection_OK;
 }
 
 bool
 GoalDetector::GetPosts(cv::Mat& canny_img,
                        cv::Mat& raw_hsv,
-                       cv::Mat& gray,
-                       const cv::Mat& binary_frame,
                        Projection& projection,
                        const std::vector<cv::Point>& field_hull,
                        std::vector<LineSegment>& res_lines,
                        std::vector<LineSegment>& all_lines,
-                       std::vector<cv::Point2f>& goal_position,
                        const bool& SHOWGUI,
                        cv::Mat& gui_img)
 {
-    // never use
-    // if (binary_frame.empty()) {
-    //   return false;
-    // }
     cv::Rect rec;
     rec.x = 0;
     rec.y = 0;
@@ -157,11 +179,10 @@ GoalDetector::GetPosts(cv::Mat& canny_img,
     }
 
     // 线段融合
-    std::vector<LineSegment> all_ver_lines_2;
-    MergeLinesMax(all_ver_lines, 30, DistanceToMerge, all_ver_lines_2, rec);
+    MergeLinesMax(all_ver_lines, 30, DistanceToMerge, all_lines, rec);
 
-    for (size_t i = 0; i < all_ver_lines_2.size(); i++) {
-        LineSegment tmp_line = all_ver_lines_2[i];
+    for (size_t i = 0; i < all_lines.size(); i++) {
+        LineSegment tmp_line = all_lines[i];
         cv::Point up = (tmp_line.P1.y > tmp_line.P2.y) ? tmp_line.P2 : tmp_line.P1;
         cv::Point down = (tmp_line.P1.y < tmp_line.P2.y) ? tmp_line.P2 : tmp_line.P1;
 
@@ -243,14 +264,14 @@ GoalDetector::GetPosts(cv::Mat& canny_img,
         }
 
         // 令人感动球门柱下端点加了进去
-        goal_position.push_back(down_real);
+        m_goal_position.push_back(down_real);
         // 顺便加了整个球门柱的线片段
         res_lines.push_back(LineSegment(down, up));
     }
 
     if (SHOWGUI && parameters.goal.showVote) {
-        for (size_t i = 0; i < all_ver_lines_2.size(); i++) {
-            cv::line(gui_img, all_ver_lines_2[i].P1, all_ver_lines_2[i].P2, darkOrangeColor(), 1);
+        for (size_t i = 0; i < all_lines.size(); i++) {
+            cv::line(gui_img, all_lines[i].P1, all_lines[i].P2, darkOrangeColor(), 1);
         }
     }
     if (SHOWGUI && parameters.goal.showResult) {

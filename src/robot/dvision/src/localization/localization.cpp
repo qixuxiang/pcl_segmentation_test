@@ -11,6 +11,7 @@
 
 #include "dvision/localization.hpp"
 #include "dvision/parameters.hpp"
+#include "dvision/projection.hpp"
 
 namespace dvision {
 
@@ -36,7 +37,6 @@ Localization::Localization()
   , global_pos_(0, 0, 0)
   , last_odom_(0, 0, 0)
   , last_odom_id_(0)
-  , ball_pos_(0, 0)
   , current_vertex_id_(0)
   , previous_vertex_id_(0)
   , landmark_count_(0)
@@ -116,21 +116,37 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
                         const bool& circle_detected,
                         const cv::Point2f& field_hull_real_center,
                         const std::vector<cv::Point2f>& field_hull_real,
-                        const cv::Point2d& result_circle_rotated,
+                        std::vector<cv::Point2f>& m_field_hull_real_rotated,
+                        const cv::Point2d& result_circle,
                         const std::vector<cv::Point2f>& goal_position,
-                        std::vector<LineContainer>& all_lines,
-                        std::vector<FeatureContainer>& all_features)
+                        // std::vector<LineContainer>& all_lines,
+                        // std::vector<FeatureContainer>& all_features,
+                        Projection& m_projection)
 {
-    if (camera_projections_ == NULL) {
+    if (camera_projections_ == NULL || !parameters.loc.enable) {
         // ROS_ERROR("Error in programming");
         return false;
     }
+
+    std::vector<LineContainer> all_lines;
+    std::vector<FeatureContainer> all_features;
+
+    // Rotate everthing!
+    std::vector<LineSegment> clustered_lines_rotated;
+    cv::Point2d result_circle_rotated;
+    std::vector<cv::Point2f> goal_position_real_rotated;
+
+    m_projection.CalcHeadingOffset(clustered_lines, circle_detected, result_circle, goal_position);
+    m_field_hull_real_rotated = m_projection.RotateTowardHeading(field_hull_real);
+    clustered_lines_rotated = m_projection.RotateTowardHeading(clustered_lines);
+    goal_position_real_rotated = m_projection.RotateTowardHeading(goal_position);
+    result_circle_rotated = m_projection.RotateTowardHeading(result_circle);
 
     // Flip y from robot coord to field coord
     cv::Point2d circle_rotated_and_fliiped = result_circle_rotated;
     circle_rotated_and_fliiped.y *= -1;
 
-    all_lines.reserve(clustered_lines.size());
+    all_lines.reserve(clustered_lines_rotated.size());
     all_features.reserve(5);
 
     const double MAX_FASHER = 200.;
@@ -143,8 +159,8 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
     LineSegment HorLine(cv::Point(0, -10), cv::Point(0, 10));
     LineSegment VerLine(cv::Point(10, 0), cv::Point(-10, 0));
 
-    for (size_t i = 0; i < clustered_lines.size(); i++) {
-        LineSegment line_seg = clustered_lines[i];
+    for (size_t i = 0; i < clustered_lines_rotated.size(); i++) {
+        LineSegment line_seg = clustered_lines_rotated[i];
         // flip y coord from robot coord to field coord
         line_seg.P1.y *= -1;
         line_seg.P2.y *= -1;
@@ -187,7 +203,7 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
                     // 机器人在场地白线之外时
                     // 若线片段距离检测到的场地凸包中心距离大于70/2 cm
                     // 并且检测到的场地凸包面积大于4 m^2
-                } else if (line_seg.DistanceFromLine(field_hull_real_center) > (parameters.loc.VerLineMinDistanceToUpdate / 2.) && cv::contourArea(field_hull_real) > 40000) {
+                } else if (line_seg.DistanceFromLine(field_hull_real_center) > (parameters.loc.VerLineMinDistanceToUpdate / 2.) && cv::contourArea(m_field_hull_real_rotated) > 40000) {
                     LandmarkType ltype = CenterL;
                     LineSegment l2_est = line_seg;
                     if (line_seg.P1.x > line_seg.P2.x) {
@@ -232,14 +248,14 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
 
                 // 检测到大于2个球门柱点，且线片段与其距离均小于50cm
                 // Flip goal y coord
-                bool double_goal_pos_OK = goal_position.size() >= 2 && line_seg.DistanceFromLine(cv::Point2f(goal_position[0].x, -goal_position[0].y)) < 20 &&
-                                          line_seg.DistanceFromLine(cv::Point2f(goal_position[1].x, -goal_position[1].y)) < 20;
-                bool single_goal_pos_OK = goal_position.size() == 1 && line_seg.DistanceFromLine(cv::Point2f(goal_position[0].x, -goal_position[0].y)) < 10;
+                bool double_goal_pos_OK = goal_position_real_rotated.size() >= 2 && line_seg.DistanceFromLine(cv::Point2f(goal_position_real_rotated[0].x, -goal_position_real_rotated[0].y)) < 20 &&
+                                          line_seg.DistanceFromLine(cv::Point2f(goal_position_real_rotated[1].x, -goal_position_real_rotated[1].y)) < 20;
+                bool single_goal_pos_OK = goal_position_real_rotated.size() == 1 && line_seg.DistanceFromLine(cv::Point2f(goal_position_real_rotated[0].x, -goal_position_real_rotated[0].y)) < 10;
 
                 if (double_goal_pos_OK || single_goal_pos_OK) {
                     // cout << "Distance from line to goal: [0]="
-                    //      << line_seg.DistanceFromLine(goal_position[0])
-                    //      << ", [1]=" << line_seg.DistanceFromLine(goal_position[1]) <<
+                    //      << line_seg.DistanceFromLine(goal_position_real_rotated[0])
+                    //      << ", [1]=" << line_seg.DistanceFromLine(goal_position_real_rotated[1]) <<
                     //      endl;
                     LandmarkType typel = CenterL;
                     double estimated_x = 0;
@@ -251,7 +267,7 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
                         estimated_x = -A2_ + abs(mid.x);
                     }
 
-                    double low_PC = GetUpdateCoef((goal_position.size() == 2 ? UPDATESTRONG : UPDATENORMAL), line_seg);
+                    double low_PC = GetUpdateCoef((goal_position_real_rotated.size() == 2 ? UPDATESTRONG : UPDATENORMAL), line_seg);
                     AddObservation(cv::Point2d(estimated_x, 0), MAX_FASHER * low_PC, 0, typel);
                     this_type = HorGoal;
                 }
@@ -335,8 +351,8 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
             location_.x = tmpV(0);
             location_.y = tmpV(1);
 
-            std::cout << "Localization: (" << location_.x << ", " << location_.y << ")" << std::endl;
-            std::cout << "-----------------------------------------------------" << std::endl;
+            // std::cout << "Localization: (" << location_.x << ", " << location_.y << ")" << std::endl;
+            // std::cout << "-----------------------------------------------------" << std::endl;
         }
     }
     return true;
@@ -488,12 +504,6 @@ Localization::AddObservation(cv::Point2d observation, const double& x_fasher, co
 }
 
 // getter
-cv::Point2f
-Localization::ball()
-{
-    return ball_pos_;
-}
-
 cv::Point3d
 Localization::location()
 {
@@ -530,13 +540,6 @@ Localization::odom_last_get()
     } else {
         return cv::Point2d(0, 0);
     }
-}
-
-// setter
-void
-Localization::ball(const cv::Point2f& _in)
-{
-    ball_pos_ = _in;
 }
 
 double
