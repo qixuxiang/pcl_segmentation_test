@@ -159,7 +159,6 @@ main(int argc, char** argv)
             cvWaitKey(0);
         } else {
             cout << image_name << " found corner failed! & removed!" << endl;
-            remove(image_name.c_str());
         }
     }
 
@@ -168,6 +167,7 @@ main(int argc, char** argv)
     cout << "-------------cameraMatrix--------------" << endl;
     cout << cameraMatrix.size() << endl;
     cout << cameraMatrix << endl;
+    printf("fx: %lf, fy: %lf, cx: %lf, cy: %lf\n", cameraMatrix.at<double>(0, 0), cameraMatrix.at<double>(1, 1), cameraMatrix.at<double>(0, 2), cameraMatrix.at<double>(1, 2));
 
     cout << "---------------distCoeffs--------------" << endl;
     cout << distCoeffs.size() << endl;
@@ -177,7 +177,6 @@ main(int argc, char** argv)
         Mat view = imread(image_name.c_str());
         Mat temp = view.clone();
         undistort(temp, view, cameraMatrix, distCoeffs);
-        cout << image_name << endl;
         namedWindow("undist", CV_WINDOW_NORMAL);
         imshow("undist", view);
         waitKey(0);
