@@ -9,6 +9,7 @@
 #include "clabel.hpp"
 #include "dvision/parameters.hpp"
 #include "dvision/distortionModel.hpp"
+#include "undist.hpp"
 
 namespace Ui {
     class MainWindow;
@@ -23,33 +24,35 @@ public:
     inline void setApp(QApplication* app) { m_app = app; }
 private:
     void init();
-    QPoint undistPoint(int x, int y);
-
-signals:
+    void connectSignals();
 
 public slots:
+    void onOriginalClicked(QMouseEvent*);
 
+    // update
+    void updateView();
 
 private slots:
     void on_actionOpen_triggered();
+    void on_actionSave_triggered();
+
     void on_currentChanged(QModelIndex current);
     void keyReleaseEvent(QKeyEvent* ev) override;
 
     void appendText();
-    void updateView();
-
-
-    void on_actionSave_triggered();
 
 private:
-    Ui::MainWindow* ui;
-    MyModel* m_model;
-    CLabel* m_imgPanel;
+    Ui::MainWindow* m_ui;
+
+    MyModel* m_listmodel;
+    CLabel* m_orignial;
+    Undist* m_undist;
 
     QVector<QPoint> m_realPoints;
     QApplication* m_app;
 
-    dvision::DistortionModel* m_distmodel;
+    int m_pitch = -9999;
+    int m_yaw = -9999;
 };
 
 #endif // MAINWINDOW_H

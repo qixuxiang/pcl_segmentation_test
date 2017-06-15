@@ -14,19 +14,19 @@ Projection::init(ros::NodeHandle* nh)
 {
     parameters.init(nh);
     m_dist.init();
+    m_ipm.Init(parameters.camera.extrinsic_para,
+               parameters.camera.fx,
+               parameters.camera.fy,
+               parameters.camera.cx,
+               parameters.camera.cy);
 }
 
-Projection::~Projection()
-{
-}
+Projection::~Projection() = default;
 
-bool
-Projection::updateExtrinsic(double yaw, double pitch)
+void
+Projection::updateExtrinsic(double pitch, double yaw)
 {
-    m_yaw = yaw;
-    m_pitch = pitch;
-    // m_extrinsic = fuck;
-    return true;
+    m_ipm.updateDeg(pitch, yaw);
 }
 
 // Single point
@@ -34,14 +34,16 @@ Projection::updateExtrinsic(double yaw, double pitch)
 bool
 Projection::getOnImageCoordinate(const Point2f& point, Point& resPoint)
 {
-    ROS_ERROR("Not implemented");
+    Point2d undist_point = m_ipm.project(point.x, point.y);
+    resPoint = m_dist.distort(undist_point.x, undist_point.y);
     return true;
 }
 
 bool
 Projection::getOnRealCoordinate(const Point& point, Point2f& resPoint)
 {
-    ROS_ERROR("Not implemented");
+    Point undist_point = m_dist.undistort(point.x, point.y);
+    resPoint = m_ipm.inverseProject(undist_point.x, undist_point.y);
     return true;
 }
 
@@ -50,17 +52,20 @@ Projection::getOnRealCoordinate(const Point& point, Point2f& resPoint)
 bool
 Projection::getOnImageCoordinate(const vector<Point2f>& points, vector<Point>& resPoints)
 {
-    // if (!m_dist.undistort(points, resPoints)) {
-    //     return false;
-    // }
-    ROS_ERROR("Not implemented");
+    resPoints.resize(points.size());
+    for(uint32_t i = 0; i < points.size(); ++i) {
+        getOnImageCoordinate(points[i], resPoints[i]);
+    }
     return true;
 }
 
 bool
 Projection::getOnRealCoordinate(const vector<Point>& points, vector<Point2f>& resPoints)
 {
-    ROS_ERROR("Not implemented");
+    resPoints.resize(points.size());
+    for(uint32_t i = 0; i < points.size(); ++i) {
+        getOnRealCoordinate(points[i], resPoints[i]);
+    }
     return true;
 }
 
@@ -68,14 +73,34 @@ Projection::getOnRealCoordinate(const vector<Point>& points, vector<Point2f>& re
 bool
 Projection::getOnImageCoordinate(const std::vector<LineSegment>& lines, std::vector<LineSegment>& res_lines)
 {
-    ROS_ERROR("Not implemented");
+    res_lines.resize(lines.size());
+    Point tmp;
+    for(uint32_t i = 0; i < lines.size(); ++i) {
+        getOnImageCoordinate(lines[i].P1, tmp);
+        res_lines[i].P1.x = tmp.x;
+        res_lines[i].P1.y = tmp.y;
+
+        getOnImageCoordinate(lines[i].P2, tmp);
+        res_lines[i].P2.x = tmp.x;
+        res_lines[i].P2.y = tmp.y;
+    }
     return true;
 }
 
 bool
 Projection::getOnRealCoordinate(const std::vector<LineSegment>& lines, std::vector<LineSegment>& res_lines)
 {
-    ROS_ERROR("Not implemented");
+    res_lines.resize(lines.size());
+    Point2f tmp;
+    for(uint32_t i = 0; i < lines.size(); ++i) {
+        getOnRealCoordinate(lines[i].P1, tmp);
+        res_lines[i].P1.x = tmp.x;
+        res_lines[i].P1.y = tmp.y;
+
+        getOnRealCoordinate(lines[i].P2, tmp);
+        res_lines[i].P2.x = tmp.x;
+        res_lines[i].P2.y = tmp.y;
+    }
     return true;
 }
 

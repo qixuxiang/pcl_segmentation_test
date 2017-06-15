@@ -4,7 +4,7 @@ project(dvision)
 add_definitions(-std=c++11 -Wall -Wextra -Wno-unused-result) #-Wfloat-equal -Weffc++ -pedantic
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake_modules/")
-add_definitions(-std=c++11 -Wall -Wextra -Wfloat-equal -Wno-unused-result) #-Weffc++ -pedantic
+add_definitions(-std=c++11 -Wall -Wextra -Wno-unused-result) #-Weffc++ -pedantic
 
 find_package(catkin REQUIRED
   COMPONENTS roscpp
@@ -27,12 +27,11 @@ add_message_files(
 
 generate_messages(
   DEPENDENCIES
-
 )
 
 catkin_package(
     INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIR}
-    LIBRARIES dvisionlib
+    LIBRARIES dvisionlib ${OpenCV_LIBS}
   #  CATKIN_DEPENDS dprocess
   #  DEPENDS system_lib
 )
@@ -86,11 +85,11 @@ add_library(dvisionlib
   src/tools/kalman.cpp
   )
 target_link_libraries(dvisionlib ${catkin_LIBRARIES} ${OpenCV_LIBS} ${G2O_LIBS}) # ${Boost_LIBRARIES})
-#add_dependencies(dvisionlib ${project_name}_generate_messages_cpp)
+add_dependencies(dvisionlib ${PROJECT_NAME}_generate_messages_cpp)
 
 add_executable(dvision_node src/main.cpp)
 target_link_libraries(dvision_node dvisionlib ${catkin_LIBRARIES})
-#add_dependencies(dmotion_node ${PROJECT_NAME}_generate_messages_cpp)
+add_dependencies(dvision_node ${PROJECT_NAME}_generate_messages_cpp)
 
 add_executable(calib src/camera/calibration.cpp)
 target_link_libraries(calib ${OpenCV_LIBS})
@@ -121,3 +120,11 @@ target_link_libraries(test_localization ${catkin_LIBRARIES})
 catkin_add_gtest(test_ball_detector test/test_ball_detector.cpp)
 target_link_libraries(test_ball_detector dvisionlib)
 target_link_libraries(test_ball_detector ${catkin_LIBRARIES})
+
+catkin_add_gtest(test_undist test/test_undist.cpp)
+target_link_libraries(test_undist dvisionlib)
+target_link_libraries(test_undist ${catkin_LIBRARIES})
+
+catkin_add_gtest(test_ipm test/test_ipm.cpp)
+target_link_libraries(test_ipm dvisionlib)
+target_link_libraries(test_ipm ${catkin_LIBRARIES})

@@ -48,6 +48,7 @@ class GaitStateManager
     GaitStateSetupBackDown* setupbackdown;
 
     dmotion::ActionCmd m_cmd;
+    dmotion::ActionCmd m_destCmd;
     double desYaw;
     double desPitch;
     ros::Time last_unstable_timestamp;
@@ -55,4 +56,6 @@ class GaitStateManager
     /* for head plat compensation */
     VecPos estimated_plat;
     deltadataDebug tempD;
+
+    ros::Publisher m_pub;
 };

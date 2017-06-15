@@ -12,7 +12,7 @@ Frame::save(std::string path)
 {
     cvt();
     std::string filename = path + std::to_string(m_timeStamp.toNSec()) + ".png";
-    cv::imwrite(filename, m_rgb);
+    cv::imwrite(filename, m_bgr);
 
     std::cout << "Saved as " << filename << std::endl;
 }
@@ -23,6 +23,6 @@ Frame::show()
     cvt();
     cv::namedWindow("camera", CV_WINDOW_NORMAL);
 
-    cv::imshow("camera", m_rgb);
+    cv::imshow("camera", m_bgr);
 }
 } // namespace dvision

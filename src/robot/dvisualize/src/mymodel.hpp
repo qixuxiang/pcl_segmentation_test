@@ -1,8 +1,10 @@
 #ifndef MYMODEL_H
 #define MYMODEL_H
 #include <QAbstractListModel>
+#include <QtCore>
 #include <QPixmap>
 #include <QIcon>
+#include "dvision/frame.hpp"
 
 class MyModel : public QAbstractListModel
 {
@@ -23,11 +25,20 @@ public:
 
     const QPixmap getImage() const;
 
+    dvision::Frame getFrame() const;
+
     void setCurrentIndex(int);
+
+    QPoint getPlatAngle(int index);
+
+public slots:
+    void onCurrentIndexChanged(QModelIndex current);
 
 private:
     QVector<QPixmap> m_pictures;
     QVector<QIcon> m_pics;
+    QVector<QString> m_picname;
+    QFileInfoList m_allfilesInfo;
     int m_currentIndex;
 };
 

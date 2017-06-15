@@ -20,7 +20,7 @@ DVision::DVision(ros::NodeHandle* n)
     m_concurrent.push([] {
         //     ROS_INFO("concurrent");
     });
-    m_sub_action_cmd = m_nh->subscribe("/humanoid/ActionCmd", 1, &DVision::motionCallback, this);
+    m_sub_action_cmd = m_nh->subscribe("/humanoid/MotionFeedback", 1, &DVision::motionCallback, this);
     m_sub_save_img = m_nh->subscribe("/humanoid/SaveImg", 1, &DVision::saveImgCallback, this);
 }
 
@@ -41,23 +41,13 @@ DVision::tick()
     
     double pitch = 0;
     double yaw = 0;
-    m_projection.updateExtrinsic(yaw, pitch);
-    m_projection.calcHomography();
 
-
-    if (!m_projection.updateExtrinsic(yaw, pitch)) {
-        ROS_ERROR("Cannot update extrinsic of camera!");
-    }
-
-    if (!m_projection.calcHomography()) {
-        ROS_ERROR("Cannot calculate homography!");
-    }
     if (!m_loc.Update(m_projection)) {
         ROS_ERROR("Cannot update localization!");
     }
 
     // get image in BGR and HSV color space
-    m_gui_img = frame.getRGB();
+    m_gui_img = frame.getBGR();
     cv::cvtColor(m_gui_img, m_hsv_img, CV_BGR2HSV);
 
     /******************
@@ -348,8 +338,6 @@ DVision::motionCallback(const dmotion::ActionCmd::ConstPtr& motion_msg) {
   std::cout << "fuck: " << m_action_cmd.cmd_head.y << " " <<m_action_cmd.cmd_head.z << std::endl;
   m_pitch = static_cast<int>(m_action_cmd.cmd_head.y);
   m_yaw = static_cast<int>(m_action_cmd.cmd_head.z);
-
-
 }
 
 void
