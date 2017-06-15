@@ -34,6 +34,7 @@ DVision::tick()
 {
     ROS_INFO("dvision tick");
     auto frame = m_camera.capture();
+    frame.show();
 
     /**********
      * Update *
@@ -46,59 +47,67 @@ DVision::tick()
 
     // get image in BGR and HSV color space
     m_gui_img = frame.getBGR();
-    cv::cvtColor(m_gui_img, m_hsv_img, CV_BGR2HSV);
+    // cv::cvtColor(m_gui_img, m_hsv_img, CV_BGR2HSV);
 
     /******************
      * Field Detector *
      ******************/
-    bool field_detection_OK = false;
 
     // TODO(corenel) move it ro m_field
-    cv::Mat field_binary_raw;
-    std::vector<cv::Point> hull_field;
-
-    field_detection_OK =
-      m_field.Process(m_field_hull_real, m_field_hull_real_rotated, hull_field, m_field_binary, field_binary_raw, m_field_convex_hull, m_hsv_img, m_gui_img, m_field_hull_real_center, m_projection);
-
-    if (parameters.field.enable && !field_detection_OK) {
-        ROS_ERROR("Detecting field failed.");
-    }
+    // cv::Mat field_binary_raw;
+    // std::vector<cv::Point> hull_field;
+    //
+    // m_data.see_field =
+    //   m_field.Process(m_field_hull_real, m_field_hull_real_rotated, hull_field, m_field_binary, field_binary_raw, m_field_convex_hull, m_hsv_img, m_gui_img, m_field_hull_real_center, m_projection);
+    //
+    // if (parameters.field.enable && !m_data.see_field) {
+    //     ROS_ERROR("Detecting field failed.");
+    // }
+    // ROS_INFO("line detected %d.", m_data.see_field);
 
     /*****************
      * Line Detector *
      *****************/
 
     // TODO(corenel) move it ro m_line
-    std::vector<LineSegment> clustered_lines;
-
-    if (!m_line.Process(m_canny_img, m_hsv_img, m_gui_img, m_field_convex_hull, field_binary_raw, clustered_lines, m_projection)) {
-        ROS_ERROR("Detecting lines failed.");
-    }
+    // std::vector<LineSegment> clustered_lines;
+    //
+    // m_data.see_line = m_line.Process(m_canny_img, m_hsv_img, m_gui_img, m_field_convex_hull, field_binary_raw, clustered_lines, m_projection);
+    //
+    // if (!m_data.see_line) {
+    //     ROS_ERROR("Detecting lines failed.");
+    // }
+    // ROS_INFO("line detected %d.", m_data.see_line);
 
     /*******************
      * Circle detector *
      *******************/
 
     // TODO(corenel) move it ro m_circle
-    cv::Point2d result_circle;
-
-    if (field_detection_OK) {
-        m_data.see_circle = m_circle.Process(result_circle, clustered_lines);
-    }
+    // cv::Point2d result_circle;
+    //
+    // if (m_data.see_field && m_data.see_line) {
+    //     m_data.see_circle = m_circle.Process(result_circle, clustered_lines);
+    // }
+    // ROS_INFO("circle detected. %d", m_data.see_circle);
 
     /*****************
      * Goal Detector *
      *****************/
 
-    if (field_detection_OK) {
-        m_data.see_goal = m_goal.Process(m_canny_img, m_hsv_img, m_gui_img, hull_field, m_projection);
-    }
+    // if (m_data.see_field) {
+    //     m_data.see_goal = m_goal.Process(m_canny_img, m_hsv_img, m_gui_img, hull_field, m_projection);
+    // }
+    // ROS_INFO("goal detected. %d", m_data.see_circle);
 
     /****************
      * Localization *
      ****************/
-
-    m_data.loc_ok = m_loc.Calculate(clustered_lines, m_data.see_circle, m_field_hull_real_center, m_field_hull_real, m_field_hull_real_rotated, result_circle, m_goal.goal_position(), m_projection);
+    // if (m_data.see_field && m_data.see_line) {
+    //     m_data.loc_ok =
+    //       m_loc.Calculate(clustered_lines, m_data.see_circle, m_field_hull_real_center, m_field_hull_real, m_field_hull_real_rotated, result_circle, m_goal.goal_position(), m_projection);
+    //     ROS_INFO("loc detected. %d", m_data.loc_ok);
+    // }
 
     /*****************
      * Ball Detector *
@@ -159,10 +168,10 @@ DVision::prepareVisionShareData()
             m_data.see_both_goal = true;
             m_data.right_goal.x = goal_position[1].x;
             m_data.right_goal.y = goal_position[1].y;
-        } else {
+        } else if (goal_position.size() == 3) {
             m_data.see_unknown_goal = true;
-            m_data.unknown_goal.x = goal_position[1].x;
-            m_data.unknown_goal.y = goal_position[1].y;
+            m_data.unknown_goal.x = goal_position[2].x;
+            m_data.unknown_goal.y = goal_position[2].y;
         }
     }
     // ball

@@ -27,8 +27,8 @@ class StatusBlackBoard(object):
 
     def callback(self, parent, var_name, topic, msg):
         """Callback for ros subscription."""
-        setattr(parent, var_name, msg.data)
-        rospy.loginfo("{}: {}".format(topic, msg.data))
+        setattr(parent, var_name, msg)
+        rospy.logdebug("{}: {}".format(topic, msg))
 
     def gparam(self, param_name, var_name, parent):
         """Get parameters from parameters server and save it to variables."""

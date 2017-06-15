@@ -1,7 +1,9 @@
-bool loc_ok
-bool see_ball
+bool see_field
+bool see_line
 bool see_circle
 bool see_goal
+bool see_ball
+bool loc_ok
 bool see_both_goal
 bool see_unknown_goal
 geometry_msgs/Vector3 ball_global

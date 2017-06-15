@@ -45,7 +45,7 @@ LineDetector::Process(cv::Mat& m_canny_img,
     // calculate canny image
     cv::Mat channels[3];
     cv::split(m_hsv_img, channels);
-    cv::Mat m_canny_img_in_field = cv::Mat::zeros(m_canny_img_in_field.size(), CV_8UC1);
+    cv::Mat m_canny_img_in_field = cv::Mat::zeros(m_hsv_img.size(), CV_8UC1);
     // 对v进行模糊,模糊结果存在m_canny_img中
     cv::blur(channels[2], m_canny_img, cv::Size(parameters.line.blurSize, parameters.line.blurSize));
     cv::Canny(m_canny_img, m_canny_img, parameters.line.cannyThreadshold, parameters.line.cannyThreadshold * 3, parameters.line.cannyaperture);
@@ -62,7 +62,6 @@ LineDetector::Process(cv::Mat& m_canny_img,
     top_view_box.width = 2 * parameters.field_model.field_length;
     top_view_box.height = 2 * parameters.field_model.field_length;
     std::vector<LineSegment> result_lines, result_lines_real;
-
     // get unmerged lines
     if (GetLines(m_hsv_img,
                  field_binary_raw,
@@ -109,12 +108,10 @@ LineDetector::GetLines(cv::Mat& raw_hsv, cv::Mat& field_mask, cv::Mat& gui_img, 
     bool AprxDist = parameters.line.aprxDist;
     const int NUM_MID_P = 3;
     const int COUNT_MID_P = static_cast<int>(pow(2, NUM_MID_P) + 1);
-
     std::vector<cv::Vec4i> lines_from_houghP;
     // 概率霍夫线变换
     HoughLinesP(
       line_binary, lines_from_houghP, parameters.line.rhoHough, M_PI / parameters.line.thetaHough, parameters.line.threasholdHough, parameters.line.MinLineLength, parameters.line.maxLineGapHough);
-
     // TODO(corenel) show hough line in gui_img
     if (parameters.line.showAllLine && SHOWGUI) {
         for (size_t i = 0; i < lines_from_houghP.size(); i++) {
@@ -141,7 +138,6 @@ LineDetector::GetLines(cv::Mat& raw_hsv, cv::Mat& field_mask, cv::Mat& gui_img, 
 
     std::vector<std::vector<cv::Point2d>> midds(lines_from_houghP.size(), std::vector<cv::Point2d>(COUNT_MID_P));
     std::vector<LineSegment> all_lines(lines_from_houghP.size());
-
     for (size_t i = 0; i < lines_from_houghP.size(); i++) {
         cv::Vec4i lP = lines_from_houghP[i];
         // 取出第一个线片段
