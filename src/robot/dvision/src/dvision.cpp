@@ -10,7 +10,7 @@ DVision::DVision(ros::NodeHandle* n)
   , m_nh(n)
 {
     m_projection.init(n);
-    m_ball.Init();
+    // m_ball.Init();
     m_circle.Init();
     m_field.Init();
     m_goal.Init();
@@ -106,7 +106,7 @@ DVision::tick()
      * Ball Detector *
      *****************/
 
-    m_ball.GetBall(frame.getBGR(), m_data, m_projection);
+    // m_ball.GetBall(frame.getBGR(), m_data, m_projection);
 
     /***********
      * Publish *
@@ -169,14 +169,14 @@ DVision::prepareVisionShareData()
         }
     }
     // ball
-    if (m_data.loc_ok) {
-        // TODO(corenel) Rotate angle is correct?
-        cv::Point2f ball_global;
-        ball_global = m_projection.RotateTowardHeading(cv::Point2f(m_data.ball_field.x, m_data.ball_field.y));
-        ball_global += cv::Point2f(m_data.robot_pos.x, m_data.robot_pos.y);
-        m_data.ball_global.x = ball_global.x;
-        m_data.ball_global.y = ball_global.y;
-    }
+    // if (m_data.loc_ok) {
+    //     // TODO(corenel) Rotate angle is correct?
+    //     cv::Point2f ball_global;
+    //     ball_global = m_projection.RotateTowardHeading(cv::Point2f(m_data.ball_field.x, m_data.ball_field.y));
+    //     ball_global += cv::Point2f(m_data.robot_pos.x, m_data.robot_pos.y);
+    //     m_data.ball_global.x = ball_global.x;
+    //     m_data.ball_global.y = ball_global.y;
+    // }
 }
 
 } // namespace dvision

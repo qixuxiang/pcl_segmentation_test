@@ -19,7 +19,8 @@ class DistortionModel
 
     void distort(const std::vector<cv::Point>& points, std::vector<cv::Point>& res);
     cv::Point distort(int x, int y);
-    inline cv::Point distort(const cv::Point point) {
+    inline cv::Point distort(const cv::Point point)
+    {
         return distort(point.x, point.y);
     }
 
@@ -28,7 +29,7 @@ class DistortionModel
 
   private:
     std::vector<cv::Point> m_undistortionVector; // undist to dist
-    std::vector<cv::Point> m_distortionVector; // dist to undist
+    std::vector<cv::Point> m_distortionVector;   // dist to undist
     cv::Mat m_map1;
     cv::Mat m_map2;
 };

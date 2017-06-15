@@ -107,19 +107,21 @@ FieldDetector::Process(std::vector<cv::Point2f>& m_field_hull_real,
                 hull_undist_mid_point.push_back(cv::Point(static_cast<int>(undist_point_pool[i].x), static_cast<int>(undist_point_pool[i].y)));
             }
 
-            if (m_projection.undistort(hull_undist_mid_point, hull_field)) {
+            if (m_projection.distort(hull_undist_mid_point, hull_field)) {
                 // debug 模式下显示凸包边界点
+
                 if (parameters.field.showDebug && parameters.monitor.update_gui_img) {
                     for (size_t i = 0; i < hull_field.size(); i++) {
                         cv::circle(m_gui_img, hull_field[i], 4, redColor(), 3);
                     }
                 }
+
                 std::vector<std::vector<cv::Point>> hulls(1, hull_field);
                 m_field_convex_hull = cv::Mat::zeros(m_field_binary.size(), CV_8UC1);
 
                 // 在m_field_convex_hull中划出凸包
                 // grayWhite 就是灰度图下的255
-                drawContours(m_field_convex_hull, hulls, -1, grayWhite(), CV_FILLED, 8);
+                cv::drawContours(m_field_convex_hull, hulls, -1, grayWhite(), CV_FILLED, 8);
 
                 // 是否考虑body mask
                 std::vector<cv::Point> tmp_body_mask_contour = GetBodyMaskContourInRaw(-Radian2Degree(0));
@@ -128,10 +130,9 @@ FieldDetector::Process(std::vector<cv::Point2f>& m_field_hull_real,
                 if (consider_body_mask) {
                     cv::Mat body_mask_mat = cv::Mat::zeros(m_hsv_img.size(), CV_8UC1);
                     std::vector<std::vector<cv::Point>> hullstmp_body_mask_contour(1, tmp_body_mask_contour);
-                    drawContours(body_mask_mat, hullstmp_body_mask_contour, -1, grayWhite(), CV_FILLED, 8);
+                    cv::drawContours(body_mask_mat, hullstmp_body_mask_contour, -1, grayWhite(), CV_FILLED, 8);
                     m_field_convex_hull -= body_mask_mat;
                 }
-
                 if (hull_field.size() > 1) {
                     std::vector<cv::Point2f> real_hull_points;
                     // 把场地边界转换为世界坐标系中的点

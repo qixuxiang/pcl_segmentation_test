@@ -1,9 +1,9 @@
 dvision:
   ball_detector:
     enable:                     true
-    label_file:                 '/home/yuthon/.darknet/data/rob.names'
-    net_cfg:                    '/home/yuthon/.darknet/cfg/tiny-yolo-v1-rob.cfg'
-    weight_file:                '/home/yuthon/.darknet/model/tiny-yolo.weights'
+    label_file:                 '/home/ubuntu/.darknet/data/rob.names'
+    net_cfg:                    '/home/ubuntu/.darknet/cfg/tiny-yolo-v1-rob.cfg'
+    weight_file:                '/home/ubuntu/.darknet/model/tiny-yolo.weights'
     low_thresh:                 0.1
     high_thresh:                1.0
   circle_detector:
