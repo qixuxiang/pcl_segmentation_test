@@ -23,11 +23,12 @@ find_package(G2O REQUIRED)
 add_message_files(
   FILES
   SaveImg.msg
+  VisionShareData.msg
 )
 
 generate_messages(
   DEPENDENCIES
-
+  geometry_msgs
 )
 
 catkin_package(
@@ -43,7 +44,7 @@ include_directories(include ${catkin_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR} ${CSPAR
 #g2o_solver_csparse g2o_solver_dense g2o_solver_pcg g2o_stuff g2o_types_icp
 #g2o_types_sba g2o_types_sim3 g2o_types_slam2d g2o_types_slam3d)
 
-SET(G2O_LIBS 
+SET(G2O_LIBS
     ${G2O_CORE_LIBRARY}
     ${G2O_STUFF_LIBRARY}
     ${G2O_CLI_LIBRARY}

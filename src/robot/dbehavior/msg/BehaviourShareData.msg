@@ -1,0 +1,6 @@
+bool kick
+bool save_image
+bool reset_localization
+bool enable_localization
+geometry_msgs/Vector3 reset_point
+geometry_msgs/Vector3 destination

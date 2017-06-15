@@ -26,7 +26,7 @@ class _Ready(Action):
         try:
             self.lookat(0, 15)
             self.enable_localization()
-            dest = self.team.get_start_pos(self.team.currentRole)
+            dest = self.team.get_start_pos(self.team.current_role)
 
             if not self.got_dest(dest) and not self.got:
                 self.goto(dest)

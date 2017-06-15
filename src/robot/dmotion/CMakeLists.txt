@@ -16,6 +16,7 @@ find_package(OpenCV 3 REQUIRED)
 add_message_files(
   FILES
   ActionCmd.msg
+  MotionShareData.msg
 )
 
 generate_messages(

@@ -1,0 +1,12 @@
+bool see_ball
+bool see_circle
+bool see_goal
+bool see_both_goal
+bool see_unknown_goal
+geometry_msgs/Vector3 ball_global
+geometry_msgs/Vector3 ball_field
+geometry_msgs/Vector3 ball_image
+geometry_msgs/Vector3 left_goal
+geometry_msgs/Vector3 right_goal
+geometry_msgs/Vector3 unknown_goal
+geometry_msgs/Vector3 robot_pos

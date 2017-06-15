@@ -14,7 +14,7 @@ from misc.types.constant import (ROLE_GOALIE, ROLE_STRIKER, ROLE_DEFENDER,
 @condition
 def is_striker(self):
     return self.team.id in STRIKER
-    # return self.team.currentRole is ROLE_STRIKER
+    # return self.team.current_role is ROLE_STRIKER
 
 
 @condition
@@ -24,13 +24,13 @@ def is_defender(self):
 
 @condition
 def is_midfielder(self):
-    return self.team.currentRole is ROLE_MIDFIELDER
+    return self.team.current_role is ROLE_MIDFIELDER
 
 
 @condition
 def is_goalie(self):
     return self.team.id in GOALIE
-    # return self.team.currentRole is ROLE_GOALIE
+    # return self.team.current_role is ROLE_GOALIE
 
 
 Play = ev_sequence(  # RoleChange,

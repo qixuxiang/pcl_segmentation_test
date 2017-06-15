@@ -64,7 +64,7 @@ class _Goalie(Role):
                 return self.running()
 
         else:
-            self.team.goalieAttacking = False
+            self.team.goalie_attacking = False
             self.crouch()
             self.scanfield.tick()
             print 'Goalie ticking 4'

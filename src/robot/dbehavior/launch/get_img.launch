@@ -1,8 +1,8 @@
 <launch>
   <node
     pkg="dbehavior"
-    name="getImg_node"
-    type="getImg.py"
+    name="get_image_node"
+    type="GetImg.py"
     output="screen"
     respawn="false"
     required="true"

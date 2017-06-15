@@ -50,7 +50,7 @@ class _Approach(Action):
                 if dest_field.x < 0:
                     dest = final_dest
 
-            self.req.destination = dest
+            self.req.behaviour.destination = dest
             x, y, t = get_walk(dest, self.world.robot_pos)
 
             # angle = degree_between(self.world.ball_global,

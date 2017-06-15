@@ -33,7 +33,7 @@ class _AvoidBall(Action):
                 x, y, t = get_walk(destination, self.world.robot_pos, True)
             else:
                 x, y, t = get_walk(destination, self.world.robot_pos, False)
-            self.req.destination = destination
+            self.req.behaviour.destination = destination
 
             self.walk(x, y, t)
             return self.running()

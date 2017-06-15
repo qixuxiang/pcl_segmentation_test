@@ -14,7 +14,7 @@ class RoleChange(Action):
 
     def tick(self):
         """Tick."""
-        prev_role = self.team.currentRole
+        prev_role = self.team.current_role
         # Goalie don't change role
         if self.team.is_goalie():
             return self.success()
@@ -40,7 +40,7 @@ class RoleChange(Action):
                     else:
                         self.cover()
 
-        if prev_role is not self.team.currentRole:
+        if prev_role is not self.team.current_role:
             self.last_change_time.restart()
             rospy.loginfo('[RoleChange {}] {} --> {}'
                           .format(get_current_time(),

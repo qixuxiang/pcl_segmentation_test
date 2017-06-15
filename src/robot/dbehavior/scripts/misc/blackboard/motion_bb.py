@@ -21,13 +21,14 @@ class MotionBlackBoard(StatusBlackBoard):
 
         self.robotCtrl = Vector3(0, 0, 0)
         self.fieldAngle = 0
-        self.eular = None
+        # self.eular = None
         self.curPlat = None
+        # TODO(corenel) remove compass
         self.compass = None
         self.vy = None
-        self.gyro = None
+        # self.gyro = None
         self.stable = None
         self.lower_board_connected = False
         self.deltaData = Vector3(0, 0, 0)
-        self.actions = None
+        # self.actions = None
         self.uptime = 0

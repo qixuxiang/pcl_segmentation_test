@@ -313,7 +313,7 @@ class Action(Node):
 
     def kick(self, left=0):
         """Kick."""
-        self.req.kick = True
+        self.req.behaviour.kick = True
         kick(self.req.actions, left)
 
     # def update_vec(self, list_):
@@ -328,7 +328,7 @@ class Action(Node):
     def goto(self, destination):
         """Goto position."""
         x, y, t = get_walk(destination, self.world.robot_pos)
-        self.req.destination = destination
+        self.req.behaviour.destination = destination
         # if x < 0:
         #     x = 0
         self.walk(x, y, t)
@@ -350,7 +350,7 @@ class Action(Node):
 
     def enable_localization(self):
         """Enable Localization."""
-        self.req.enable_localization = True
+        self.req.behaviour.enable_localization = True
 
     def crouch(self):
         """Crouch."""
@@ -416,12 +416,12 @@ class Action(Node):
 
     def set_position(self, robotstate):
         """Set self localization at given global position."""
-        self.req.resetLocalization = True
-        self.req.reset_point = robotstate
+        self.req.behaviour.reset_localization = True
+        self.req.behaviour.reset_point = robotstate
 
     def capture(self):
         """Capture images."""
-        self.req.saveimage = True
+        self.req.behaviour.save_image = True
 
     def debug_log(self):
         """Output debug log."""

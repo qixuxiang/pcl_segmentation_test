@@ -52,7 +52,7 @@ class _Initial(Action):
     def assign_role(self):
         print 'assign role!'
         if self.gc.player_id in GOALIE_ID:
-            self.team.currentRole = ROLE_GOALIE
+            self.team.current_role = ROLE_GOALIE
         else:
 
             if not self.team.has_striker():
