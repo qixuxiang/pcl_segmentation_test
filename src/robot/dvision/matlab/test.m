@@ -12,15 +12,15 @@ CameraMatrix = [fx 0 cx 0;
 
 evalin('base', 'para0');
 
-pitch = 0;
-yaw = 45 / 180 * pi;
+pitch = 45 / 180 * pi;
+yaw = 0;
 
 ex = calc_extrinsic(para0, pitch, yaw);
 
 foo = CameraMatrix * ex;
 
 
-x = 240;
+x = 40;
 y = 0;
 
 fuck = ex * [x;y;0;1]
