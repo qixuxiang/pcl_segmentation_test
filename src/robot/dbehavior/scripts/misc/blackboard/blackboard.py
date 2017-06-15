@@ -8,6 +8,8 @@
 # @Last modified time: 2017-06-11T15:08:19+08:00
 # @Copyright: ZJUDancer
 
+from dmotion.msg import MotionShareData
+from dvision.msg import VisionShareData
 from .status_bb import StatusBlackBoard
 from .motion_bb import MotionBlackBoard
 from .vision_bb import VisionBlackBoard
@@ -23,11 +25,12 @@ class BlackBoard(StatusBlackBoard):
         """Init BlackBoard."""
         super(BlackBoard, self).__init__()
         # self.gc = GameControllerBlackBoard()
-        # Motion
         self.motion = MotionBlackBoard()
-        # Vision
         self.vision = VisionBlackBoard()
-        # Params
         self.params = ParamsBlackBoard()
-        # Receiver
         self.receiver = ReceiverBlackBoard()
+        # subscribe
+        self.subscribe("/humanoid/VisionShareData", VisionShareData,
+                       self, "vision")
+        self.subscribe("/humanoid/MotionShareData", MotionShareData,
+                       self, "motion")
