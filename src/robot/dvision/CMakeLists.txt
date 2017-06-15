@@ -125,3 +125,7 @@ target_link_libraries(test_ball_detector ${catkin_LIBRARIES})
 catkin_add_gtest(test_undist test/test_undist.cpp)
 target_link_libraries(test_undist dvisionlib)
 target_link_libraries(test_undist ${catkin_LIBRARIES})
+
+catkin_add_gtest(test_ipm test/test_ipm.cpp)
+target_link_libraries(test_ipm dvisionlib)
+target_link_libraries(test_ipm ${catkin_LIBRARIES})

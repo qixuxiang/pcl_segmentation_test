@@ -41,17 +41,7 @@ DVision::tick()
     
     double pitch = 0;
     double yaw = 0;
-    m_projection.updateExtrinsic(yaw, pitch);
-    m_projection.calcHomography();
 
-
-    if (!m_projection.updateExtrinsic(yaw, pitch)) {
-        ROS_ERROR("Cannot update extrinsic of camera!");
-    }
-
-    if (!m_projection.calcHomography()) {
-        ROS_ERROR("Cannot calculate homography!");
-    }
     if (!m_loc.Update(m_projection)) {
         ROS_ERROR("Cannot update localization!");
     }

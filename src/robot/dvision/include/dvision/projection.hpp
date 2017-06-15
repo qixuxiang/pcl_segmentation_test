@@ -23,11 +23,6 @@ class Projection
   public:
     bool updateExtrinsic(double yaw, double pitch);
 
-    inline bool calcHomography()
-    {
-        return m_ipm.initGetHomography(m_extrinsic, homoImgToReal, homoRealToImg);
-    }
-
     inline bool undistort(const std::vector<cv::Point>& points, std::vector<cv::Point>& res)
     {
         return m_dist.undistort(points, res);
