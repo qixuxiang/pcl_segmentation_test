@@ -41,7 +41,7 @@ FieldDetector::Init()
 bool
 FieldDetector::Process(cv::Mat& m_hsv_img, cv::Mat& m_gui_img, Projection& m_projection)
 {
-    ROS_DEBUG("FieldDetector tick");
+    // ROS_DEBUG("FieldDetector tick");
     // clear field convex hull
     field_hull_real_.clear();
     field_hull_real_rotated_.clear();

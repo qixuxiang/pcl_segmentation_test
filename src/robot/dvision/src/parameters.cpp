@@ -126,7 +126,7 @@ Parameters::init(ros::NodeHandle* nh)
     GPARAM("/dvision/line_detector/maxLineGapHough", parameters.line.maxLineGapHough);
     GPARAM("/dvision/line_detector/rhoHough", parameters.line.rhoHough);
     GPARAM("/dvision/line_detector/thetaHough", parameters.line.thetaHough);
-    GPARAM("/dvision/line_detector/threasholdHough", parameters.line.threasholdHough);
+    GPARAM("/dvision/line_detector/thresholdHough", parameters.line.thresholdHough);
     GPARAM("/dvision/line_detector/jumpMax", parameters.line.jumpMax);
     GPARAM("/dvision/line_detector/jumpMin", parameters.line.jumpMin);
     GPARAM("/dvision/line_detector/widthCheck", parameters.line.widthCheck);

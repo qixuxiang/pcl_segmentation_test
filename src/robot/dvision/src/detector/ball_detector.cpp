@@ -63,7 +63,7 @@ BallDetector::~BallDetector()
 bool
 BallDetector::GetBall(cv::Mat& frame, VisionShareData& m_data, Projection& m_projection)
 {
-    ROS_DEBUG("BallDetector Tick");
+    // ROS_DEBUG("BallDetector Tick");
 
     darknet::Image raw_img(frame);
     darknet::params p = net_->get_params();

@@ -4,17 +4,17 @@ dvision:
     label_file:                 '/home/ubuntu/.darknet/data/rob.names'
     net_cfg:                    '/home/ubuntu/.darknet/cfg/tiny-yolo-v1-rob.cfg'
     weight_file:                '/home/ubuntu/.darknet/model/tiny-yolo.weights'
-    low_thresh:                 0.1
-    high_thresh:                1.0
+    low_thresh:                 0.1 # low thresh value for probability
+    high_thresh:                1.0 # high thresh value for probability
   circle_detector:
     enable:                     true
-    minLineLen:                 20
-    maxLineLen:                 150
-    maxDistBetween2LS:          30
-    radiusMaxCoef:              1.5
-    radiusMinCoef:              0.7
-    confiusedDist:              1
-    minLineSegmentCount:        3
+    minLineLen:                 20 # min line length for circle line
+    maxLineLen:                 150 # max line length for circle line
+    maxDistBetween2LS:          30 # max distance between two circle lines
+    radiusMaxCoef:              1.5 # max coef for valid radius
+    radiusMinCoef:              0.7 # min coef for valid radius
+    confiusedDist:              30 # distance for confused center point
+    minLineSegmentCount:        3 # how many circle points at least
   field_detector:
     enable:                     true
     showMask:                   false
@@ -78,13 +78,13 @@ dvision:
     v0:                         54
     v1:                         255
     active:                     false
-    MinLineLength:              80
-    AngleToMerge:               10
+    MinLineLength:              80 # min length for hough line
+    rhoHough:                   1 # distance resolution of the accumulator in pixels
+    thetaHough:                 45 # angle resolution of the accumulator in radians
+    thresholdHough:             20 # accumulator threshold parameter
+    maxLineGapHough:            20 # max allowed gap between points on the same line to link them.
+    AngleToMerge:               30
     DistanceToMerge:            30
-    maxLineGapHough:            20
-    rhoHough:                   1
-    thetaHough:                 45
-    threasholdHough:            20
     jumpMax:                    20
     jumpMin:                    3
     widthCheck:                 0.07

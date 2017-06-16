@@ -31,7 +31,7 @@ LineDetector::Init()
 bool
 LineDetector::Process(cv::Mat& canny_img, cv::Mat& hsv_img, cv::Mat& gui_img, cv::Mat& field_convex_hull, cv::Mat& field_binary_raw, Projection& m_projection)
 {
-    ROS_DEBUG("LineDetector Tick");
+    // ROS_DEBUG("LineDetector Tick");
 
     if (!parameters.line.enable) {
         return false;
@@ -107,8 +107,8 @@ LineDetector::GetLines(cv::Mat& raw_hsv, cv::Mat& field_mask, cv::Mat& gui_img, 
     const int COUNT_MID_P = static_cast<int>(pow(2, NUM_MID_P) + 1);
     std::vector<cv::Vec4i> lines_from_houghP;
     // 概率霍夫线变换
-    HoughLinesP(
-      line_binary, lines_from_houghP, parameters.line.rhoHough, M_PI / parameters.line.thetaHough, parameters.line.threasholdHough, parameters.line.MinLineLength, parameters.line.maxLineGapHough);
+    cv::HoughLinesP(
+      line_binary, lines_from_houghP, parameters.line.rhoHough, M_PI / parameters.line.thetaHough, parameters.line.thresholdHough, parameters.line.MinLineLength, parameters.line.maxLineGapHough);
     // TODO(corenel) show hough line in gui_img
     if (parameters.line.showAllLine && SHOWGUI) {
         for (size_t i = 0; i < lines_from_houghP.size(); i++) {

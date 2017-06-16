@@ -53,7 +53,7 @@ struct CircleDetectorParameters
     float maxDistBetween2LS;
     float radiusMaxCoef;
     float radiusMinCoef;
-    float confiusedDist;
+    int confiusedDist;
     int minLineSegmentCount;
 };
 
@@ -129,11 +129,11 @@ struct LineDetectorParameters
     bool active;
     int MinLineLength;
     int AngleToMerge;
-    float DistanceToMerge;
+    int DistanceToMerge;
     int maxLineGapHough;
     float rhoHough;
     int thetaHough;
-    int threasholdHough;
+    int thresholdHough;
     int jumpMax;
     int jumpMin;
     float widthCheck;

@@ -453,6 +453,7 @@ Localization::UpdateVertexIdx()
         information(2, 2) = 1;
         e->setInformation(information);
         optimizer.addEdge(e);
+        ROS_WARN("add Edges: %d -> dead_reck (%f, %f)", current_vertex_id_, dead_reck.x, dead_reck.y);
 
         // cout << "add Edges: " << current_vertex_id_ << "-> dead_reck ("
         //      << dead_reck.x << ", " << dead_reck.y << ")" << endl;
@@ -498,7 +499,7 @@ Localization::AddObservation(cv::Point2d observation, const double& x_fasher, co
         optimizer.addEdge(e);
     }
     at_least_one_observation_ = true;
-    ROS_DEBUG("add Edges: %d -> %d (%f, %f)", current_vertex_id_, type, observation.x, observation.y);
+    ROS_WARN("add Edges: %d -> %d (%f, %f)", current_vertex_id_, type, observation.x, observation.y);
     return true;
 }
 

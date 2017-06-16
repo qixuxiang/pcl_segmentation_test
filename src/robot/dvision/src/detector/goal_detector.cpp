@@ -31,7 +31,7 @@ GoalDetector::Init()
 bool
 GoalDetector::Process(cv::Mat& m_canny_img, cv::Mat& m_hsv_img, cv::Mat& m_gui_img, std::vector<cv::Point>& hull_field, Projection& m_projection)
 {
-    ROS_DEBUG("GoalDetector Tick");
+    // ROS_DEBUG("GoalDetector Tick");
 
     bool goal_detection_OK = false;
     goal_position_.clear();

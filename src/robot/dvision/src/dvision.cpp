@@ -88,16 +88,16 @@ DVision::tick()
     /****************
      * Localization *
      ****************/
-    // if (m_data.see_field && m_data.see_line && m_data.see_circle || m_data.see_goal) {
-    //     m_data.loc_ok = m_loc.Calculate(m_line.clustered_lines(),
-    //                                     m_data.see_circle,
-    //                                     m_field.field_hull_real_center(),
-    //                                     m_field.field_hull_real(),
-    //                                     m_field.field_hull_real_rotated(),
-    //                                     m_circle.result_circle(),
-    //                                     m_goal.goal_position(),
-    //                                     m_projection);
-    // }
+    if (m_data.see_field && m_data.see_line && m_data.see_circle || m_data.see_goal) {
+        m_data.loc_ok = m_loc.Calculate(m_line.clustered_lines(),
+                                        m_data.see_circle,
+                                        m_field.field_hull_real_center(),
+                                        m_field.field_hull_real(),
+                                        m_field.field_hull_real_rotated(),
+                                        m_circle.result_circle(),
+                                        m_goal.goal_position(),
+                                        m_projection);
+    }
 
     /*****************
      * Ball Detector *
@@ -119,12 +119,16 @@ DVision::tick()
     cv::namedWindow("gui_img", CV_WINDOW_NORMAL);
     cv::imshow("gui_img", m_gui_img);
     // using for change hsv of white
-    cv::createTrackbar("h_low", "gui_img", &parameters.field.h0, 255);
-    cv::createTrackbar("h_high", "gui_img", &parameters.field.h1, 255);
-    cv::createTrackbar("s_low", "gui_img", &parameters.field.s0, 255);
-    cv::createTrackbar("s_high", "gui_img", &parameters.field.s1, 255);
-    cv::createTrackbar("v_low", "gui_img", &parameters.field.v0, 255);
-    cv::createTrackbar("v_high", "gui_img", &parameters.field.v1, 255);
+    // cv::createTrackbar("h_low", "gui_img", &parameters.field.h0, 255);
+    // cv::createTrackbar("h_high", "gui_img", &parameters.field.h1, 255);
+    // cv::createTrackbar("s_low", "gui_img", &parameters.field.s0, 255);
+    // cv::createTrackbar("s_high", "gui_img", &parameters.field.s1, 255);
+    // cv::createTrackbar("v_low", "gui_img", &parameters.field.v0, 255);
+    // cv::createTrackbar("v_high", "gui_img", &parameters.field.v1, 255);
+    cv::createTrackbar("MinLineLength", "gui_img", &parameters.line.MinLineLength, 255);
+    cv::createTrackbar("AngleToMerge", "gui_img", &parameters.line.AngleToMerge, 255);
+    cv::createTrackbar("DistanceToMerge", "gui_img", &parameters.line.DistanceToMerge, 255);
+    cv::createTrackbar("confiusedDist", "gui_img", &parameters.circle.confiusedDist, 255);
 
     cv::waitKey(1);
 
