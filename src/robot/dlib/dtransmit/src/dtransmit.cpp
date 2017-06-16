@@ -11,7 +11,11 @@ DTransmit::DTransmit(string address)
 }
 
 DTransmit::~DTransmit() {
-//    m_service.stop();
-//    m_t.join();
+    m_service.stop();
+    // TODO(MWX): delete all socket
+    //if(m_t) {
+        // m_t->join();
+        //delete m_t; 
+    //}
 }
 }

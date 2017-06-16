@@ -12,6 +12,7 @@
 #include <thread>
 #include <functional>
 #include <ros/ros.h>
+#include <iostream>
 
 // http://wiki.ros.org/roscpp/Overview/MessagesSerializationAndAdaptingTypes
 
@@ -67,6 +68,7 @@ void DTransmit::startRecv(PORT port, ReadHandler handler) {
 
 template <typename ROSMSG>
 void DTransmit::add_recv(PORT port, std::function<void(ROSMSG & )> callback) {
+    std::cout << "Start add_recv" << std::endl;
     using namespace boost::asio;
     m_recvFoo[port] = Foo(m_service, port);
 
@@ -82,10 +84,24 @@ void DTransmit::add_recv(PORT port, std::function<void(ROSMSG & )> callback) {
     };
     startRecv(port, m_recvFoo[port].readHandler);
 
+// TODO(MWX): better solution
+
+    if(m_t) {
+        m_service.stop();
+        // m_t->join();
+        // delete m_t;
+    }
+
+    
     m_t = new std::thread([&]() {
+        m_service.reset();
         m_service.run();
     });
     m_t->detach();
+
+    // TODO(MWX): try to delete this single line!!!
+    std::cout << "Add recv end" << std::endl;
+    
 }
 
 void DTransmit::createSendSocket(PORT port) {
@@ -106,7 +122,7 @@ void DTransmit::createSendSocket(PORT port) {
 
 template <typename ROSMSG>
 void DTransmit::send(PORT port, ROSMSG& rosmsg) {
-    ROS_INFO("Send throught %d", port);
+    ROS_INFO("Sending through %d", port);
     if(!m_sendSockets.count(port)) {
        createSendSocket(port);
     }

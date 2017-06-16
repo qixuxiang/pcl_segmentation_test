@@ -3,25 +3,35 @@
 #include <std_msgs/String.h>
 #include "dtransmit/dtransmit.hpp"
 
+// TODO(MWX): test on different machine, over wifi
 using namespace dtransmit;
+using namespace std;
 TEST(dtransmit, main) {
     DTransmit d("127.0.0.1");
 
-    d.add_recv<std_msgs::String>(2333, [](std_msgs::String& msg) {
-        ROS_INFO("I heard: [%s]", msg.data.c_str());
-    });
+    int NUM = 100;
+
+    for(int i = 0; i < NUM; ++i) {
+        d.add_recv<std_msgs::String>(2000 + i, [=](std_msgs::String& msg) {
+            ROS_INFO("%d heard: [%s]", 2000 + i, msg.data.c_str());
+        });
+    }
 
 
-    for(int i = 0 ; ; ++i) {
+
+    for(int i = 0 ; i < 1000 ; ++i) {
         std_msgs::String msg;
         std::stringstream ss;
-        ss << "Hello dtransmit" << i;
+        ss << "Hello dtransmit " << i;
         msg.data = ss.str();
 
-       ROS_INFO("Sending: [%s]", msg.data.c_str());
+        ROS_INFO("Sending: [%s]", msg.data.c_str());
 
-        d.send<std_msgs::String>(2333, msg);
-        sleep(1);
+        for(int j = 0; j < NUM; ++j) {
+            d.send<std_msgs::String>(2000 + j, msg);
+        }
+        usleep(100);
+        cout << endl;
     }
 }
 
