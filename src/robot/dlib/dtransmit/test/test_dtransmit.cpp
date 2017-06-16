@@ -1,12 +1,13 @@
 #include <gtest/gtest.h>
 #include <ros/ros.h>
+#include <std_msgs>
 #include "dtransmit/dtransmit.hpp"
 
 using namespace dtransmit;
 TEST(dtransmit, main) {
-    DTransmit d("192.168.255.255");
+    DTransmit d("127.0.0.1");
 
-    d.add_recv<ActionCmd>(2333, [](ActionCmd& msg) {
+    d.add_recv<std_msgs::UInt32>(2333, [](ActionCmd& msg) {
         ///
     });
     ActionCmd a;
