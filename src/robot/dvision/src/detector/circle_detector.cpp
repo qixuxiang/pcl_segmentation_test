@@ -24,21 +24,23 @@ CircleDetector::~CircleDetector()
 bool
 CircleDetector::Init()
 {
-    ROS_INFO("CircleDetector Init() finished");
+    ROS_DEBUG("CircleDetector Init");
     return true;
 }
 
 bool
-CircleDetector::Process(cv::Point2d& result_circle, std::vector<LineSegment>& clustered_lines)
+CircleDetector::Process(std::vector<LineSegment>& clustered_lines)
 {
+    ROS_DEBUG("CircleDetector Tick");
+
     if (parameters.circle.enable)
-        return GetCircle(parameters.field_model.center_circle_diameter / 2, clustered_lines, result_circle);
+        return GetCircle(parameters.field_model.center_circle_diameter / 2, clustered_lines);
     else
         return false;
 }
 
 bool
-CircleDetector::GetCircle(const double& H2, std::vector<LineSegment>& clustered_lines, cv::Point2d& result_circle)
+CircleDetector::GetCircle(const double& H2, std::vector<LineSegment>& clustered_lines)
 {
     // H2 1.5 / 2 = 0.75 貌似是圆的半径
     std::vector<cv::Point2d> circle_point;
@@ -99,9 +101,9 @@ CircleDetector::GetCircle(const double& H2, std::vector<LineSegment>& clustered_
             //     }
             // }
         }
-        result_circle.x = sum.x / circle_point.size();
-        result_circle.y = sum.y / circle_point.size();
-        // ROD_DEBUG("circleCentre: (%f, %f)", result_circle.x, result_circle.y);
+        result_circle_.x = sum.x / circle_point.size();
+        result_circle_.y = sum.y / circle_point.size();
+        // ROD_DEBUG("circleCentre: (%f, %f)", result_circle_.x, result_circle_.y);
 
         return true;
     }

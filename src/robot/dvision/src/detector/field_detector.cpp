@@ -34,36 +34,29 @@ FieldDetector::Init()
     //      {
     //        ROS_ERROR("Create or modify BodyMask.yml!");
     //      }
-    ROS_INFO("FieldDetector Init() finished");
+    ROS_DEBUG("FieldDetector Init");
     return true;
 }
 
 bool
-FieldDetector::Process(std::vector<cv::Point2f>& m_field_hull_real,
-                       std::vector<cv::Point2f>& m_field_hull_real_rotated,
-                       std::vector<cv::Point>& hull_field,
-                       cv::Mat& m_field_binary,
-                       cv::Mat& field_binary_raw,
-                       cv::Mat& m_field_convex_hull,
-                       cv::Mat& m_hsv_img,
-                       cv::Mat& m_gui_img,
-                       cv::Point2f& m_field_hull_real_center,
-                       Projection& m_projection)
+FieldDetector::Process(cv::Mat& m_hsv_img, cv::Mat& m_gui_img, Projection& m_projection)
 {
+    ROS_DEBUG("FieldDetector tick");
     // clear field convex hull
-    m_field_hull_real.clear();
-    m_field_hull_real_rotated.clear();
+    field_hull_real_.clear();
+    field_hull_real_rotated_.clear();
+    hull_field_.clear();
 
     // create binary mask of field
-    m_field_binary = cv::Mat::zeros(m_hsv_img.size(), CV_8UC1);
-    field_binary_raw = cv::Mat::zeros(m_hsv_img.size(), CV_8UC1);
-    cv::inRange(m_hsv_img, cv::Scalar(parameters.field.h0, parameters.field.s0, parameters.field.v0), cv::Scalar(parameters.field.h1, parameters.field.s1, parameters.field.v1), field_binary_raw);
-    m_field_binary = field_binary_raw.clone();
+    field_binary_ = cv::Mat::zeros(m_hsv_img.size(), CV_8UC1);
+    field_binary_raw_ = cv::Mat::zeros(m_hsv_img.size(), CV_8UC1);
+    cv::inRange(m_hsv_img, cv::Scalar(parameters.field.h0, parameters.field.s0, parameters.field.v0), cv::Scalar(parameters.field.h1, parameters.field.s1, parameters.field.v1), field_binary_raw_);
+    field_binary_ = field_binary_raw_.clone();
 
     // draw field mask on gui image
     if (parameters.field.showMask && parameters.monitor.update_gui_img) {
         cv::Mat darker = cv::Mat::zeros(m_gui_img.size(), CV_8UC3);
-        darker.copyTo(m_gui_img, 255 - field_binary_raw);
+        darker.copyTo(m_gui_img, 255 - field_binary_raw_);
     }
 
     // detect field
@@ -73,7 +66,7 @@ FieldDetector::Process(std::vector<cv::Point2f>& m_field_hull_real,
     std::vector<cv::Point> hull_undist_mid_point;
     std::vector<std::vector<cv::Point>> all_field_contours;
 
-    if (parameters.field.enable && GetPoints(m_field_binary, field_points, all_field_contours)) {
+    if (parameters.field.enable && GetPoints(field_points, all_field_contours)) {
         // show all field contours for debugging
         if (parameters.field.showDebug && parameters.monitor.update_gui_img) {
             cv::drawContours(m_gui_img, all_field_contours, -1, cv::Scalar(70, 220, 70), 2, 8);
@@ -107,21 +100,21 @@ FieldDetector::Process(std::vector<cv::Point2f>& m_field_hull_real,
                 hull_undist_mid_point.push_back(cv::Point(static_cast<int>(undist_point_pool[i].x), static_cast<int>(undist_point_pool[i].y)));
             }
 
-            if (m_projection.distort(hull_undist_mid_point, hull_field)) {
+            if (m_projection.distort(hull_undist_mid_point, hull_field_)) {
                 // debug 模式下显示凸包边界点
 
                 if (parameters.field.showDebug && parameters.monitor.update_gui_img) {
-                    for (size_t i = 0; i < hull_field.size(); i++) {
-                        cv::circle(m_gui_img, hull_field[i], 4, redColor(), 3);
+                    for (size_t i = 0; i < hull_field_.size(); i++) {
+                        cv::circle(m_gui_img, hull_field_[i], 4, redColor(), 3);
                     }
                 }
 
-                std::vector<std::vector<cv::Point>> hulls(1, hull_field);
-                m_field_convex_hull = cv::Mat::zeros(m_field_binary.size(), CV_8UC1);
+                std::vector<std::vector<cv::Point>> hulls(1, hull_field_);
+                field_convex_hull_ = cv::Mat::zeros(field_binary_.size(), CV_8UC1);
 
-                // 在m_field_convex_hull中划出凸包
+                // 在field_convex_hull_中划出凸包
                 // grayWhite 就是灰度图下的255
-                cv::drawContours(m_field_convex_hull, hulls, -1, grayWhite(), CV_FILLED, 8);
+                cv::drawContours(field_convex_hull_, hulls, -1, grayWhite(), CV_FILLED, 8);
 
                 // 是否考虑body mask
                 std::vector<cv::Point> tmp_body_mask_contour = GetBodyMaskContourInRaw(-Radian2Degree(0));
@@ -131,33 +124,33 @@ FieldDetector::Process(std::vector<cv::Point2f>& m_field_hull_real,
                     cv::Mat body_mask_mat = cv::Mat::zeros(m_hsv_img.size(), CV_8UC1);
                     std::vector<std::vector<cv::Point>> hullstmp_body_mask_contour(1, tmp_body_mask_contour);
                     cv::drawContours(body_mask_mat, hullstmp_body_mask_contour, -1, grayWhite(), CV_FILLED, 8);
-                    m_field_convex_hull -= body_mask_mat;
+                    field_convex_hull_ -= body_mask_mat;
                 }
-                if (hull_field.size() > 1) {
+                if (hull_field_.size() > 1) {
                     std::vector<cv::Point2f> real_hull_points;
                     // 把场地边界转换为世界坐标系中的点
-                    if (!m_projection.getOnRealCoordinate(hull_field, real_hull_points)) {
+                    if (!m_projection.getOnRealCoordinate(hull_field_, real_hull_points)) {
                         ROS_ERROR("Cannot get real coord of hull field");
                     }
 
-                    m_field_hull_real_center.x = 0;
-                    m_field_hull_real_center.y = 0;
-                    m_field_hull_real.resize(real_hull_points.size());
+                    field_hull_real_center_.x = 0;
+                    field_hull_real_center_.y = 0;
+                    field_hull_real_.resize(real_hull_points.size());
 
-                    // 把世界做坐标系中的点存在了m_field_hull_real中,并求所有点的x,y的均值存在m_field_hull_real_center中
+                    // 把世界做坐标系中的点存在了field_hull_real_中,并求所有点的x,y的均值存在field_hull_real_center_中
                     // TODO(yyj) 感觉没有必要定义real_hull_points
                     for (size_t fI = 0; fI < real_hull_points.size(); fI++) {
-                        m_field_hull_real[fI] = real_hull_points[fI];
-                        m_field_hull_real_center.x += real_hull_points[fI].x;
-                        m_field_hull_real_center.y += real_hull_points[fI].y;
+                        field_hull_real_[fI] = real_hull_points[fI];
+                        field_hull_real_center_.x += real_hull_points[fI].x;
+                        field_hull_real_center_.y += real_hull_points[fI].y;
                     }
-                    m_field_hull_real_center.x /= m_field_hull_real.size();
-                    m_field_hull_real_center.y /= m_field_hull_real.size();
+                    field_hull_real_center_.x /= field_hull_real_.size();
+                    field_hull_real_center_.y /= field_hull_real_.size();
                 }
 
-                if (m_field_hull_real.size() > 3) {
+                if (field_hull_real_.size() > 3) {
                     // 又把实际的坐标值用折线进行近似
-                    cv::approxPolyDP(m_field_hull_real, m_field_hull_real, cv::arcLength(m_field_hull_real, true) * parameters.field.approxPoly, true);
+                    cv::approxPolyDP(field_hull_real_, field_hull_real_, cv::arcLength(field_hull_real_, true) * parameters.field.approxPoly, true);
                 }
 
                 // 终于画出了凸包轮廓 TAT
@@ -174,21 +167,21 @@ FieldDetector::Process(std::vector<cv::Point2f>& m_field_hull_real,
 }
 
 bool
-FieldDetector::GetPoints(cv::Mat& binary_frame, std::vector<cv::Point>& res_points, std::vector<std::vector<cv::Point>>& all_field_contours)
+FieldDetector::GetPoints(std::vector<cv::Point>& res_points, std::vector<std::vector<cv::Point>>& all_field_contours)
 {
     if (parameters.field.erode > 0) {
-        erode(binary_frame, binary_frame, cv::Mat(), cv::Point(-1, -1), parameters.field.erode);
+        erode(field_binary_, field_binary_, cv::Mat(), cv::Point(-1, -1), parameters.field.erode);
     }
     if (parameters.field.dilate > 0) {
-        dilate(binary_frame, binary_frame, cv::Mat(), cv::Point(-1, -1), parameters.field.dilate);
+        dilate(field_binary_, field_binary_, cv::Mat(), cv::Point(-1, -1), parameters.field.dilate);
     }
     if (parameters.field.erode2 > 0) {
-        erode(binary_frame, binary_frame, cv::Mat(), cv::Point(-1, -1), parameters.field.erode2);
+        erode(field_binary_, field_binary_, cv::Mat(), cv::Point(-1, -1), parameters.field.erode2);
     }
     if (parameters.field.dilate2 > 0) {
-        dilate(binary_frame, binary_frame, cv::Mat(), cv::Point(-1, -1), parameters.field.dilate2);
+        dilate(field_binary_, field_binary_, cv::Mat(), cv::Point(-1, -1), parameters.field.dilate2);
     }
-    cv::findContours(binary_frame.clone(), all_field_contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
+    cv::findContours(field_binary_.clone(), all_field_contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
     res_points.reserve(parameters.field.maxContourCount);
     std::sort(all_field_contours.begin(), all_field_contours.end(), SortFuncDescending);
     bool ret = false;

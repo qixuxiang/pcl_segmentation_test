@@ -32,7 +32,7 @@ DVision::~DVision()
 void
 DVision::tick()
 {
-    ROS_INFO("dvision tick");
+    ROS_DEBUG("dvision tick");
     auto frame = m_camera.capture();
 
     /**********
@@ -52,61 +52,51 @@ DVision::tick()
      * Field Detector *
      ******************/
 
-    // TODO(corenel) move it ro m_field
-    cv::Mat field_binary_raw;
-    std::vector<cv::Point> hull_field;
-
-    m_data.see_field =
-      m_field.Process(m_field_hull_real, m_field_hull_real_rotated, hull_field, m_field_binary, field_binary_raw, m_field_convex_hull, m_hsv_img, m_gui_img, m_field_hull_real_center, m_projection);
+    m_data.see_field = m_field.Process(m_hsv_img, m_gui_img, m_projection);
 
     if (parameters.field.enable && !m_data.see_field) {
         ROS_ERROR("Detecting field failed.");
     }
-    ROS_INFO("line detected %d.", m_data.see_field);
 
     /*****************
      * Line Detector *
      *****************/
 
-    // TODO(corenel) move it ro m_line
-    std::vector<LineSegment> clustered_lines;
-
-    m_data.see_line = m_line.Process(m_canny_img, m_hsv_img, m_gui_img, m_field_convex_hull, field_binary_raw, clustered_lines, m_projection);
+    m_data.see_line = m_line.Process(m_canny_img, m_hsv_img, m_gui_img, m_field.field_convex_hull(), m_field.field_binary_raw(), m_projection);
 
     if (!m_data.see_line) {
         ROS_ERROR("Detecting lines failed.");
     }
-    ROS_INFO("line detected %d.", m_data.see_line);
 
     /*******************
      * Circle detector *
      *******************/
 
-    // TODO(corenel) move it ro m_circle
-    // cv::Point2d result_circle;
-    //
-    // if (m_data.see_field && m_data.see_line) {
-    //     m_data.see_circle = m_circle.Process(result_circle, clustered_lines);
-    // }
-    // ROS_INFO("circle detected. %d", m_data.see_circle);
+    if (m_data.see_field && m_data.see_line) {
+        m_data.see_circle = m_circle.Process(m_line.clustered_lines());
+    }
 
     /*****************
      * Goal Detector *
      *****************/
 
-    // if (m_data.see_field) {
-    //     m_data.see_goal = m_goal.Process(m_canny_img, m_hsv_img, m_gui_img, hull_field, m_projection);
-    // }
-    // ROS_INFO("goal detected. %d", m_data.see_circle);
+    if (m_data.see_field) {
+        m_data.see_goal = m_goal.Process(m_canny_img, m_hsv_img, m_gui_img, m_field.hull_field(), m_projection);
+    }
 
     /****************
      * Localization *
      ****************/
-    // if (m_data.see_field && m_data.see_line) {
-    //     m_data.loc_ok =
-    //       m_loc.Calculate(clustered_lines, m_data.see_circle, m_field_hull_real_center, m_field_hull_real, m_field_hull_real_rotated, result_circle, m_goal.goal_position(), m_projection);
-    //     ROS_INFO("loc detected. %d", m_data.loc_ok);
-    // }
+    if (m_data.see_field && m_data.see_line && m_data.see_circle || m_data.see_goal) {
+        m_data.loc_ok = m_loc.Calculate(m_line.clustered_lines(),
+                                        m_data.see_circle,
+                                        m_field.field_hull_real_center(),
+                                        m_field.field_hull_real(),
+                                        m_field.field_hull_real_rotated(),
+                                        m_circle.result_circle(),
+                                        m_goal.goal_position(),
+                                        m_projection);
+    }
 
     /*****************
      * Ball Detector *

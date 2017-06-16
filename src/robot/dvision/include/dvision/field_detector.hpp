@@ -22,23 +22,49 @@ class FieldDetector : public IDetector
     explicit FieldDetector();
     ~FieldDetector();
     bool Init();
-    bool Process(std::vector<cv::Point2f>& m_field_hull_real,
-                 std::vector<cv::Point2f>& m_field_hull_real_rotated,
-                 std::vector<cv::Point>& hull_field,
-                 cv::Mat& m_field_binary,
-                 cv::Mat& field_binary_raw,
-                 cv::Mat& m_field_convex_hull,
-                 cv::Mat& m_hsv_img,
-                 cv::Mat& m_gui_img,
-                 cv::Point2f& m_field_hull_real_center,
-                 Projection& m_projection);
+    bool Process(cv::Mat& m_hsv_img, cv::Mat& m_gui_img, Projection& m_projection);
 
-    bool GetPoints(cv::Mat& binary_frame, std::vector<cv::Point>& res_points, std::vector<std::vector<cv::Point>>& all_field_contours);
+    bool GetPoints(std::vector<cv::Point>& res_points, std::vector<std::vector<cv::Point>>& all_field_contours);
     void FindInField(const cv::Mat& src_hsv_img, const cv::Mat& template_gray_img, cv::Mat* dst_gray_imgs, HSVRange* ranges, bool* in_template, int size = 1);
     std::vector<cv::Point> GetBodyMaskContourInRaw(float rot);
 
-    std::vector<cv::Point> body_mask_contour_inverted_;
+    inline std::vector<cv::Point>& hull_field()
+    {
+        return hull_field_;
+    }
+
+    inline cv::Mat& field_binary_raw()
+    {
+        return field_binary_raw_;
+    }
+
+    inline cv::Mat& field_convex_hull()
+    {
+        return field_convex_hull_;
+    }
+
+    inline cv::Point2f& field_hull_real_center()
+    {
+        return field_hull_real_center_;
+    }
+
+    inline std::vector<cv::Point2f>& field_hull_real()
+    {
+        return field_hull_real_;
+    }
+
+    inline std::vector<cv::Point2f>& field_hull_real_rotated()
+    {
+        return field_hull_real_rotated_;
+    }
 
   private:
+    std::vector<cv::Point> body_mask_contour_inverted_;
+    std::vector<cv::Point> hull_field_;
+    std::vector<cv::Point2f> field_hull_real_;
+    std::vector<cv::Point2f> field_hull_real_rotated_;
+    cv::Point2f field_hull_real_center_;
+    cv::Mat field_binary_, field_binary_raw_;
+    cv::Mat field_convex_hull_;
 };
 } // namespace dvision

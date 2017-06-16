@@ -4,7 +4,9 @@
 #include "dvision/dvision.hpp"
 #include <signal.h>
 
-void signalHandler(int sig) {
+void
+signalHandler(int sig)
+{
     ROS_WARN("Trying to exit!");
     std::terminate();
 }
@@ -12,7 +14,7 @@ void signalHandler(int sig) {
 int
 main(int argc, char** argv)
 {
-    ros::init(argc, argv, "dmotion_node");
+    ros::init(argc, argv, "dvision_node");
     ros::NodeHandle nh;
     signal(SIGINT, signalHandler);
     dvision::DVision v(&nh);
