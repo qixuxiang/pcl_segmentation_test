@@ -12,7 +12,6 @@
 #include <thread>
 #include <functional>
 #include <ros/ros.h>
-#include <iostream>
 
 // http://wiki.ros.org/roscpp/Overview/MessagesSerializationAndAdaptingTypes
 
@@ -68,7 +67,7 @@ void DTransmit::startRecv(PORT port, ReadHandler handler) {
 
 template <typename ROSMSG>
 void DTransmit::add_recv(PORT port, std::function<void(ROSMSG & )> callback) {
-    std::cout << "Start add_recv" << std::endl;
+    // std::cout << "Start add_recv" << std::endl;
     using namespace boost::asio;
     m_recvFoo[port] = Foo(m_service, port);
 
@@ -99,8 +98,7 @@ void DTransmit::add_recv(PORT port, std::function<void(ROSMSG & )> callback) {
     });
     m_t->detach();
 
-    // TODO(MWX): try to delete this single line!!!
-    std::cout << "Add recv end" << std::endl;
+    // std::cout << "Add recv end" << std::endl;
     
 }
 

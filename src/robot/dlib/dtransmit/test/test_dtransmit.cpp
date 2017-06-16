@@ -7,7 +7,8 @@
 using namespace dtransmit;
 using namespace std;
 TEST(dtransmit, main) {
-    DTransmit d("127.0.0.1");
+//    DTransmit d("127.0.0.1");
+    DTransmit d("192.168.255.255");
 
     int NUM = 100;
 
@@ -30,7 +31,7 @@ TEST(dtransmit, main) {
         for(int j = 0; j < NUM; ++j) {
             d.send<std_msgs::String>(2000 + j, msg);
         }
-        usleep(100);
+//        usleep(100);
         cout << endl;
     }
 }
