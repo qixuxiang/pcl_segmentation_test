@@ -36,16 +36,21 @@ private:
 
     // maybe use pair
     struct Foo {
-        boost::asio::ip::udp::socket socket;
+        boost::asio::ip::udp::socket* socket;
+        std::function<void(const boost::system::error_code& , std::size_t)> readHandler;
         uint8_t recvBuffer[1500];
-        Foo(boost::asio::io_service& service, PORT port) : socket(service, boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), port)) {
+        Foo() {
+        }
+
+        Foo(boost::asio::io_service& service, PORT port) {
+            socket = new boost::asio::ip::udp::socket(service, boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), port));
         }
     };
 
     std::string m_broadcastAddress;
     boost::asio::io_service m_service;
 
-    std::thread m_t;
+    std::thread* m_t;
     boost::asio::ip::udp::endpoint m_remoteEndpoint;
     boost::asio::ip::udp::endpoint m_broadcastEndpoint;
     std::unordered_map<PORT, Foo> m_recvFoo;
@@ -54,35 +59,33 @@ private:
 
 template <typename ReadHandler>
 void DTransmit::startRecv(PORT port, ReadHandler handler) {
-    auto& buffer = m_recvFoo[port].recvBuffer;
-    m_recvFoo[port].socket.async_receive_from(
-        boost::asio::buffer(boost::asio::mutable_buffer((void*)&buffer,
-                                           sizeof(buffer))), m_remoteEndpoint, handler
+    m_recvFoo[port].socket->async_receive_from(
+        boost::asio::buffer(boost::asio::mutable_buffer((void*)&m_recvFoo[port].recvBuffer,
+                                           sizeof(m_recvFoo[port].recvBuffer))), m_remoteEndpoint, handler
     );
 }
 
 template <typename ROSMSG>
 void DTransmit::add_recv(PORT port, std::function<void(ROSMSG & )> callback) {
     using namespace boost::asio;
-
     m_recvFoo[port] = Foo(m_service, port);
 
-    std::function<void(const boost::system::error_code& , std::size_t)> readHandler = [&](const boost::system::error_code& error, std::size_t bytesRecved) {
+    m_recvFoo[port].readHandler = [=](const boost::system::error_code& error, std::size_t bytesRecved) {
         ROSMSG msg;
-        uint32_t serial_size = ros::serialization::serializationLength(msg);
-        if(bytesRecved != serial_size) {
-            ROS_WARN("DTransmit recved buffer with unexpected size: %d, expected: %d", bytesRecved, serial_size);
-        } else {
-            boost::shared_array<uint8_t> buffer(new uint8_t[serial_size]);
-            ros::serialization::IStream stream(buffer.get(), serial_size);
-            // ros::serialization::deserialize(stream, msg);
-            ros::serialization::Serializer<ROSMSG>::read(stream, msg);
-            // client callback
-            callback(msg);
-        }
-        startRecv(port, readHandler);
+
+        ros::serialization::IStream stream((uint8_t*)m_recvFoo[port].recvBuffer, bytesRecved);
+        ros::serialization::Serializer<ROSMSG>::read(stream, msg);
+        // client callback
+        callback(msg);
+
+        startRecv(port, m_recvFoo[port].readHandler);
     };
-    startRecv(port, readHandler);
+    startRecv(port, m_recvFoo[port].readHandler);
+
+    m_t = new std::thread([&]() {
+        m_service.run();
+    });
+    m_t->detach();
 }
 
 void DTransmit::createSendSocket(PORT port) {
@@ -103,6 +106,7 @@ void DTransmit::createSendSocket(PORT port) {
 
 template <typename ROSMSG>
 void DTransmit::send(PORT port, ROSMSG& rosmsg) {
+    ROS_INFO("Send throught %d", port);
     if(!m_sendSockets.count(port)) {
        createSendSocket(port);
     }
@@ -119,7 +123,6 @@ void DTransmit::send(PORT port, ROSMSG& rosmsg) {
 void DTransmit::sendBuffer(boost::asio::ip::udp::socket* socket, const void* buffer, std::size_t size) {
     boost::system::error_code ec;
     socket->send(boost::asio::buffer(buffer, size), 0, ec);
-
     if(ec) {
         ROS_ERROR("DTransmit can't send buffer: %s", ec.message().c_str());
     }
