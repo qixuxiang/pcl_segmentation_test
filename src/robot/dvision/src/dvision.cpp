@@ -152,19 +152,20 @@ DVision::prepareVisionShareData()
     m_data.robot_pos.z = m_loc.location().z;
     // goal
     // TODO(corenel) Get global coord?
-    std::vector<cv::Point2f> goal_position = m_goal.goal_position();
-    if (goal_position.size() >= 1) {
+    std::vector<cv::Point2f> goal_position_rotated = m_projection.RotateTowardHeading(m_goal.goal_position());
+
+    if (goal_position_rotated.size() >= 1) {
         m_data.see_goal = true;
-        m_data.left_goal.x = goal_position[0].x;
-        m_data.left_goal.y = goal_position[0].y;
-        if (goal_position.size() == 2) {
+        m_data.left_goal.x = goal_position_rotated[0].x;
+        m_data.left_goal.y = goal_position_rotated[0].y;
+        if (goal_position_rotated.size() == 2) {
             m_data.see_both_goal = true;
-            m_data.right_goal.x = goal_position[1].x;
-            m_data.right_goal.y = goal_position[1].y;
-        } else if (goal_position.size() == 3) {
+            m_data.right_goal.x = goal_position_rotated[1].x;
+            m_data.right_goal.y = goal_position_rotated[1].y;
+        } else if (goal_position_rotated.size() == 3) {
             m_data.see_unknown_goal = true;
-            m_data.unknown_goal.x = goal_position[2].x;
-            m_data.unknown_goal.y = goal_position[2].y;
+            m_data.unknown_goal.x = goal_position_rotated[2].x;
+            m_data.unknown_goal.y = goal_position_rotated[2].y;
         }
     }
     // ball
@@ -172,7 +173,6 @@ DVision::prepareVisionShareData()
     //     // TODO(corenel) Rotate angle is correct?
     //     cv::Point2f ball_global;
     //     ball_global = m_projection.RotateTowardHeading(cv::Point2f(m_data.ball_field.x, m_data.ball_field.y));
-    //     ball_global += cv::Point2f(m_data.robot_pos.x, m_data.robot_pos.y);
     //     m_data.ball_global.x = ball_global.x;
     //     m_data.ball_global.y = ball_global.y;
     // }

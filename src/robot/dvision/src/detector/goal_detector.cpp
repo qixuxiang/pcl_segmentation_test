@@ -34,7 +34,7 @@ GoalDetector::Process(cv::Mat& m_canny_img, cv::Mat& m_hsv_img, cv::Mat& m_gui_i
     ROS_DEBUG("GoalDetector Tick");
 
     bool goal_detection_OK = false;
-    m_goal_position.clear();
+    goal_position_.clear();
     if (parameters.goal.enable) {
         std::vector<LineSegment> result_lines, all_lines;
         // detect goal position
@@ -266,7 +266,7 @@ GoalDetector::GetPosts(cv::Mat& canny_img,
         }
 
         // 令人感动球门柱下端点加了进去
-        m_goal_position.push_back(down_real);
+        goal_position_.push_back(down_real);
         // 顺便加了整个球门柱的线片段
         res_lines.push_back(LineSegment(down, up));
     }

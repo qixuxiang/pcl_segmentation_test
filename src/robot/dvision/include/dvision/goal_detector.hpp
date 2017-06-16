@@ -48,10 +48,10 @@ class GoalDetector : public IDetector
                            int& vote_for_double_right);
     inline std::vector<cv::Point2f> goal_position()
     {
-        return m_goal_position;
+        return goal_position_;
     }
 
   private:
-    std::vector<cv::Point2f> m_goal_position;
+    std::vector<cv::Point2f> goal_position_;
 };
 } // namespace dvision
