@@ -65,7 +65,7 @@ def init_skill():
 def mainloop():
     """Main loop for dbehaviour."""
     # init node
-    rospy.init_node("dbehavior_node", anonymous=True, log_level=rospy.INFO)
+    rospy.init_node("dbehavior_node", anonymous=True, log_level=rospy.DEBUG)
     rospy.loginfo("dbehavior node started")
 
     # init blackboard

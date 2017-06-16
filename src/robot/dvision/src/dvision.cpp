@@ -34,6 +34,7 @@ DVision::tick()
 {
     ROS_DEBUG("dvision tick");
     auto frame = m_camera.capture();
+    VisionShareData m_data;
 
     /**********
      * Update *
@@ -108,7 +109,7 @@ DVision::tick()
      * Publish *
      ***********/
 
-    prepareVisionShareData();
+    prepareVisionShareData(m_data);
     m_pub.publish(m_data);
 
     /****************
@@ -144,7 +145,7 @@ DVision::saveImgCallback(const SaveImg::ConstPtr& save_img_msg)
 }
 
 void
-DVision::prepareVisionShareData()
+DVision::prepareVisionShareData(VisionShareData& m_data)
 {
     // localization
     m_data.robot_pos.x = m_loc.location().x;
@@ -153,6 +154,9 @@ DVision::prepareVisionShareData()
     // goal
     // TODO(corenel) Get global coord?
     std::vector<cv::Point2f> goal_position_rotated = m_projection.RotateTowardHeading(m_goal.goal_position());
+    m_data.see_goal = false;
+    m_data.see_both_goal = false;
+    m_data.see_unknown_goal = false;
 
     if (goal_position_rotated.size() >= 1) {
         m_data.see_goal = true;
@@ -168,6 +172,10 @@ DVision::prepareVisionShareData()
             m_data.unknown_goal.y = goal_position_rotated[2].y;
         }
     }
+    // circle
+    cv::Point2d result_circle_rotated = m_projection.RotateTowardHeading(m_circle.result_circle());
+    m_data.circle_field.x = result_circle_rotated.x;
+    m_data.circle_field.y = result_circle_rotated.y;
     // ball
     // if (m_data.loc_ok) {
     //     // TODO(corenel) Rotate angle is correct?

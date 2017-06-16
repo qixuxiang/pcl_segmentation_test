@@ -498,8 +498,7 @@ Localization::AddObservation(cv::Point2d observation, const double& x_fasher, co
         optimizer.addEdge(e);
     }
     at_least_one_observation_ = true;
-    // cout << "add Edges: " << current_vertex_id_ << "->" << type << " ("
-    //      << observation.x << ", " << observation.y << ")" << endl;
+    ROS_DEBUG("add Edges: %d -> %d (%f, %f)", current_vertex_id_, type, observation.x, observation.y);
     return true;
 }
 

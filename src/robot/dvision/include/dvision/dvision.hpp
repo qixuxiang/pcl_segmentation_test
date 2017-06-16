@@ -42,7 +42,6 @@ class DVision : public dprocess::DProcess<DVision>
     GoalDetector m_goal;
     FieldDetector m_field;
     Localization m_loc;
-    VisionShareData m_data;
 
     // image
     cv::Mat m_hsv_img, m_canny_img, m_gui_img;
@@ -53,6 +52,6 @@ class DVision : public dprocess::DProcess<DVision>
     SaveImg m_save_img;
     void motionCallback(const dmotion::ActionCmd::ConstPtr& msg);
     void saveImgCallback(const SaveImg::ConstPtr& save_img_msg);
-    void prepareVisionShareData();
+    void prepareVisionShareData(VisionShareData& m_data);
 };
 } // namespace dvision
