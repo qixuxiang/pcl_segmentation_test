@@ -33,7 +33,7 @@ dvision:
     dilate2:                    0
     maxContourCount:            3
     minArea:                    0
-    maxDownDiffPixel:           700
+    maxDownDiffPixel:           400
     approxPoly:                 0.02
     maxAcceptDistance:          10.81
     minAcceptX:                 -1

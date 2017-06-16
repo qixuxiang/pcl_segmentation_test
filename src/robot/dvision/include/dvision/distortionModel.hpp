@@ -23,6 +23,8 @@ class DistortionModel
     {
         return distort(point.x, point.y);
     }
+    bool distortP(const cv::Point& point, cv::Point& resPoint);
+    bool distortP(const std::vector<cv::Point>& contour, std::vector<cv::Point>& resCountour);
 
   private:
     bool undistort_slow(const std::vector<cv::Point>& points, std::vector<cv::Point>& resPoints);

@@ -100,7 +100,7 @@ FieldDetector::Process(cv::Mat& m_hsv_img, cv::Mat& m_gui_img, Projection& m_pro
                 hull_undist_mid_point.push_back(cv::Point(static_cast<int>(undist_point_pool[i].x), static_cast<int>(undist_point_pool[i].y)));
             }
 
-            if (m_projection.distort(hull_undist_mid_point, hull_field_)) {
+            if (m_projection.distortP(hull_undist_mid_point, hull_field_)) {
                 // debug 模式下显示凸包边界点
 
                 if (parameters.field.showDebug && parameters.monitor.update_gui_img) {
@@ -112,11 +112,11 @@ FieldDetector::Process(cv::Mat& m_hsv_img, cv::Mat& m_gui_img, Projection& m_pro
                 std::vector<std::vector<cv::Point>> hulls(1, hull_field_);
                 field_convex_hull_ = cv::Mat::zeros(field_binary_.size(), CV_8UC1);
 
-                // 在field_convex_hull_中划出凸包
+                // 在field_convex_hull_中画出凸包
                 // grayWhite 就是灰度图下的255
                 cv::drawContours(field_convex_hull_, hulls, -1, grayWhite(), CV_FILLED, 8);
 
-                // 是否考虑body mask
+                // TODO(yyj) 是否考虑body mask
                 std::vector<cv::Point> tmp_body_mask_contour = GetBodyMaskContourInRaw(-Radian2Degree(0));
                 bool consider_body_mask = (tmp_body_mask_contour.size() >= 6);
 

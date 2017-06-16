@@ -14,11 +14,7 @@ Projection::init(ros::NodeHandle* nh)
 {
     parameters.init(nh);
     m_dist.init();
-    m_ipm.Init(parameters.camera.extrinsic_para,
-               parameters.camera.fx,
-               parameters.camera.fy,
-               parameters.camera.undistCx,
-               parameters.camera.undistCy);
+    m_ipm.Init(parameters.camera.extrinsic_para, parameters.camera.fx, parameters.camera.fy, parameters.camera.undistCx, parameters.camera.undistCy);
 }
 
 Projection::~Projection() = default;
@@ -35,7 +31,8 @@ bool
 Projection::getOnImageCoordinate(const Point2f& point, Point& resPoint)
 {
     Point2d undist_point = m_ipm.project(point.x, point.y);
-    resPoint = m_dist.distort(undist_point.x, undist_point.y);
+    // resPoint = m_dist.fuck(undist_point.x, undist_point.y);
+    m_dist.distortP(undist_point, resPoint);
     return true;
 }
 
@@ -53,7 +50,7 @@ bool
 Projection::getOnImageCoordinate(const vector<Point2f>& points, vector<Point>& resPoints)
 {
     resPoints.resize(points.size());
-    for(uint32_t i = 0; i < points.size(); ++i) {
+    for (uint32_t i = 0; i < points.size(); ++i) {
         getOnImageCoordinate(points[i], resPoints[i]);
     }
     return true;
@@ -63,7 +60,7 @@ bool
 Projection::getOnRealCoordinate(const vector<Point>& points, vector<Point2f>& resPoints)
 {
     resPoints.resize(points.size());
-    for(uint32_t i = 0; i < points.size(); ++i) {
+    for (uint32_t i = 0; i < points.size(); ++i) {
         getOnRealCoordinate(points[i], resPoints[i]);
     }
     return true;
@@ -75,7 +72,7 @@ Projection::getOnImageCoordinate(const std::vector<LineSegment>& lines, std::vec
 {
     res_lines.resize(lines.size());
     Point tmp;
-    for(uint32_t i = 0; i < lines.size(); ++i) {
+    for (uint32_t i = 0; i < lines.size(); ++i) {
         getOnImageCoordinate(lines[i].P1, tmp);
         res_lines[i].P1.x = tmp.x;
         res_lines[i].P1.y = tmp.y;
@@ -92,7 +89,7 @@ Projection::getOnRealCoordinate(const std::vector<LineSegment>& lines, std::vect
 {
     res_lines.resize(lines.size());
     Point2f tmp;
-    for(uint32_t i = 0; i < lines.size(); ++i) {
+    for (uint32_t i = 0; i < lines.size(); ++i) {
         getOnRealCoordinate(lines[i].P1, tmp);
         res_lines[i].P1.x = tmp.x;
         res_lines[i].P1.y = tmp.y;
