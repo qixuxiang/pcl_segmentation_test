@@ -12,7 +12,6 @@ Projection::Projection()
 void
 Projection::init(ros::NodeHandle* nh)
 {
-    parameters.init(nh);
     m_dist.init();
     m_ipm.Init(parameters.camera.extrinsic_para, parameters.camera.fx, parameters.camera.fy, parameters.camera.undistCx, parameters.camera.undistCy);
 }

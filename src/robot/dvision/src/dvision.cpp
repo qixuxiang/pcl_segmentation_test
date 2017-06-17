@@ -9,7 +9,7 @@ DVision::DVision(ros::NodeHandle* n)
   : DProcess(VISION_FREQ, false)
   , m_nh(n)
 {
-    parameters.init(nh);
+    parameters.init(n);
     m_projection.init(n);
     // m_ball.Init();
     m_circle.Init();
