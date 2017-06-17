@@ -30,4 +30,4 @@ Main usage
 How?
 ===
 
-Manually serialize and deserialize ros msg, and send by udp socket.
+Manually serialize and deserialize ros msg, and sendRos by udp socket.

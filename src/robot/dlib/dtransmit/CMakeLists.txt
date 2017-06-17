@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(dtransmit)
-add_definitions(-std=c++11 -Wall -g -Wextra -Wno-unused-result) #-Wfloat-equal -Weffc++ -pedantic
+add_definitions(-std=c++11 -Wall -O2 -Wextra -Wno-unused-result) #-Wfloat-equal -Weffc++ -pedantic
 
 find_package(catkin REQUIRED roscpp)
 

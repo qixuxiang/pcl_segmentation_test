@@ -21,7 +21,7 @@ int main()
         ROS_INFO("Sending: [%s]", msg.data.c_str());
 
         for(int j = 0; j < NUM; ++j) {
-            d.send<std_msgs::String>(2000 + j, msg);
+            d.sendRos<std_msgs::String>(2000 + j, msg);
         }
         usleep(1000);
     }

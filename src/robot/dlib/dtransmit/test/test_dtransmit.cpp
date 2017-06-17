@@ -5,20 +5,37 @@
 // TODO(MWX): test on different machine, over wifi
 using namespace dtransmit;
 using namespace std;
-int main(int argc, char** argv)
+int main()
 {
 //    DTransmit d("127.0.0.1");
     DTransmit d("192.168.255.255");
 
+    struct Foo {
+        int x = 1;
+        double y = 2;
+        string s = "hello";
+    } foo;
+
+
     int NUM = 10;
 
     for(int i = 0; i < NUM; ++i) {
-        d.add_recv<std_msgs::String>(2000 + i, [=](std_msgs::String& msg) {
+        d.addRosRecv<std_msgs::String>(2000 + i, [=](std_msgs::String &msg) {
             ROS_INFO("%d heard: [%s]", 2000 + i, msg.data.c_str());
         });
     }
 
-    d.startRecv();
+    bool recv = false;
+    d.addRawRecv(2333, [&](const void* buffer, std::size_t size) {
+        if(size != sizeof(foo)) {
+            throw std::runtime_error("Received raw size not correct");
+        }
+        Foo* f = (Foo*) buffer;
+        printf("recv: %d %lf %s", f->x, f->y, f->s.c_str());
+        recv = true;
+    });
+
+    d.startService();
 
     for(int i = 0 ; i < 100 ; ++i) {
         std_msgs::String msg;
@@ -29,9 +46,18 @@ int main(int argc, char** argv)
         ROS_INFO("Sending: [%s]", msg.data.c_str());
 
         for(int j = 0; j < NUM; ++j) {
-            d.send<std_msgs::String>(2000 + j, msg);
+            d.sendRos<std_msgs::String>(2000 + j, msg);
         }
 //        usleep(100);
         cout << endl;
     }
+
+    // test send raw
+    d.sendRaw(2333, (void*)&foo, sizeof(foo));
+
+    // wait until all msgs are receiveed
+    while(!recv) {
+        sleep(1);
+    }
+
 }
