@@ -1,10 +1,9 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(dvision)
 
-add_definitions(-std=c++11 -Wall -Wextra -Wno-unused-result) #-Wfloat-equal -Weffc++ -pedantic
+add_definitions(-std=c++11 -Wall -O2 -Wextra -Wno-unused-result) #-Wfloat-equal -Weffc++ -pedantic
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake_modules/")
-add_definitions(-std=c++11 -Wall -Wextra -Wno-unused-result) #-Weffc++ -pedantic
 
 find_package(catkin REQUIRED
   COMPONENTS roscpp
@@ -119,6 +118,3 @@ catkin_add_gtest(test_localization test/test_localization.cpp)
 target_link_libraries(test_localization dvisionlib)
 target_link_libraries(test_localization ${catkin_LIBRARIES})
 
-catkin_add_gtest(test_ball_detector test/test_ball_detector.cpp)
-target_link_libraries(test_ball_detector dvisionlib)
-target_link_libraries(test_ball_detector ${catkin_LIBRARIES})

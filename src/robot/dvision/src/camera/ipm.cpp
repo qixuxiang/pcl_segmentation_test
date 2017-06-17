@@ -109,7 +109,6 @@ void IPM::calc_extrinsic(double pitchRad, double yawRad) {
         1, 0, 0, 0,
         0, 0, 0, 1;
 
-    MatrixXd extrinsic(4, 4);
     m_extrinsic = c2i * p2c * w2p;
 }
 } // namespace dvision
