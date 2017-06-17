@@ -53,6 +53,7 @@ class GaitStateManager
     double desYaw;
     double desPitch;
     ros::Time last_unstable_timestamp;
+    ros::Time m_start_time;
 
     /* for head plat compensation */
     VecPos estimated_plat;

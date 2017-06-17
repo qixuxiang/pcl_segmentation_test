@@ -1,5 +1,6 @@
 uint8 stable
-uint64 uptime
+uint8 uptime
+time timestamp
 float32 vy
 float32 fieldAngle
 bool lower_board_started

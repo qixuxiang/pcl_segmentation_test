@@ -49,7 +49,17 @@ GaitStateManager::tick()
     }
 
     gaitState->execute();
+
     /* write motion share data to blackboard */
+    if (!m_motion_info.lower_board_started) {
+        m_motion_info.lower_board_started = true;
+        m_start_time = ros::Time::now();
+    }
+
+    // TODO(corenel) check lower_board_connected in dvision
+    m_motion_info.timestamp = ros::Time::now();
+    ros::Duration uptime = m_motion_info.timestamp - m_start_time;
+    m_motion_info.uptime = uptime.toSec();
 
     // robot->m_leftkick_flag = readFrom(behaviour, kick);
     // robot->m_rightkick_flag = readFrom(behaviour, kick);
@@ -176,20 +186,20 @@ GaitStateManager::platCtrl(double& targetYaw, double& targetPitch)
 
     // get delta data
     deltadataDebug tmpDelta = rstatus->checkDeltaDist();
-    tmpD.m_x += tmpDelta.m_x;
-    tmpD.m_y += tmpDelta.m_y;
-    tmpD.m_angle += tmpDelta.m_angle;
+    tempD.m_x += tmpDelta.m_x;
+    tempD.m_y += tmpDelta.m_y;
+    tempD.m_angle += tmpDelta.m_angle;
 
     m_motion_info.action.cmd_head.y = targetPitch;
     m_motion_info.action.cmd_head.z = targetYaw;
     // FIXME(corenel) using std::underlying_type_t instead
     m_motion_info.stable = static_cast<int>(rstatus->m_bStable);
     m_motion_info.vy = robot->m_robotCtrl.getWalkVelY();
-    m_motion_info.curPlat.x = estimated_plat.x;
-    m_motion_info.curPlat.y = estimated_plat.y;
-    m_motion_info.deltaData.x = estimated_plat.x;
-    m_motion_info.deltaData.y = estimated_plat.y;
-    m_motion_info.deltaData.z = estimated_plat.m_angle;
+    m_motion_info.curPlat.x = estimated_plat.m_x;
+    m_motion_info.curPlat.y = estimated_plat.m_y;
+    m_motion_info.deltaData.x = tempD.m_x;
+    m_motion_info.deltaData.y = tempD.m_y;
+    m_motion_info.deltaData.z = tempD.m_angle;
     m_motion_info.deltaData.x = robot->m_robotCtrl.robot_x;
     m_motion_info.deltaData.y = robot->m_robotCtrl.robot_x;
     m_motion_info.deltaData.z = robot->m_robotCtrl.robot_t;

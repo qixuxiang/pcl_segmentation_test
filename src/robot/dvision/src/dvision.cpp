@@ -137,7 +137,7 @@ DVision::tick()
 }
 
 void
-DVision::motionCallback(const dmotion::ActionCmd::ConstPtr& motion_msg)
+DVision::motionCallback(const dmotion::MotionInfo::ConstPtr& motion_msg)
 {
     m_motion_info = *motion_msg;
     m_pitch = static_cast<int>(m_motion_info.action.cmd_head.y);
