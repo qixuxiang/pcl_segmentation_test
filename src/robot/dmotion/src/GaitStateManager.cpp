@@ -16,6 +16,7 @@ GaitStateManager::GaitStateManager(ros::NodeHandle* nh)
     prior_gaitState = crouch;
     last_unstable_timestamp = ros::Time::now();
 
+    m_sub_reload_config = m_nh->subscribe("/humanoid/ReloadMotionConfig", 1, &GaitStateManager::reload_gaitdata, this);
     m_pub = m_nh->advertise<dmotion::MotionInfo>("/humanoid/MotionInfo", 1);
 }
 
@@ -90,7 +91,7 @@ GaitStateManager::init_allstates()
 }
 
 void
-GaitStateManager::reload_gaitdata()
+GaitStateManager::reload_gaitdata(const std_msgs::String::ConstPtr& msg)
 {
     rstatus->initMotor();
     port->update_initdata();

@@ -25,7 +25,7 @@ CONFIG = [
     'setup.yml',
     'pvhipY.yml'
 ]
-TOPIC = '/humanoid/dmotion/reload_config'
+TOPIC = '/humanoid/ReloadMotionConfig'
 
 
 class Handler(FileSystemEventHandler):

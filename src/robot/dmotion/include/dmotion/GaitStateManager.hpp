@@ -3,6 +3,7 @@
 #include "dmotion/ActionCmd.h"
 #include "dmotion/GaitStateSupportLib/HumanRobotInterface.hpp"
 #include "dmotion/MotionInfo.h"
+#include "std_msgs/String.h"
 #include "transitHub.hpp"
 #include <ros/ros.h>
 
@@ -24,7 +25,7 @@ class GaitStateManager
     void checkNewCommand(const dmotion::ActionCmd& request);
 
     void platCtrl(double& yaw, double& pitch);
-    void reload_gaitdata();
+    void reload_gaitdata(const std_msgs::String::ConstPtr&);
 
     GaitStateBase* gaitState;
     GaitStateBase* goal_gaitState;
@@ -60,4 +61,5 @@ class GaitStateManager
     deltadataDebug tempD;
 
     ros::Publisher m_pub;
+    ros::Subscriber m_sub_reload_config;
 };
