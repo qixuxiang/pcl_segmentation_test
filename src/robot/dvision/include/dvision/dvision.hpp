@@ -54,5 +54,6 @@ class DVision : public dprocess::DProcess<DVision>
     void motionCallback(const dmotion::MotionInfo::ConstPtr& msg);
     void saveImgCallback(const SaveImg::ConstPtr& save_img_msg);
     void prepareVisionInfo(VisionInfo& m_data);
+    void showDebugImg();
 };
 } // namespace dvision

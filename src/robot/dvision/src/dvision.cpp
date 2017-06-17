@@ -33,12 +33,14 @@ void
 DVision::tick()
 {
     ROS_DEBUG("dvision tick");
-    auto frame = m_camera.capture();
-    VisionInfo m_data;
 
     /**********
      * Update *
      **********/
+
+    auto frame = m_camera.capture();
+    VisionInfo m_data;
+
     m_projection.updateExtrinsic(m_pitch, m_yaw);
 
     if (!m_loc.Update(m_projection)) {
@@ -47,7 +49,7 @@ DVision::tick()
 
     // get image in BGR and HSV color space
     m_gui_img = frame.getBGR_raw();
-    cv::cvtColor(m_gui_img, m_hsv_img, CV_BGR2HSV);
+    m_hsv_img = frame.getHSV();
 
     /******************
      * Field Detector *
@@ -119,29 +121,7 @@ DVision::tick()
      * Post process *
      ****************/
 
-    if (parameters.monitor.update_loc_img) {
-        cv::namedWindow("loc", CV_WINDOW_NORMAL);
-        cv::imshow("loc", m_loc_img);
-    }
-
-    if (parameters.monitor.update_gui_img) {
-        cv::namedWindow("gui", CV_WINDOW_NORMAL);
-        cv::imshow("gui", m_gui_img);
-        // using for change hsv of white
-        // cv::createTrackbar("h_low", "gui", &parameters.goal.h0, 255);
-        // cv::createTrackbar("h_high", "gui", &parameters.goal.h1, 255);
-        // cv::createTrackbar("s_low", "gui", &parameters.goal.s0, 255);
-        // cv::createTrackbar("s_high", "gui", &parameters.goal.s1, 255);
-        // cv::createTrackbar("v_low", "gui", &parameters.goal.v0, 255);
-        // cv::createTrackbar("v_high", "gui", &parameters.goal.v1, 255);
-        cv::createTrackbar("MinLineLength", "gui", &parameters.line.MinLineLength, 255);
-        cv::createTrackbar("AngleToMerge", "gui", &parameters.line.AngleToMerge, 255);
-        cv::createTrackbar("DistanceToMerge", "gui", &parameters.line.DistanceToMerge, 255);
-        cv::createTrackbar("confiusedDist", "gui", &parameters.circle.confiusedDist, 255);
-
-        cv::waitKey(1);
-    }
-
+    showDebugImg();
     m_concurrent.spinOnce();
     m_concurrent.join();
 }
@@ -206,6 +186,33 @@ DVision::prepareVisionInfo(VisionInfo& m_data)
     //     m_data.ball_global.x = ball_global.x;
     //     m_data.ball_global.y = ball_global.y;
     // }
+}
+
+void
+DVision::showDebugImg()
+{
+    if (parameters.monitor.update_loc_img) {
+        cv::namedWindow("loc", CV_WINDOW_NORMAL);
+        cv::imshow("loc", m_loc_img);
+    }
+
+    if (parameters.monitor.update_gui_img) {
+        cv::namedWindow("gui", CV_WINDOW_NORMAL);
+        cv::imshow("gui", m_gui_img);
+        // using for change hsv of white
+        // cv::createTrackbar("h_low", "gui", &parameters.goal.h0, 255);
+        // cv::createTrackbar("h_high", "gui", &parameters.goal.h1, 255);
+        // cv::createTrackbar("s_low", "gui", &parameters.goal.s0, 255);
+        // cv::createTrackbar("s_high", "gui", &parameters.goal.s1, 255);
+        // cv::createTrackbar("v_low", "gui", &parameters.goal.v0, 255);
+        // cv::createTrackbar("v_high", "gui", &parameters.goal.v1, 255);
+        cv::createTrackbar("MinLineLength", "gui", &parameters.line.MinLineLength, 255);
+        cv::createTrackbar("AngleToMerge", "gui", &parameters.line.AngleToMerge, 255);
+        cv::createTrackbar("DistanceToMerge", "gui", &parameters.line.DistanceToMerge, 255);
+        cv::createTrackbar("confiusedDist", "gui", &parameters.circle.confiusedDist, 255);
+
+        cv::waitKey(1);
+    }
 }
 
 } // namespace dvision

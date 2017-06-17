@@ -20,7 +20,10 @@ from watchdog.events import FileSystemEventHandler
 PATH = '../dmotion/'
 CONFIG = [
     'motion.yml',
-    'motor.yml'
+    'motor.yml',
+    'kick.yml',
+    'setup.yml',
+    'pvhipY.yml'
 ]
 TOPIC = '/humanoid/dmotion/reload_config'
 
@@ -39,6 +42,7 @@ class Handler(FileSystemEventHandler):
                 self.pub.publish('')
                 for cfg in CONFIG:
                     subprocess.call(['rosparam', 'load', '%s/%s' % (PATH, cfg)])
+                    print 'rosparam load %s/%s' % (PATH, cfg)
 
                 # subprocess.call(['rosparam', 'get', '/dmotion/robot/diffv'])  # debug
                 rospy.loginfo('config changed, published reload msg')

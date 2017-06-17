@@ -19,26 +19,30 @@ class Frame
         m_timeStamp = ros::Time::now();
     }
 
-    inline Frame(std::string filepath) {
+    inline Frame(std::string filepath)
+    {
         m_bgr = cv::imread(filepath);
         m_width = m_bgr.size().width;
         m_height = m_bgr.size().height;
         m_converted = true;
     }
 
-    inline Frame() {}
+    inline Frame()
+    {
+    }
 
     inline explicit Frame(cv::Mat& mat, int width, int height)
-            : m_bgr(mat)
-            , m_width(width)
-            , m_height(height)
-            , m_converted(true)
+      : m_bgr(mat)
+      , m_width(width)
+      , m_height(height)
+      , m_converted(true)
     {
         m_timeStamp = ros::Time::now();
     }
 
-
-    inline ~Frame(){}
+    inline ~Frame()
+    {
+    }
 
     inline cv::Mat getRGB()
     {
@@ -48,14 +52,22 @@ class Frame
         return rgb;
     }
 
-    inline cv::Mat& getBGR() {
+    inline cv::Mat& getBGR()
+    {
         cvt();
         return m_bgr;
     }
 
-    inline cv::Mat getBGR_raw() {
+    inline cv::Mat getBGR_raw()
+    {
         cvt();
         return m_bgr;
+    }
+
+    inline cv::Mat& getHSV()
+    {
+        cvt();
+        return m_hsv;
     }
 
     inline void cvt()
@@ -64,6 +76,7 @@ class Frame
             return;
         cv::Mat yuvMat(m_height, m_width, CV_8UC2, m_yuv);
         cv::cvtColor(yuvMat, m_bgr, CV_YUV2BGR_YUYV);
+        cv::cvtColor(m_bgr, m_hsv, CV_BGR2HSV);
         m_converted = true;
     }
 
@@ -74,6 +87,7 @@ class Frame
   private:
     uint8_t* m_yuv; // raw yuv image
     cv::Mat m_bgr;
+    cv::Mat m_hsv;
 
     ros::Time m_timeStamp;
     int m_width;
