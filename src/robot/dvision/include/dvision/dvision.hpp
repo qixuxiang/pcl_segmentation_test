@@ -17,6 +17,7 @@
 #include "dvision/localization.hpp"
 #include "dvision/projection.hpp"
 #include "dvision/utils.hpp"
+#include "dtransmit/dtransmit.hpp"
 #include <vector>
 
 namespace dvision {
@@ -35,6 +36,8 @@ class DVision : public dprocess::DProcess<DVision>
     Camera m_camera;
     Projection m_projection;
     dprocess::DConcurrent m_concurrent;
+    dtransmit::DTransmit* m_transmitter;
+    // todo add broadcast address config
 
     // detectors and loc
     BallDetector m_ball;

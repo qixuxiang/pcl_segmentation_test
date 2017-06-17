@@ -7,6 +7,7 @@ add_definitions(-std=c++11 -Wall  -Wextra -Wfloat-equal -Wno-unused-result) #-We
 find_package(catkin REQUIRED
   COMPONENTS 
   roscpp
+  dvision
   dtransmit
 )
 

@@ -196,6 +196,17 @@ struct MonitorParameters
     bool update_loc_img;
 };
 
+struct HSVRange
+{
+    bool active;
+    int h0;
+    int h1;
+    int s0;
+    int s1;
+    int v0;
+    int v1;
+};
+
 struct Parameters
 {
     BallDetectorParameters ball;
@@ -209,19 +220,12 @@ struct Parameters
     FieldModelParameters field_model;
     MonitorParameters monitor;
 
+    std::string udpBroadcastAddress;
+    int robotId;
+
     void init(ros::NodeHandle* nh);
 };
 
-struct HSVRange
-{
-    bool active;
-    int h0;
-    int h1;
-    int s0;
-    int s1;
-    int v0;
-    int v1;
-};
 
 extern Parameters parameters;
 }

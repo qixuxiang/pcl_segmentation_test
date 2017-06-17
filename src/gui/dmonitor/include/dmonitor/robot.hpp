@@ -1,44 +1,37 @@
 #pragma once
 #include <QQuickPaintedItem>
 #include "dtransmit/dtransmit.hpp"
+#include "dvision/VisionInfo.h"
 
 namespace dmonitor {
 
 class Robot : public QQuickPaintedItem {
     Q_OBJECT
-    Q_PROPERTY(int id READ id WRITE setId NOTIFY idChanged)
-    Q_PROPERTY(int port READ port WRITE setPort NOTIFY portChanged)
-    Q_PROPERTY(QString address READ address WRITE setAddress NOTIFY addressChanged)
+    Q_PROPERTY(int robotId READ robotId WRITE setRobotId)
+    Q_PROPERTY(QString address READ address WRITE setAddress)
 
-
-private:
-    dtransmit::DTransmit* m_dtransmit;
-    int m_id;
-    int m_port;
-    QString m_address;
 
 public:
     Robot(QQuickItem* parent = 0);
     ~Robot();
 
     Q_INVOKABLE void init();
-
     void paint(QPainter *painter) override;
-    int id() const;
-    int port() const;
 
+    // qml read
+    int robotId() const;
     QString address() const;
 
 public slots:
-    void setId(int id);
-    void setPort(int port);
-
+    void setRobotId(int robotId);
     void setAddress(QString address);
 
-signals:
-    void idChanged(int id);
-    void portChanged(int port);
-    void addressChanged(QString address);
+
+private:
+    dtransmit::DTransmit* m_transmitter;
+    int m_robotId;
+    QString m_address;
+    dvision::VisionInfo m_visionInfo;
 };
 
 } // namespace dmonitor

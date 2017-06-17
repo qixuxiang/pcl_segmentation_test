@@ -12,7 +12,6 @@ Projection::Projection()
 void
 Projection::init(ros::NodeHandle* nh)
 {
-    parameters.init(nh);
     m_dist.init();
     m_ipm.Init(parameters.camera.extrinsic_para, parameters.camera.fx, parameters.camera.fy, parameters.camera.undistCx, parameters.camera.undistCy);
 }
@@ -137,35 +136,35 @@ bool
 Projection::CalcHeadingOffset(std::vector<LineSegment>& clustered_lines, bool circle_detected, const Point2d& result_circle, const std::vector<cv::Point2f>& goal_position)
 {
     // Ver line in robot coord
-    LineSegment VerLine(cv::Point(0, -10), cv::Point(0, 10));
-    std::vector<double> heading_offset_vec;
-    for (auto line_seg : clustered_lines) {
-        if (line_seg.GetLength() > parameters.loc.minLineLen) {
-            double angle_diff_ver = line_seg.GetExteriorAngleDegree(VerLine);
-            if (angle_diff_ver < -90)
-                angle_diff_ver += 180;
-            if (angle_diff_ver > 90)
-                angle_diff_ver += -180;
-
-            if (circle_detected && DistanceFromLineSegment(line_seg, result_circle) < 50) {
-                heading_offset_vec.push_back(angle_diff_ver);
-                // cout << "CalcHeadingOffset: HorCenter angle " <<
-                // heading_offset_vec.back()
-                //      << endl;
-            }
-            if (goal_position.size() >= 2 && line_seg.DistanceFromLine(goal_position[0]) < 50 && line_seg.DistanceFromLine(goal_position[1]) < 50) {
-                heading_offset_vec.push_back(angle_diff_ver);
-                // cout << "CalcHeadingOffset: goal line angle " <<
-                // heading_offset_vec.back()
-                //      << endl;
-            }
-        }
-    }
-    if (!heading_offset_vec.empty()) {
-        double heading_offset_avg = accumulate(heading_offset_vec.begin(), heading_offset_vec.end(), 0.0) / heading_offset_vec.size();
-        // cout << "CalcHeadingOffset: " << heading_offset_avg << endl;
-        m_heading_offset = M_PI / 180 * heading_offset_avg;
-    }
+//    LineSegment VerLine(cv::Point(0, -10), cv::Point(0, 10));
+//    std::vector<double> heading_offset_vec;
+//    for (auto line_seg : clustered_lines) {
+//        if (line_seg.GetLength() > parameters.loc.minLineLen) {
+//            double angle_diff_ver = line_seg.GetExteriorAngleDegree(VerLine);
+//            if (angle_diff_ver < -90)
+//                angle_diff_ver += 180;
+//            if (angle_diff_ver > 90)
+//                angle_diff_ver += -180;
+//
+//            if (circle_detected && DistanceFromLineSegment(line_seg, result_circle) < 50) {
+//                heading_offset_vec.push_back(angle_diff_ver);
+//                // cout << "CalcHeadingOffset: HorCenter angle " <<
+//                // heading_offset_vec.back()
+//                //      << endl;
+//            }
+//            if (goal_position.size() >= 2 && line_seg.DistanceFromLine(goal_position[0]) < 50 && line_seg.DistanceFromLine(goal_position[1]) < 50) {
+//                heading_offset_vec.push_back(angle_diff_ver);
+//                // cout << "CalcHeadingOffset: goal line angle " <<
+//                // heading_offset_vec.back()
+//                //      << endl;
+//            }
+//        }
+//    }
+//    if (!heading_offset_vec.empty()) {
+//        double heading_offset_avg = accumulate(heading_offset_vec.begin(), heading_offset_vec.end(), 0.0) / heading_offset_vec.size();
+//         cout << "CalcHeadingOffset: " << heading_offset_avg << endl;
+//        m_heading_offset = M_PI / 180 * heading_offset_avg;
+//    }
 }
 
 } // namespace dvision

@@ -9,6 +9,7 @@ DVision::DVision(ros::NodeHandle* n)
   : DProcess(VISION_FREQ, false)
   , m_nh(n)
 {
+    parameters.init(n);
     m_projection.init(n);
     // m_ball.Init();
     m_circle.Init();
@@ -20,6 +21,7 @@ DVision::DVision(ros::NodeHandle* n)
     m_concurrent.push([] {
         //     ROS_INFO("concurrent");
     });
+    m_transmitter = new dtransmit::DTransmit(parameters.udpBroadcastAddress);
     m_sub_action_cmd = m_nh->subscribe("/humanoid/MotionInfo", 100, &DVision::motionCallback, this);
     m_sub_save_img = m_nh->subscribe("/humanoid/SaveImg", 100, &DVision::saveImgCallback, this);
     m_pub = m_nh->advertise<VisionInfo>("/humanoid/VisionInfo", 100);
@@ -116,6 +118,7 @@ DVision::tick()
 
     prepareVisionInfo(m_data);
     m_pub.publish(m_data);
+    m_transmitter->sendRos(2000 + parameters.robotId, m_data);
 
     /****************
      * Post process *

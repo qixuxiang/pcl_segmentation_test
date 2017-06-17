@@ -7,4 +7,6 @@
     <rosparam command="load" file="$(find dconfig)/dmotion/pvhipY.yml"/>
     <rosparam command="load" file="$(find dconfig)/dmotion/kick.yml"/>
     <rosparam command="load" file="$(find dconfig)/dmotion/setup.yml"/>
+    <rosparam command="load" file="$(find dconfig)/zjudancer.yml"/>
+    <param name="/ZJUDancer/RobotId" value="$(env ZJUDANCER_ROBOTID)"/>
 </launch>

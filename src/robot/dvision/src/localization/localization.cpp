@@ -139,7 +139,7 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
     cv::Point2d result_circle_rotated;
     std::vector<cv::Point2f> goal_position_real_rotated;
 
-    m_projection.CalcHeadingOffset(clustered_lines, circle_detected, result_circle, goal_position);
+    // m_projection.CalcHeadingOffset(clustered_lines, circle_detected, result_circle, goal_position);
     field_hull_real_rotated = m_projection.RotateTowardHeading(field_hull_real);
     clustered_lines_rotated = m_projection.RotateTowardHeading(clustered_lines);
     goal_position_real_rotated = m_projection.RotateTowardHeading(goal_position);

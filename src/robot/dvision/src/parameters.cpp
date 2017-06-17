@@ -16,14 +16,14 @@ namespace dvision {
 void
 Parameters::init(ros::NodeHandle* nh)
 {
-    vector<double> dist_coeff;
+    GPARAM("/ZJUDancer/RobotId", parameters.robotId);
+    GPARAM("/ZJUDancer/udpBroadcastAddress", parameters.udpBroadcastAddress);
 
     // Get camera parameters
     GPARAM("/dvision/projection/fx", parameters.camera.fx);
     GPARAM("/dvision/projection/fy", parameters.camera.fy);
     GPARAM("/dvision/projection/cx", parameters.camera.cx);
     GPARAM("/dvision/projection/cy", parameters.camera.cy);
-    GPARAM("/dvision/projection/dist_coeff", dist_coeff);
     GPARAM("/dvision/projection/extrinsic_para", parameters.camera.extrinsic_para);
     GPARAM("/dvision/camera/width", parameters.camera.width);
     GPARAM("/dvision/camera/height", parameters.camera.height);
@@ -31,6 +31,8 @@ Parameters::init(ros::NodeHandle* nh)
     parameters.camera.cameraMatrix = (Mat_<double>(3, 3) << parameters.camera.fx, 0, parameters.camera.cx, 0, parameters.camera.fy, parameters.camera.cy, 0, 0, 1);
     parameters.camera.distCoeff = Mat_<double>(1, 14);
 
+    vector<double> dist_coeff;
+    GPARAM("/dvision/projection/dist_coeff", dist_coeff);
     for (uint32_t i = 0; i < dist_coeff.size(); ++i) {
         parameters.camera.distCoeff.at<double>(0, i) = dist_coeff[i];
     }
