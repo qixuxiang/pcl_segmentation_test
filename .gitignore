@@ -9,7 +9,7 @@ build/
 *.user
 *-build
 build*
-*.qrc
+#*.qrc
 
 *~
 .#*
