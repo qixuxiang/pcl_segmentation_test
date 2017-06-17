@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(dvisualize)
+project(dcalibrator)
 #LIST(APPEND CMAKE_MODULE_PATH ${dvision_SOURCE_DIR}/cmake_modules)
 
 add_definitions(-std=c++11 -Wall  -Wextra -Wfloat-equal -Wno-unused-result) #-Weffc++ -pedantic
@@ -32,7 +32,7 @@ qt5_wrap_ui(UI_SRC src/mainwindow.ui src/undist.ui)
 
 include_directories(include src ${catkin_INCLUDE_DIRS})
 
-add_executable(dvisualize src/main.cpp
+add_executable(dcalibrator src/main.cpp
     src/mainwindow.cpp
     src/mymodel.cpp
     #src/dvis.qrc
@@ -42,7 +42,7 @@ add_executable(dvisualize src/main.cpp
     )
 
 
-target_link_libraries(dvisualize 
+target_link_libraries(dcalibrator
     ${catkin_LIBRARIES}
     ${OpenCV_LIBS}
     Qt5::Core Qt5::Widgets)

@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
-  <name>dvisualize</name>
+  <name>dmonitor</name>
   <version>0.0.0</version>
-  <description>The dvisualize package</description>
+  <description>The dmonitor package</description>
   <maintainer email="mwx@todo.todo">mwx</maintainer>
   <license>TODO</license>
 
