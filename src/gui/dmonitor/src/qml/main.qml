@@ -1,6 +1,7 @@
 import QtQuick 2.3
 import QtQuick.Controls 1.2
 import DMonitor 1.0
+import "componentCreation.js" as MyScript
 
 ApplicationWindow {
     id: root
@@ -32,21 +33,21 @@ ApplicationWindow {
 
         // list view robot
 
-        Robot {
-            id: robot
-            address: root.udpAddress
-            robotId: 4
-            width: 100
-            height:100
-        }
+//        Robot {
+//            id: robot
+//            address: root.udpAddress
+//            robotId: 1
+//            width: 10
+//            height:10
+//        }
 
         function updateView() {
-            field.update()
-            robot.update()
+            field.update();
+            MyScript.updateRobot();
         }
 
-        Component.onCompleted: {
-            robot.init()
-        }
+        Component.onCompleted: MyScript.createObjects();
+
+
     }
 }

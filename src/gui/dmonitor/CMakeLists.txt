@@ -40,6 +40,7 @@ add_executable(dmonitor
     include/dmonitor/field.hpp
     src/qml.qrc
     src/main.qml
+    src/componentCreation.js
     )
 
 
