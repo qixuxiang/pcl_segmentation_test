@@ -72,12 +72,16 @@ void DTransmit::add_recv(PORT port, std::function<void(ROSMSG & )> callback) {
     m_recvFoo[port] = Foo(m_service, port);
 
     m_recvFoo[port].readHandler = [=](const boost::system::error_code& error, std::size_t bytesRecved) {
-        ROSMSG msg;
+        if(error) {
+            ROS_INFO("Error in recv: %s", error.message().c_str());
+        } else {
+            ROSMSG msg;
 
-        ros::serialization::IStream stream((uint8_t*)m_recvFoo[port].recvBuffer, bytesRecved);
-        ros::serialization::Serializer<ROSMSG>::read(stream, msg);
-        // client callback
-        callback(msg);
+            ros::serialization::IStream stream((uint8_t*)m_recvFoo[port].recvBuffer, bytesRecved);
+            ros::serialization::Serializer<ROSMSG>::read(stream, msg);
+            // client callback
+            callback(msg);
+        }
 
         startRecv(port, m_recvFoo[port].readHandler);
     };
@@ -112,7 +116,6 @@ void DTransmit::createSendSocket(PORT port) {
     socket->connect(broadcastEndpoint, ec);
     if(ec) {
         ROS_ERROR("DTransmit create send socket error: %s", ec.message().c_str());
-        throw(ec);
     }
 
     m_sendSockets[port] = socket;
