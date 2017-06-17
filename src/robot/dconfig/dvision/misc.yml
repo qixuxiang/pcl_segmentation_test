@@ -13,3 +13,4 @@ dvision:
 
   monitor:
     update_gui_img: true
+    update_loc_img: true

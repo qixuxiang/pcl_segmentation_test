@@ -101,6 +101,7 @@ class Localization
                    const std::vector<cv::Point2f>& goal_position,
                    //  std::vector<LineContainer>& all_lines,
                    //  std::vector<FeatureContainer>& all_features,
+                   cv::Mat& m_loc_img,
                    Projection& m_projection);
 
     // graph

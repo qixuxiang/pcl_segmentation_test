@@ -45,7 +45,7 @@ class DVision : public dprocess::DProcess<DVision>
     Localization m_loc;
 
     // image
-    cv::Mat m_hsv_img, m_canny_img, m_gui_img;
+    cv::Mat m_hsv_img, m_canny_img, m_gui_img, m_loc_img;
     // added by yyj
     int m_yaw;
     int m_pitch;

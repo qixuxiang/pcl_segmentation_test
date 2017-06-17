@@ -123,6 +123,7 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
                         const std::vector<cv::Point2f>& goal_position,
                         // std::vector<LineContainer>& all_lines,
                         // std::vector<FeatureContainer>& all_features,
+                        cv::Mat& m_loc_img,
                         Projection& m_projection)
 {
     if (camera_projections_ == NULL || !parameters.loc.enable) {
@@ -353,9 +354,50 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
             location_.x = tmpV(0);
             location_.y = tmpV(1);
 
-            std::cout << "Localization: (" << location_.x << ", " << location_.y << ")" << std::endl;
-            std::cout << "-----------------------------------------------------" << std::endl;
+            ROS_WARN("Localization: (%f, %f)", location().x, location().y);
         }
+    }
+    if (parameters.monitor.update_loc_img) {
+        double offssx = 250;
+        double offssy = 250;
+        double ratioo = 0.2;
+        // White lines
+        for (int j = 0; j < all_lines.size(); ++j) {
+            cv::Scalar lc;
+            LineType lt = all_lines[j].type_;
+            if (lt == HorUndef) {
+                lc = blueMeloColor();
+            } else if (lt == HorCenter) {
+                lc = darkOrangeColor();
+            } else if (lt == HorGoalNear || lt == HorGoal) {
+                lc = pinkMeloColor();
+            } else if (lt == VerUndef) {
+                lc = greenColor();
+            } else if (lt == VerLeft || lt == VerLeftT || lt == VerLeftNear) {
+                lc = redColor();
+            } else if (lt == VerRight || lt == VerRightT || lt == VerRightNear) {
+                lc = yellowColor();
+            } else {
+                lc = whiteColor();
+            }
+            cv::line(m_loc_img,
+                     cv::Point(all_lines[j].line_transformed_.P1.x * ratioo + offssx, -all_lines[j].line_transformed_.P1.y * ratioo + offssy),
+                     cv::Point(all_lines[j].line_transformed_.P2.x * ratioo + offssx, -all_lines[j].line_transformed_.P2.y * ratioo + offssy),
+                     lc,
+                     2,
+                     8);
+        }
+        // Center circle
+        if (circle_detected) {
+            cv::circle(m_loc_img, cv::Point(result_circle_rotated.x * ratioo + offssx, result_circle_rotated.y * ratioo + offssy), 75 * ratioo, blueColor(), 2, 8);
+        }
+        // Goal
+        for (size_t i = 0; i < goal_position_real_rotated.size(); i++) {
+            cv::circle(m_loc_img, cv::Point(goal_position_real_rotated[i].x * ratioo + offssx, goal_position_real_rotated[i].y * ratioo + offssy), 2, redColor(), 2, 8);
+        }
+        // Axis
+        cv::line(m_loc_img, cv::Point(offssx, offssy), cv::Point(50 + offssx, offssy), yellowColor(), 2, 8);
+        cv::line(m_loc_img, cv::Point(offssx, offssy), cv::Point(offssx, 50 + offssy), redColor(), 2, 8);
     }
     return true;
 }
@@ -455,10 +497,7 @@ Localization::UpdateVertexIdx()
         information(2, 2) = 1;
         e->setInformation(information);
         optimizer.addEdge(e);
-        ROS_DEBUG("add Edges: %d -> dead_reck (%f, %f)", current_vertex_id_, dead_reck.x, dead_reck.y);
-
-        // cout << "add Edges: " << current_vertex_id_ << "-> dead_reck ("
-        //      << dead_reck.x << ", " << dead_reck.y << ")" << endl;
+        ROS_INFO("add Edges: %d -> dead_reck (%f, %f)", current_vertex_id_, dead_reck.x, dead_reck.y);
     }
 }
 
@@ -501,7 +540,7 @@ Localization::AddObservation(cv::Point2d observation, const double& x_fasher, co
         optimizer.addEdge(e);
     }
     at_least_one_observation_ = true;
-    ROS_DEBUG("add Edges: %d -> %d (%f, %f)", current_vertex_id_, type, observation.x, observation.y);
+    ROS_INFO("add Edges: %d -> %d (%f, %f)", current_vertex_id_, type, observation.x, observation.y);
     return true;
 }
 

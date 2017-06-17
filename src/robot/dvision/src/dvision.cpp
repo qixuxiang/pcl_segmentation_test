@@ -20,9 +20,9 @@ DVision::DVision(ros::NodeHandle* n)
     m_concurrent.push([] {
         //     ROS_INFO("concurrent");
     });
-    m_sub_action_cmd = m_nh->subscribe("/humanoid/MotionInfo", 1, &DVision::motionCallback, this);
-    m_sub_save_img = m_nh->subscribe("/humanoid/SaveImg", 1, &DVision::saveImgCallback, this);
-    m_pub = m_nh->advertise<VisionInfo>("/humanoid/VisionInfo", 1);
+    m_sub_action_cmd = m_nh->subscribe("/humanoid/MotionInfo", 100, &DVision::motionCallback, this);
+    m_sub_save_img = m_nh->subscribe("/humanoid/SaveImg", 100, &DVision::saveImgCallback, this);
+    m_pub = m_nh->advertise<VisionInfo>("/humanoid/VisionInfo", 100);
 }
 
 DVision::~DVision()
@@ -88,6 +88,8 @@ DVision::tick()
     /****************
      * Localization *
      ****************/
+    m_loc_img = cv::Mat(500, 500, CV_8UC3, cv::Scalar(0, 0, 0));
+
     if (m_data.see_field && m_data.see_line) {
         m_data.loc_ok = m_loc.Calculate(m_line.clustered_lines(),
                                         m_data.see_circle,
@@ -96,6 +98,7 @@ DVision::tick()
                                         m_field.field_hull_real_rotated(),
                                         m_circle.result_circle(),
                                         m_goal.goal_position(),
+                                        m_loc_img,
                                         m_projection);
     }
 
@@ -116,21 +119,28 @@ DVision::tick()
      * Post process *
      ****************/
 
-    cv::namedWindow("gui_img", CV_WINDOW_NORMAL);
-    cv::imshow("gui_img", m_gui_img);
-    // using for change hsv of white
-    // cv::createTrackbar("h_low", "gui_img", &parameters.field.h0, 255);
-    // cv::createTrackbar("h_high", "gui_img", &parameters.field.h1, 255);
-    // cv::createTrackbar("s_low", "gui_img", &parameters.field.s0, 255);
-    // cv::createTrackbar("s_high", "gui_img", &parameters.field.s1, 255);
-    // cv::createTrackbar("v_low", "gui_img", &parameters.field.v0, 255);
-    // cv::createTrackbar("v_high", "gui_img", &parameters.field.v1, 255);
-    cv::createTrackbar("MinLineLength", "gui_img", &parameters.line.MinLineLength, 255);
-    cv::createTrackbar("AngleToMerge", "gui_img", &parameters.line.AngleToMerge, 255);
-    cv::createTrackbar("DistanceToMerge", "gui_img", &parameters.line.DistanceToMerge, 255);
-    cv::createTrackbar("confiusedDist", "gui_img", &parameters.circle.confiusedDist, 255);
+    if (parameters.monitor.update_loc_img) {
+        cv::namedWindow("loc", CV_WINDOW_NORMAL);
+        cv::imshow("loc", m_loc_img);
+    }
 
-    cv::waitKey(1);
+    if (parameters.monitor.update_gui_img) {
+        cv::namedWindow("gui", CV_WINDOW_NORMAL);
+        cv::imshow("gui", m_gui_img);
+        // using for change hsv of white
+        // cv::createTrackbar("h_low", "gui", &parameters.goal.h0, 255);
+        // cv::createTrackbar("h_high", "gui", &parameters.goal.h1, 255);
+        // cv::createTrackbar("s_low", "gui", &parameters.goal.s0, 255);
+        // cv::createTrackbar("s_high", "gui", &parameters.goal.s1, 255);
+        // cv::createTrackbar("v_low", "gui", &parameters.goal.v0, 255);
+        // cv::createTrackbar("v_high", "gui", &parameters.goal.v1, 255);
+        cv::createTrackbar("MinLineLength", "gui", &parameters.line.MinLineLength, 255);
+        cv::createTrackbar("AngleToMerge", "gui", &parameters.line.AngleToMerge, 255);
+        cv::createTrackbar("DistanceToMerge", "gui", &parameters.line.DistanceToMerge, 255);
+        cv::createTrackbar("confiusedDist", "gui", &parameters.circle.confiusedDist, 255);
+
+        cv::waitKey(1);
+    }
 
     m_concurrent.spinOnce();
     m_concurrent.join();

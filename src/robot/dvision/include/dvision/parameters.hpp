@@ -186,6 +186,7 @@ struct FieldModelParameters
 struct MonitorParameters
 {
     bool update_gui_img;
+    bool update_loc_img;
 };
 
 struct Parameters

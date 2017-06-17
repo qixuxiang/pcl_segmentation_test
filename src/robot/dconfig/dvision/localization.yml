@@ -83,7 +83,7 @@ dvision:
     thetaHough:                 45 # angle resolution of the accumulator in radians
     thresholdHough:             20 # accumulator threshold parameter
     maxLineGapHough:            20 # max allowed gap between points on the same line to link them.
-    AngleToMerge:               30
+    AngleToMerge:               15
     DistanceToMerge:            30
     jumpMax:                    20
     jumpMin:                    3

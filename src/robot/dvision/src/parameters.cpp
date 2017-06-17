@@ -173,6 +173,7 @@ Parameters::init(ros::NodeHandle* nh)
 
     // Get monitor parameters
     GPARAM("/dvision/monitor/update_gui_img", parameters.monitor.update_gui_img);
+    GPARAM("/dvision/monitor/update_loc_img", parameters.monitor.update_loc_img);
 }
 
 #undef GPARAM

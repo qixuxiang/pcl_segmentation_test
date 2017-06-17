@@ -225,7 +225,7 @@ GoalDetector::GetPosts(cv::Mat& canny_img,
 
         // invalid point出现五个或者总计延长点超过15个
         // 则终止延长
-        while (cnt_invalid_points <= 5 && cnt_total_ext_points <= 15) {
+        while (cnt_invalid_points <= 2 && cnt_total_ext_points <= 10) {
             // 取tmpLine向下的延长线上的一点
             cv::Point2d down_extension_point = tmp_line.ExtensionPointDown(2);
 
