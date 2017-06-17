@@ -8,11 +8,11 @@
 # @Last modified time: 2017-06-15T15:23:11+08:00
 # @Copyright: ZJUDancer
 
-from dmotion.msg import MotionShareData
+from dmotion.msg import MotionInfo
 from geometry_msgs.msg import Vector3
 
 
-class MotionBlackBoard(MotionShareData):
+class MotionBlackBoard(MotionInfo):
     """BlackBoard for robot motion messages."""
 
     def __init__(self):

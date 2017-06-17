@@ -8,12 +8,12 @@
 # @Last modified time: 2017-06-15T15:20:21+08:00
 # @Copyright: ZJUDancer
 
-from dvision.msg import VisionShareData
+from dvision.msg import VisionInfo
 from geometry_msgs.msg import Vector3
 from ..types.constant import UNKNOWN
 
 
-class VisionBlackBoard(VisionShareData):
+class VisionBlackBoard(VisionInfo):
     """BlackBoard for robot vision messages."""
 
     def __init__(self):

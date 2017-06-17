@@ -24,15 +24,17 @@ GoalDetector::~GoalDetector()
 bool
 GoalDetector::Init()
 {
-    ROS_INFO("GoalDetector Init() finished");
+    ROS_DEBUG("GoalDetector Init");
     return true;
 }
 
 bool
 GoalDetector::Process(cv::Mat& m_canny_img, cv::Mat& m_hsv_img, cv::Mat& m_gui_img, std::vector<cv::Point>& hull_field, Projection& m_projection)
 {
+    // ROS_DEBUG("GoalDetector Tick");
+
     bool goal_detection_OK = false;
-    m_goal_position.clear();
+    goal_position_.clear();
     if (parameters.goal.enable) {
         std::vector<LineSegment> result_lines, all_lines;
         // detect goal position
@@ -75,7 +77,7 @@ GoalDetector::GetPosts(cv::Mat& canny_img,
     const int MinLineLength = parameters.goal.MinLineLength;
     const int DistanceToMerge = parameters.goal.DistanceToMerge;
     const int MaxOutField = parameters.goal.MaxOutField;
-    const int MinNearFieldUpPoint = -20;
+    const int MinNearFieldUpPoint = parameters.goal.MinNearFieldUpPoint;
 
     std::vector<cv::Vec4i> linesP;
 
@@ -223,7 +225,7 @@ GoalDetector::GetPosts(cv::Mat& canny_img,
 
         // invalid point出现五个或者总计延长点超过15个
         // 则终止延长
-        while (cnt_invalid_points <= 5 && cnt_total_ext_points <= 15) {
+        while (cnt_invalid_points <= parameters.goal.extInvalidPoints && cnt_total_ext_points <= parameters.goal.extTotalPoints) {
             // 取tmpLine向下的延长线上的一点
             cv::Point2d down_extension_point = tmp_line.ExtensionPointDown(2);
 
@@ -264,7 +266,7 @@ GoalDetector::GetPosts(cv::Mat& canny_img,
         }
 
         // 令人感动球门柱下端点加了进去
-        m_goal_position.push_back(down_real);
+        goal_position_.push_back(down_real);
         // 顺便加了整个球门柱的线片段
         res_lines.push_back(LineSegment(down, up));
     }

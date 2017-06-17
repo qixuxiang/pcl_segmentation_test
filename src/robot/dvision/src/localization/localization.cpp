@@ -11,7 +11,6 @@
 
 #include "dvision/localization.hpp"
 #include "dvision/parameters.hpp"
-#include "dvision/projection.hpp"
 
 namespace dvision {
 
@@ -79,6 +78,9 @@ Localization::~Localization()
 bool
 Localization::Init()
 {
+    InitG2OGraph();
+    optimizer.setAlgorithm(opt_algo_);
+    optimizer.setVerbose(false);
     ROS_INFO("Localization Init() finished");
     return true;
 }
@@ -116,11 +118,12 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
                         const bool& circle_detected,
                         const cv::Point2f& field_hull_real_center,
                         const std::vector<cv::Point2f>& field_hull_real,
-                        std::vector<cv::Point2f>& m_field_hull_real_rotated,
+                        std::vector<cv::Point2f>& field_hull_real_rotated,
                         const cv::Point2d& result_circle,
                         const std::vector<cv::Point2f>& goal_position,
                         // std::vector<LineContainer>& all_lines,
                         // std::vector<FeatureContainer>& all_features,
+                        cv::Mat& m_loc_img,
                         Projection& m_projection)
 {
     if (camera_projections_ == NULL || !parameters.loc.enable) {
@@ -137,7 +140,7 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
     std::vector<cv::Point2f> goal_position_real_rotated;
 
     m_projection.CalcHeadingOffset(clustered_lines, circle_detected, result_circle, goal_position);
-    m_field_hull_real_rotated = m_projection.RotateTowardHeading(field_hull_real);
+    field_hull_real_rotated = m_projection.RotateTowardHeading(field_hull_real);
     clustered_lines_rotated = m_projection.RotateTowardHeading(clustered_lines);
     goal_position_real_rotated = m_projection.RotateTowardHeading(goal_position);
     result_circle_rotated = m_projection.RotateTowardHeading(result_circle);
@@ -203,7 +206,7 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
                     // 机器人在场地白线之外时
                     // 若线片段距离检测到的场地凸包中心距离大于70/2 cm
                     // 并且检测到的场地凸包面积大于4 m^2
-                } else if (line_seg.DistanceFromLine(field_hull_real_center) > (parameters.loc.VerLineMinDistanceToUpdate / 2.) && cv::contourArea(m_field_hull_real_rotated) > 40000) {
+                } else if (line_seg.DistanceFromLine(field_hull_real_center) > (parameters.loc.VerLineMinDistanceToUpdate / 2.) && cv::contourArea(field_hull_real_rotated) > 40000) {
                     LandmarkType ltype = CenterL;
                     LineSegment l2_est = line_seg;
                     if (line_seg.P1.x > line_seg.P2.x) {
@@ -248,9 +251,11 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
 
                 // 检测到大于2个球门柱点，且线片段与其距离均小于50cm
                 // Flip goal y coord
-                bool double_goal_pos_OK = goal_position_real_rotated.size() >= 2 && line_seg.DistanceFromLine(cv::Point2f(goal_position_real_rotated[0].x, -goal_position_real_rotated[0].y)) < 20 &&
-                                          line_seg.DistanceFromLine(cv::Point2f(goal_position_real_rotated[1].x, -goal_position_real_rotated[1].y)) < 20;
-                bool single_goal_pos_OK = goal_position_real_rotated.size() == 1 && line_seg.DistanceFromLine(cv::Point2f(goal_position_real_rotated[0].x, -goal_position_real_rotated[0].y)) < 10;
+                bool double_goal_pos_OK = goal_position_real_rotated.size() >= 2 &&
+                                          line_seg.DistanceFromLine(cv::Point2f(goal_position_real_rotated[0].x, -goal_position_real_rotated[0].y)) < parameters.loc.maxDistanceBothGoal &&
+                                          line_seg.DistanceFromLine(cv::Point2f(goal_position_real_rotated[1].x, -goal_position_real_rotated[1].y)) < parameters.loc.maxDistanceBothGoal;
+                bool single_goal_pos_OK = goal_position_real_rotated.size() == 1 &&
+                                          line_seg.DistanceFromLine(cv::Point2f(goal_position_real_rotated[0].x, -goal_position_real_rotated[0].y)) < parameters.loc.maxDistanceSingleGoal;
 
                 if (double_goal_pos_OK || single_goal_pos_OK) {
                     // cout << "Distance from line to goal: [0]="
@@ -343,7 +348,7 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
 
     if (at_least_one_observation_) {
         UpdateVertexIdx();
-        if ((node_counter_ % 30 == 0) && previous_vertex_id_ > 0) {
+        if ((node_counter_ % parameters.loc.optimizeCounter == 0) && previous_vertex_id_ > 0) {
             optimizer.initializeOptimization();
             optimizer.optimize(10);
             Eigen::Vector3d tmpV;
@@ -351,9 +356,50 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
             location_.x = tmpV(0);
             location_.y = tmpV(1);
 
-            // std::cout << "Localization: (" << location_.x << ", " << location_.y << ")" << std::endl;
-            // std::cout << "-----------------------------------------------------" << std::endl;
+            ROS_WARN("Localization: (%f, %f)", location().x, location().y);
         }
+    }
+    if (parameters.monitor.update_loc_img) {
+        double offssx = 250;
+        double offssy = 250;
+        double ratioo = 0.2;
+        // White lines
+        for (int j = 0; j < all_lines.size(); ++j) {
+            cv::Scalar lc;
+            LineType lt = all_lines[j].type_;
+            if (lt == HorUndef) {
+                lc = blueMeloColor();
+            } else if (lt == HorCenter) {
+                lc = darkOrangeColor();
+            } else if (lt == HorGoalNear || lt == HorGoal) {
+                lc = pinkMeloColor();
+            } else if (lt == VerUndef) {
+                lc = greenColor();
+            } else if (lt == VerLeft || lt == VerLeftT || lt == VerLeftNear) {
+                lc = redColor();
+            } else if (lt == VerRight || lt == VerRightT || lt == VerRightNear) {
+                lc = yellowColor();
+            } else {
+                lc = whiteColor();
+            }
+            cv::line(m_loc_img,
+                     cv::Point(all_lines[j].line_transformed_.P1.x * ratioo + offssx, -all_lines[j].line_transformed_.P1.y * ratioo + offssy),
+                     cv::Point(all_lines[j].line_transformed_.P2.x * ratioo + offssx, -all_lines[j].line_transformed_.P2.y * ratioo + offssy),
+                     lc,
+                     2,
+                     8);
+        }
+        // Center circle
+        if (circle_detected) {
+            cv::circle(m_loc_img, cv::Point(result_circle_rotated.x * ratioo + offssx, result_circle_rotated.y * ratioo + offssy), 75 * ratioo, blueColor(), 2, 8);
+        }
+        // Goal
+        for (size_t i = 0; i < goal_position_real_rotated.size(); i++) {
+            cv::circle(m_loc_img, cv::Point(goal_position_real_rotated[i].x * ratioo + offssx, goal_position_real_rotated[i].y * ratioo + offssy), 2, redColor(), 2, 8);
+        }
+        // Axis
+        cv::line(m_loc_img, cv::Point(offssx, offssy), cv::Point(50 + offssx, offssy), yellowColor(), 2, 8);
+        cv::line(m_loc_img, cv::Point(offssx, offssy), cv::Point(offssx, 50 + offssy), redColor(), 2, 8);
     }
     return true;
 }
@@ -440,7 +486,7 @@ Localization::UpdateVertexIdx()
         optimizer.addVertex(r);
     }
 
-    {
+    if (parameters.loc.useDeadReck) {
         g2o::EdgeSE2* e = new g2o::EdgeSE2;
         e->vertices()[0] = optimizer.vertex(previous_vertex_id_);
         e->vertices()[1] = optimizer.vertex(current_vertex_id_);
@@ -453,9 +499,7 @@ Localization::UpdateVertexIdx()
         information(2, 2) = 1;
         e->setInformation(information);
         optimizer.addEdge(e);
-
-        // cout << "add Edges: " << current_vertex_id_ << "-> dead_reck ("
-        //      << dead_reck.x << ", " << dead_reck.y << ")" << endl;
+        ROS_INFO("add Edges: %d -> dead_reck (%f, %f)", current_vertex_id_, dead_reck.x, dead_reck.y);
     }
 }
 
@@ -498,8 +542,7 @@ Localization::AddObservation(cv::Point2d observation, const double& x_fasher, co
         optimizer.addEdge(e);
     }
     at_least_one_observation_ = true;
-    // cout << "add Edges: " << current_vertex_id_ << "->" << type << " ("
-    //      << observation.x << ", " << observation.y << ")" << endl;
+    ROS_INFO("add Edges: %d -> %d (%f, %f)", current_vertex_id_, type, observation.x, observation.y);
     return true;
 }
 

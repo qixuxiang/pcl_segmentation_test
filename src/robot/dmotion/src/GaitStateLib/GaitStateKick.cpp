@@ -66,13 +66,13 @@ GaitStateKick::entry()
             // target_robotCtrl.rh[0] = dataR_[14][i];//6;
             // target_robotCtrl.rh[1] = dataR_[15][i];//-4;
         } else {
-            step = dataL_[0][i]; // 1
-            target_robotCtrl.cm[0] = dataL_[1][i]; // 2;
-            target_robotCtrl.cm[2] = dataL_[2][i]; // 3;
-            target_robotCtrl.cm[3] = dataL_[3][i]; // 4;
-            target_robotCtrl.cm[4] = dataL_[4][i]; // 5;
+            step = dataL_[0][i];                                    // 1
+            target_robotCtrl.cm[0] = dataL_[1][i];                  // 2;
+            target_robotCtrl.cm[2] = dataL_[2][i];                  // 3;
+            target_robotCtrl.cm[3] = dataL_[3][i];                  // 4;
+            target_robotCtrl.cm[4] = dataL_[4][i];                  // 5;
             target_robotCtrl.cm_dxy[1] = dataL_[5][i] + cm_advance; // 6
-            target_robotCtrl.la[0] = dataL_[6][i]; // 7
+            target_robotCtrl.la[0] = dataL_[6][i];                  // 7
             target_robotCtrl.la[1] = dataL_[7][i] - 0;
             target_robotCtrl.la[2] = dataL_[8][i];
             target_robotCtrl.la[3] = dataL_[9][i];
@@ -84,9 +84,9 @@ GaitStateKick::entry()
             // target_robotCtrl.rh[1] = dataL_[15][i];//-4;
         }
 
-        double* dataBig; // = new double[step];
-        double* dataSmall; //= new double[step / 2];
-        double* dataBigb; //= new double[step];
+        double* dataBig;    // = new double[step];
+        double* dataSmall;  //= new double[step / 2];
+        double* dataBigb;   //= new double[step];
         double* dataSmallb; // = new double[step / 2];
 
         if (step >= 999) {
@@ -159,12 +159,23 @@ GaitStateKick::entry()
 #endif
             robot->doTxTask(dataArray);
         } // for step
-        delete[] dataBig;
-        delete[] dataBigb;
-        delete[] dataSmallb;
-        delete[] dataSmall;
+        // FIXME(mwx) FUCK delete
+        // if (dataBig) {
+        //     delete[] dataBig;
+        // }
+        // if (dataBigb) {
+        //     delete[] dataBigb;
+        // }
+        // if (dataSmallb) {
+        //     delete[] dataSmallb;
+        // }
+        // if (dataSmall) {
+        //     delete[] dataSmall;
+        // }
     }
-    delete[] dataArray;
+    // if (dataArray) {
+    //     delete[] dataArray;
+    // }
 } // entry()
 
 void

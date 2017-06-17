@@ -22,7 +22,7 @@ find_package(G2O REQUIRED)
 add_message_files(
   FILES
   SaveImg.msg
-  VisionShareData.msg
+  VisionInfo.msg
 )
 
 generate_messages(
@@ -85,7 +85,7 @@ add_library(dvisionlib
   src/tools/utils.cpp
   src/tools/kalman.cpp
   )
-target_link_libraries(dvisionlib ${catkin_LIBRARIES} ${OpenCV_LIBS} ${G2O_LIBS}) # ${Boost_LIBRARIES})
+target_link_libraries(dvisionlib ${catkin_LIBRARIES} ${OpenCV_LIBS} ${CSPARSE_LIBRARY} ${G2O_LIBS}) # ${Boost_LIBRARIES})
 add_dependencies(dvisionlib ${PROJECT_NAME}_generate_messages_cpp)
 
 add_executable(dvision_node src/main.cpp)
@@ -118,3 +118,6 @@ catkin_add_gtest(test_localization test/test_localization.cpp)
 target_link_libraries(test_localization dvisionlib)
 target_link_libraries(test_localization ${catkin_LIBRARIES})
 
+catkin_add_gtest(test_ball_detector test/test_ball_detector.cpp)
+target_link_libraries(test_ball_detector dvisionlib)
+target_link_libraries(test_ball_detector ${catkin_LIBRARIES})

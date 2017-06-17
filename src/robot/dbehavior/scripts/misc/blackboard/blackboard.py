@@ -8,8 +8,8 @@
 # @Last modified time: 2017-06-11T15:08:19+08:00
 # @Copyright: ZJUDancer
 
-from dmotion.msg import MotionShareData
-from dvision.msg import VisionShareData
+from dmotion.msg import MotionInfo
+from dvision.msg import VisionInfo
 from .status_bb import StatusBlackBoard
 from .motion_bb import MotionBlackBoard
 from .vision_bb import VisionBlackBoard
@@ -30,7 +30,7 @@ class BlackBoard(StatusBlackBoard):
         self.params = ParamsBlackBoard()
         self.receiver = ReceiverBlackBoard()
         # subscribe
-        self.subscribe("/humanoid/VisionShareData", VisionShareData,
+        self.subscribe("/humanoid/VisionInfo", VisionInfo,
                        self, "vision")
-        self.subscribe("/humanoid/MotionShareData", MotionShareData,
+        self.subscribe("/humanoid/MotionInfo", MotionInfo,
                        self, "motion")

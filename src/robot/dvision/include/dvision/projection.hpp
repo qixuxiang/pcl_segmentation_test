@@ -33,6 +33,18 @@ class Projection
         return m_dist.undistort(points, res);
     }
 
+    inline bool distort(const std::vector<cv::Point>& points, std::vector<cv::Point>& res)
+    {
+        m_dist.distort(points, res);
+        return true;
+    }
+
+    inline bool distortP(const std::vector<cv::Point>& points, std::vector<cv::Point>& res)
+    {
+        m_dist.distortP(points, res);
+        return true;
+    }
+
     bool getOnImageCoordinate(const std::vector<cv::Point2f>& points, std::vector<cv::Point>& res_points);
     bool getOnRealCoordinate(const std::vector<cv::Point>& points, std::vector<cv::Point2f>& res_points);
 
@@ -62,7 +74,8 @@ class Projection
         // return CorrectAngleRadian360(headingData.heading + m_heading_offset);
     }
 
-    inline DistortionModel* dist() {
+    inline DistortionModel* dist()
+    {
         return &m_dist;
     }
 

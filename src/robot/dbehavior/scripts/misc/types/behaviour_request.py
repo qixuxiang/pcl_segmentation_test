@@ -26,7 +26,7 @@ class BehaviourRequest(object):
         # self.update_gait_vec = False
         self.actions = ActionCmd()
         crouch(self.actions)
-        head(self.actions, 0, 70)
+        head(self.actions, 0, 0)
         # behaviour request
         self.behaviour = BehaviourShareData()
         self.behaviour.enable_localization = False

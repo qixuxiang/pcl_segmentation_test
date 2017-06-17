@@ -3,10 +3,11 @@
 
 #pragma once
 #include "dmotion/ActionCmd.h"
+#include "dmotion/MotionInfo.h"
 #include "dprocess/dconcurrent.hpp"
 #include "dprocess/dprocess.hpp"
 #include "dvision/SaveImg.h"
-#include "dvision/VisionShareData.h"
+#include "dvision/VisionInfo.h"
 #include "dvision/ball_detector.hpp"
 #include "dvision/camera.hpp"
 #include "dvision/circle_detector.hpp"
@@ -42,25 +43,17 @@ class DVision : public dprocess::DProcess<DVision>
     GoalDetector m_goal;
     FieldDetector m_field;
     Localization m_loc;
-    VisionShareData m_data;
 
-    // field hull
-    std::vector<cv::Point2f> m_field_hull_real;
-    std::vector<cv::Point2f> m_field_hull_real_rotated;
-    cv::Point2f m_field_hull_real_center;
-
-    // img
-    cv::Mat m_hsv_img, m_gray_img, m_canny_img, m_gui_img;
-    // cv::Mat m_gui_top_view_rotate, m_gui_img, m_gui_undist;
-    cv::Mat m_ball_binary, m_field_binary, m_goal_binary;
-    cv::Mat m_field_convex_hull;
+    // image
+    cv::Mat m_hsv_img, m_canny_img, m_gui_img, m_loc_img;
     // added by yyj
     int m_yaw;
     int m_pitch;
-    dmotion::ActionCmd m_action_cmd;
+    dmotion::MotionInfo m_motion_info;
     SaveImg m_save_img;
-    void motionCallback(const dmotion::ActionCmd::ConstPtr& msg);
+    void motionCallback(const dmotion::MotionInfo::ConstPtr& msg);
     void saveImgCallback(const SaveImg::ConstPtr& save_img_msg);
-    void prepareVisionShareData();
+    void prepareVisionInfo(VisionInfo& m_data);
+    void showDebugImg();
 };
 } // namespace dvision

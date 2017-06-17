@@ -2,6 +2,7 @@
 
 #include "dmotion/ActionCmd.h"
 #include "dmotion/GaitStateSupportLib/HumanRobotInterface.hpp"
+#include "dmotion/MotionInfo.h"
 #include "transitHub.hpp"
 #include <ros/ros.h>
 
@@ -28,6 +29,7 @@ class GaitStateManager
     GaitStateBase* gaitState;
     GaitStateBase* goal_gaitState;
     GaitStateBase* prior_gaitState;
+    dmotion::MotionInfo m_motion_info;
 
   private:
     ros::NodeHandle* m_nh;
@@ -48,10 +50,10 @@ class GaitStateManager
     GaitStateSetupBackDown* setupbackdown;
 
     dmotion::ActionCmd m_cmd;
-    dmotion::ActionCmd m_destCmd;
     double desYaw;
     double desPitch;
     ros::Time last_unstable_timestamp;
+    ros::Time m_start_time;
 
     /* for head plat compensation */
     VecPos estimated_plat;

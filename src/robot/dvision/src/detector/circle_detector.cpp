@@ -24,21 +24,23 @@ CircleDetector::~CircleDetector()
 bool
 CircleDetector::Init()
 {
-    ROS_INFO("CircleDetector Init() finished");
+    ROS_DEBUG("CircleDetector Init");
     return true;
 }
 
 bool
-CircleDetector::Process(cv::Point2d& result_circle, std::vector<LineSegment>& clustered_lines)
+CircleDetector::Process(std::vector<LineSegment>& clustered_lines)
 {
+    // ROS_DEBUG("CircleDetector Tick");
+
     if (parameters.circle.enable)
-        return GetCircle(parameters.field_model.center_circle_diameter / 2, clustered_lines, result_circle);
+        return GetCircle(parameters.field_model.center_circle_diameter / 2, clustered_lines);
     else
         return false;
 }
 
 bool
-CircleDetector::GetCircle(const double& H2, std::vector<LineSegment>& clustered_lines, cv::Point2d& result_circle)
+CircleDetector::GetCircle(const double& H2, std::vector<LineSegment>& clustered_lines)
 {
     // H2 1.5 / 2 = 0.75 貌似是圆的半径
     std::vector<cv::Point2d> circle_point;
@@ -91,6 +93,7 @@ CircleDetector::GetCircle(const double& H2, std::vector<LineSegment>& clustered_
     // 对所有点的坐标取均值，得到结果点，如果其中有点偏离比较大的，就设置confused为true
     if (circle_point.size() >= (size_t)parameters.circle.minLineSegmentCount) {
         cv::Point2d sum;
+        // Get average center circle point
         for (size_t cCounter = 0; cCounter < circle_point.size(); cCounter++) {
             sum += circle_point[cCounter];
             // for (size_t cCounter2 = cCounter + 1; cCounter2 < circle_point.size(); cCounter2++) {
@@ -99,9 +102,26 @@ CircleDetector::GetCircle(const double& H2, std::vector<LineSegment>& clustered_
             //     }
             // }
         }
-        result_circle.x = sum.x / circle_point.size();
-        result_circle.y = sum.y / circle_point.size();
-        // ROD_DEBUG("circleCentre: (%f, %f)", result_circle.x, result_circle.y);
+        result_circle_.x = sum.x / circle_point.size();
+        result_circle_.y = sum.y / circle_point.size();
+        // ROD_DEBUG("circleCentre: (%f, %f)", result_circle_.x, result_circle_.y);
+
+        // remove point far from average
+        sum.x = 0.0;
+        sum.y = 0.0;
+        int valid_cCounter = 0;
+        for (size_t cCounter = 0; cCounter < circle_point.size(); cCounter++) {
+            if (GetDistance(circle_point[cCounter], result_circle_) < parameters.circle.confiusedDist) {
+                sum += circle_point[cCounter];
+                valid_cCounter++;
+            } else {
+                ROS_WARN("fucking center point (%f, %f)", circle_point[cCounter].x, circle_point[cCounter].y);
+            }
+        }
+        if (valid_cCounter > 0) {
+            result_circle_.x = sum.x / valid_cCounter;
+            result_circle_.y = sum.y / valid_cCounter;
+        }
 
         return true;
     }

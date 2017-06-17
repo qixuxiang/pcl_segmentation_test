@@ -1,20 +1,20 @@
 dvision:
   ball_detector:
     enable:                     true
-    label_file:                 '/home/yuthon/.darknet/data/rob.names'
-    net_cfg:                    '/home/yuthon/.darknet/cfg/tiny-yolo-v1-rob.cfg'
-    weight_file:                '/home/yuthon/.darknet/model/tiny-yolo.weights'
-    low_thresh:                 0.1
-    high_thresh:                1.0
+    label_file:                 '/home/ubuntu/.darknet/data/rob.names'
+    net_cfg:                    '/home/ubuntu/.darknet/cfg/tiny-yolo-v1-rob.cfg'
+    weight_file:                '/home/ubuntu/.darknet/model/tiny-yolo.weights'
+    low_thresh:                 0.1 # low thresh value for probability
+    high_thresh:                1.0 # high thresh value for probability
   circle_detector:
     enable:                     true
-    minLineLen:                 20
-    maxLineLen:                 150
-    maxDistBetween2LS:          30
-    radiusMaxCoef:              1.5
-    radiusMinCoef:              0.7
-    confiusedDist:              1
-    minLineSegmentCount:        3
+    minLineLen:                 20 # min line length for circle line
+    maxLineLen:                 150 # max line length for circle line
+    maxDistBetween2LS:          30 # max distance between two circle lines
+    radiusMaxCoef:              1.5 # max coef for valid radius
+    radiusMinCoef:              0.7 # min coef for valid radius
+    confiusedDist:              30 # distance for confused center point
+    minLineSegmentCount:        3 # how many circle points at least
   field_detector:
     enable:                     true
     showMask:                   false
@@ -31,9 +31,9 @@ dvision:
     dilate:                     1
     erode2:                     3
     dilate2:                    0
-    maxContourCount:            5
+    maxContourCount:            3
     minArea:                    0
-    maxDownDiffPixel:           700
+    maxDownDiffPixel:           400
     approxPoly:                 0.02
     maxAcceptDistance:          10.81
     minAcceptX:                 -1
@@ -53,17 +53,20 @@ dvision:
     active:                     true
     MinLineLength:              30
     MaxOutField:                0
+    MinNearFieldUpPoint:        -20 # min distance between up point of goal post and field
     DistanceToMerge:            15
     NearestDistance:            0
     FurthestDistance:           1081
     NearMinLen:                 0
-    NearMaxLen:                 1920 #IMGWIDTH
+    NearMaxLen:                 640 #IMGWIDTH
     FarMinLen:                  0
-    FarMaxLen:                  1920 #IMGWIDTH
+    FarMaxLen:                  640 #IMGWIDTH
     jumpMax:                    2
     doubleVote:                 40
     minDoubleLength:            3
     minContinuesColor:          7
+    extInvalidPoints:           2 # invalid point number to stop dip
+    extTotalPoints:             10 # total points number to stop dip
   line_detector:
     enable:                     true
     showMask:                   false
@@ -78,13 +81,13 @@ dvision:
     v0:                         54
     v1:                         255
     active:                     false
-    MinLineLength:              80
-    AngleToMerge:               10
+    MinLineLength:              80 # min length for hough line
+    rhoHough:                   1 # distance resolution of the accumulator in pixels
+    thetaHough:                 45 # angle resolution of the accumulator in radians
+    thresholdHough:             20 # accumulator threshold parameter
+    maxLineGapHough:            20 # max allowed gap between points on the same line to link them.
+    AngleToMerge:               15
     DistanceToMerge:            30
-    maxLineGapHough:            20
-    rhoHough:                   1
-    thetaHough:                 45
-    threasholdHough:            20
     jumpMax:                    20
     jumpMin:                    3
     widthCheck:                 0.07
@@ -112,6 +115,12 @@ dvision:
     UPDATEWEAK:                 0.05
     TOTALGAIN:                  100
     VerLineMinDistanceToUpdate: 70
+    optimizeCounter:            30 # counter to optimize location
+    # use kalman filter for localization
     useKalman:                  false
+    # use dead reck with delta motion data as edges
+    useDeadReck:                false
     forwardRobotTrackerXY:      false
     forwardRobotTrackerZ:       false
+    maxDistanceBothGoal:        20 # max distance between goal line and both goal posts
+    maxDistanceSingleGoal:      10 # max distance between goal line and single goal posts

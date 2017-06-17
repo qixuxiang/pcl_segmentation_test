@@ -51,7 +51,7 @@ BallDetector::Init()
     // set batch to 1 for network inference
     net_->set_network_batch(1);
 
-    ROS_INFO("BallDetector Init() finished");
+    ROS_DEBUG("BallDetector Init");
     return true;
 }
 
@@ -61,8 +61,10 @@ BallDetector::~BallDetector()
 }
 
 bool
-BallDetector::GetBall(cv::Mat& frame, VisionShareData& m_data, Projection& m_projection)
+BallDetector::GetBall(cv::Mat& frame, VisionInfo& m_data, Projection& m_projection)
 {
+    // ROS_DEBUG("BallDetector Tick");
+
     darknet::Image raw_img(frame);
     darknet::params p = net_->get_params();
     ROS_DEBUG("darknet resize image to %d x %d x %d", p.h, p.w, p.c);

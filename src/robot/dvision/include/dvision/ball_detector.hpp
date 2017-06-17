@@ -11,7 +11,7 @@
 
 #pragma once
 #include "darknetcxx/detector.hpp"
-#include "dvision/VisionShareData.h"
+#include "dvision/VisionInfo.h"
 #include "dvision/idetector.hpp"
 #include "dvision/projection.hpp"
 #include <ros/ros.h>
@@ -27,7 +27,7 @@ class BallDetector : public IDetector
     ~BallDetector();
     bool Init();
 
-    bool GetBall(cv::Mat& frame, VisionShareData& m_data, Projection& m_projection);
+    bool GetBall(cv::Mat& frame, VisionInfo& m_data, Projection& m_projection);
     bool CvtRelativePosition(std::vector<darknet::RelateiveBBox>& ball_position, std::vector<darknet::bbox>& ball_position_cvt);
 
   private:
