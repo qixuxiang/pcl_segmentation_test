@@ -17,34 +17,47 @@ from std_msgs.msg import String
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
-PATH = '../dmotion/'
-CONFIG = [
+PATH = '../'
+MOTION_CONFIG = [
     'motion.yml',
     'motor.yml',
     'kick.yml',
     'setup.yml',
     'pvhipY.yml'
 ]
-TOPIC = '/humanoid/ReloadMotionConfig'
+MOTION_TOPIC = '/humanoid/ReloadMotionConfig'
+VISION_CONFIG = [
+    'localization.yml'
+]
+VISION_TOPIC = '/humanoid/ReloadVisionConfig'
 
 
 class Handler(FileSystemEventHandler):
+    """File Handler."""
+
     def __init__(self):
+        """Init."""
         super(Handler, self).__init__()
-        self.pub = rospy.Publisher(TOPIC, String, queue_size=1)
+        self.pub_motion = rospy.Publisher(MOTION_TOPIC, String, queue_size=1)
+        self.pub_vision = rospy.Publisher(VISION_TOPIC, String, queue_size=1)
         rospy.init_node('config_watchdog')
         rospy.loginfo("CWD: %s" % os.getcwd())
 
     def on_modified(self, event):
+        """Callback on modified."""
         if not event.is_directory:
             _, filename = os.path.split(event.src_path)
             if filename.split('.')[-1] in ['yml', 'yaml']:
-                self.pub.publish('')
-                for cfg in CONFIG:
-                    subprocess.call(['rosparam', 'load', '%s/%s' % (PATH, cfg)])
-                    print 'rosparam load %s/%s' % (PATH, cfg)
-
-                # subprocess.call(['rosparam', 'get', '/dmotion/robot/diffv'])  # debug
+                for cfg in MOTION_CONFIG:
+                    self.pub_motion.publish('')
+                    subprocess.call(
+                        ['rosparam', 'load', '%s/dmotion/%s' % (PATH, cfg)])
+                for cfg in VISION_CONFIG:
+                    self.pub_vision.publish('')
+                    subprocess.call(
+                        ['rosparam', 'load', '%s/dvision/%s' % (PATH, cfg)])
+                    # print 'rosparam load %s/%s' % (PATH, cfg)
+                # debug
                 rospy.loginfo('config changed, published reload msg')
             else:
                 rospy.logwarn('%s not yaml file' % event.src_path)

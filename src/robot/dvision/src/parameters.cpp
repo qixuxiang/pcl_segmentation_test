@@ -7,7 +7,7 @@ namespace dvision {
 
 #define GPARAM(x, y)                                                                                                                                                                                   \
     do {                                                                                                                                                                                               \
-        if (!nh->getParam(x, y)) {                                                                                                                                                                     \
+        if (!m_nh->getParam(x, y)) {                                                                                                                                                                   \
             ROS_FATAL("Projection get pararm error!");                                                                                                                                                 \
             throw std::runtime_error("Projection get param error!");                                                                                                                                   \
         }                                                                                                                                                                                              \
@@ -15,6 +15,13 @@ namespace dvision {
 
 void
 Parameters::init(ros::NodeHandle* nh)
+{
+    m_nh = nh;
+    update();
+}
+
+void
+Parameters::update()
 {
     vector<double> dist_coeff;
 
@@ -111,6 +118,7 @@ Parameters::init(ros::NodeHandle* nh)
 
     // Get line detector parameters
     GPARAM("/dvision/line_detector/enable", parameters.line.enable);
+    GPARAM("/dvision/line_detector/showUnmerged", parameters.line.showUnmerged);
     GPARAM("/dvision/line_detector/showMask", parameters.line.showMask);
     GPARAM("/dvision/line_detector/showResult", parameters.line.showResult);
     GPARAM("/dvision/line_detector/showAllLine", parameters.line.showAllLine);

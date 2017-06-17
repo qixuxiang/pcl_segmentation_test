@@ -278,7 +278,7 @@ GoalDetector::GetPosts(cv::Mat& canny_img,
     }
     if (SHOWGUI && parameters.goal.showResult) {
         for (size_t i = 0; i < res_lines.size(); i++) {
-            cv::line(gui_img, res_lines[i].P1, res_lines[i].P2, blueColor(), 2);
+            cv::line(gui_img, res_lines[i].P1, res_lines[i].P2, redColor(), 2);
         }
     }
     return res_lines.size() > 0;

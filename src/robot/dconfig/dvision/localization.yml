@@ -18,7 +18,7 @@ dvision:
   field_detector:
     enable:                     true
     showMask:                   false
-    showResult:                 true
+    showResult:                 false
     showDebug:                  false
     h0:                         33
     h1:                         89
@@ -54,7 +54,7 @@ dvision:
     MinLineLength:              30
     MaxOutField:                0
     MinNearFieldUpPoint:        -20 # min distance between up point of goal post and field
-    DistanceToMerge:            15
+    DistanceToMerge:            30
     NearestDistance:            0
     FurthestDistance:           1081
     NearMinLen:                 0
@@ -65,12 +65,13 @@ dvision:
     doubleVote:                 40
     minDoubleLength:            3
     minContinuesColor:          7
-    extInvalidPoints:           2 # invalid point number to stop dip
+    extInvalidPoints:           1 # invalid point number to stop dip
     extTotalPoints:             10 # total points number to stop dip
   line_detector:
     enable:                     true
+    showUnmerged:               false
     showMask:                   false
-    showResult:                 true
+    showResult:                 false
     showAllLine:                false
     showVote:                   false
     showCanny:                  false
@@ -84,9 +85,9 @@ dvision:
     MinLineLength:              80 # min length for hough line
     rhoHough:                   1 # distance resolution of the accumulator in pixels
     thetaHough:                 45 # angle resolution of the accumulator in radians
-    thresholdHough:             20 # accumulator threshold parameter
+    thresholdHough:             15 # accumulator threshold parameter
     maxLineGapHough:            20 # max allowed gap between points on the same line to link them.
-    AngleToMerge:               15
+    AngleToMerge:               25
     DistanceToMerge:            30
     jumpMax:                    20
     jumpMin:                    3

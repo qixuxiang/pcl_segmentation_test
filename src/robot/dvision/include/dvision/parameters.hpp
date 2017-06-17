@@ -118,6 +118,7 @@ struct GoalDetectorParameters
 struct LineDetectorParameters
 {
     bool enable;
+    bool showUnmerged;
     bool showMask;
     bool showResult;
     bool showAllLine;
@@ -210,6 +211,10 @@ struct Parameters
     MonitorParameters monitor;
 
     void init(ros::NodeHandle* nh);
+    void update();
+
+  private:
+    ros::NodeHandle* m_nh;
 };
 
 struct HSVRange

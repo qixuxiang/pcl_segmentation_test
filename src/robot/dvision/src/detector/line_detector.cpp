@@ -69,7 +69,7 @@ LineDetector::Process(cv::Mat& canny_img, cv::Mat& hsv_img, cv::Mat& gui_img, cv
                  // cv::Rect(0, 0, parameters.camera.width, parameters.camera.height),
                  result_lines)) {
         // draw unmerged lines
-        if (parameters.monitor.update_gui_img) {
+        if (parameters.monitor.update_gui_img && parameters.line.showUnmerged) {
             for (auto line : result_lines) {
                 cv::line(gui_img, line.P1, line.P2, blueMeloColor(), 3, 8);
             }
