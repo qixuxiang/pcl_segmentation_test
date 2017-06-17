@@ -2,4 +2,9 @@
     <rosparam command="load" file="$(find dconfig)/dvision/misc.yml"/>
     <rosparam command="load" file="$(find dconfig)/dvision/camera.yml"/>
     <rosparam command="load" file="$(find dconfig)/dvision/localization.yml"/>
+    <rosparam command="load" file="$(find dconfig)/dmotion/motion.yml"/>
+    <rosparam command="load" file="$(find dconfig)/dmotion/motor.yml"/>
+    <rosparam command="load" file="$(find dconfig)/dmotion/pvhipY.yml"/>
+    <rosparam command="load" file="$(find dconfig)/dmotion/kick.yml"/>
+    <rosparam command="load" file="$(find dconfig)/dmotion/setup.yml"/>
 </launch>

@@ -88,7 +88,7 @@ DVision::tick()
     /****************
      * Localization *
      ****************/
-    if (m_data.see_field && m_data.see_line && m_data.see_circle || m_data.see_goal) {
+    if (m_data.see_field && m_data.see_line) {
         m_data.loc_ok = m_loc.Calculate(m_line.clustered_lines(),
                                         m_data.see_circle,
                                         m_field.field_hull_real_center(),
