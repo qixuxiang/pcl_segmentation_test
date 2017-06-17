@@ -28,11 +28,12 @@ DMotion::callback(const ActionCmd::ConstPtr& msg)
 }
 
 void
-DMotion::prepareShutdown() {
+DMotion::prepareShutdown()
+{
     m_sub.shutdown();
     m_cmd.gait_type = ActionCmd::STANDUP;
     m_cmd.cmd_head.y = m_cmd.cmd_head.z = 0;
-    for(int i = 0; i < 2; ++i) {
+    for (int i = 0; i < 2; ++i) {
         printf("DMotion shutting down >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
         tick();
     }

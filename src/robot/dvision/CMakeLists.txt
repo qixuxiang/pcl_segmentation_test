@@ -22,7 +22,7 @@ find_package(G2O REQUIRED)
 add_message_files(
   FILES
   SaveImg.msg
-  VisionShareData.msg
+  VisionInfo.msg
 )
 
 generate_messages(

@@ -20,9 +20,9 @@ DVision::DVision(ros::NodeHandle* n)
     m_concurrent.push([] {
         //     ROS_INFO("concurrent");
     });
-    m_sub_action_cmd = m_nh->subscribe("/humanoid/MotionFeedback", 1, &DVision::motionCallback, this);
+    m_sub_action_cmd = m_nh->subscribe("/humanoid/MotionInfo", 1, &DVision::motionCallback, this);
     m_sub_save_img = m_nh->subscribe("/humanoid/SaveImg", 1, &DVision::saveImgCallback, this);
-    m_pub = m_nh->advertise<VisionShareData>("/humanoid/VisionShareData", 1);
+    m_pub = m_nh->advertise<VisionInfo>("/humanoid/VisionInfo", 1);
 }
 
 DVision::~DVision()
@@ -34,7 +34,7 @@ DVision::tick()
 {
     ROS_DEBUG("dvision tick");
     auto frame = m_camera.capture();
-    VisionShareData m_data;
+    VisionInfo m_data;
 
     /**********
      * Update *
@@ -109,7 +109,7 @@ DVision::tick()
      * Publish *
      ***********/
 
-    prepareVisionShareData(m_data);
+    prepareVisionInfo(m_data);
     m_pub.publish(m_data);
 
     /****************
@@ -139,9 +139,9 @@ DVision::tick()
 void
 DVision::motionCallback(const dmotion::ActionCmd::ConstPtr& motion_msg)
 {
-    m_action_cmd = *motion_msg;
-    m_pitch = static_cast<int>(m_action_cmd.cmd_head.y);
-    m_yaw = static_cast<int>(m_action_cmd.cmd_head.z);
+    m_motion_info = *motion_msg;
+    m_pitch = static_cast<int>(m_motion_info.action.cmd_head.y);
+    m_yaw = static_cast<int>(m_motion_info.action.cmd_head.z);
 }
 
 void
@@ -157,7 +157,7 @@ DVision::saveImgCallback(const SaveImg::ConstPtr& save_img_msg)
 }
 
 void
-DVision::prepareVisionShareData(VisionShareData& m_data)
+DVision::prepareVisionInfo(VisionInfo& m_data)
 {
     // localization
     m_data.robot_pos.x = m_loc.location().x;

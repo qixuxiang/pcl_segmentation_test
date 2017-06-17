@@ -3,10 +3,11 @@
 
 #pragma once
 #include "dmotion/ActionCmd.h"
+#include "dmotion/MotionInfo.h"
 #include "dprocess/dconcurrent.hpp"
 #include "dprocess/dprocess.hpp"
 #include "dvision/SaveImg.h"
-#include "dvision/VisionShareData.h"
+#include "dvision/VisionInfo.h"
 #include "dvision/ball_detector.hpp"
 #include "dvision/camera.hpp"
 #include "dvision/circle_detector.hpp"
@@ -48,10 +49,10 @@ class DVision : public dprocess::DProcess<DVision>
     // added by yyj
     int m_yaw;
     int m_pitch;
-    dmotion::ActionCmd m_action_cmd;
+    dmotion::MotionInfo m_motion_info;
     SaveImg m_save_img;
-    void motionCallback(const dmotion::ActionCmd::ConstPtr& msg);
+    void motionCallback(const dmotion::MotionInfo::ConstPtr& msg);
     void saveImgCallback(const SaveImg::ConstPtr& save_img_msg);
-    void prepareVisionShareData(VisionShareData& m_data);
+    void prepareVisionInfo(VisionInfo& m_data);
 };
 } // namespace dvision
