@@ -16,11 +16,6 @@ void CLabel::setModel(MyModel *model)
     m_listmodel = model;
 }
 
-void CLabel::mousePressEvent(QMouseEvent *ev)
-{
-
-}
-
 void CLabel::mouseReleaseEvent(QMouseEvent *ev)
 {
     mouseX = ev->x();

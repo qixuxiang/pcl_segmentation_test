@@ -29,12 +29,14 @@ set(CMAKE_INCLUDE_CURRENT_DIR on)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-#qt5_wrap_ui(UI_SRC src/mainwindow.ui src/undist.ui)
-
 include_directories(include src ${catkin_INCLUDE_DIRS})
 
 add_executable(dmonitor
     src/main.cpp
+    src/robot.cpp
+    src/field.cpp
+    include/dmonitor/robot.hpp
+    include/dmonitor/field.hpp
     src/qml.qrc
     src/main.qml
     )
