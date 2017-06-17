@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(dvisualize)
+project(dmonitor)
 #LIST(APPEND CMAKE_MODULE_PATH ${dvision_SOURCE_DIR}/cmake_modules)
 
 add_definitions(-std=c++11 -Wall  -Wextra -Wfloat-equal -Wno-unused-result) #-Weffc++ -pedantic
@@ -7,10 +7,9 @@ add_definitions(-std=c++11 -Wall  -Wextra -Wfloat-equal -Wno-unused-result) #-We
 find_package(catkin REQUIRED
   COMPONENTS 
   roscpp
-  dvision
+  dtransmit
 )
 
-find_package(OpenCV 3 REQUIRED)
 catkin_package(
 #  INCLUDE_DIRS include
   #  LIBRARIES dmotion
@@ -21,6 +20,8 @@ catkin_package(
 find_package(Qt5 COMPONENTS
     Core
     Widgets
+    Qml
+    Quick
     REQUIRED)
 
 set(CMAKE_INCLUDE_CURRENT_DIR on)
@@ -28,21 +29,20 @@ set(CMAKE_INCLUDE_CURRENT_DIR on)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-qt5_wrap_ui(UI_SRC src/mainwindow.ui src/undist.ui)
+#qt5_wrap_ui(UI_SRC src/mainwindow.ui src/undist.ui)
 
 include_directories(include src ${catkin_INCLUDE_DIRS})
 
-add_executable(dvisualize src/main.cpp
-    src/mainwindow.cpp
-    src/mymodel.cpp
-    #src/dvis.qrc
-    src/clabel.cpp
-    src/undist.cpp
-    ${UI_SRC}
+add_executable(dmonitor
+    src/main.cpp
+    src/qml.qrc
+    src/main.qml
     )
 
 
-target_link_libraries(dvisualize 
+target_link_libraries(dmonitor
     ${catkin_LIBRARIES}
-    ${OpenCV_LIBS}
-    Qt5::Core Qt5::Widgets)
+    Qt5::Qml
+    Qt5::Quick
+    Qt5::Core
+    Qt5::Widgets)

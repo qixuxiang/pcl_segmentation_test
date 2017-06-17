@@ -7,8 +7,8 @@ find_package(catkin REQUIRED roscpp)
 find_package(Boost REQUIRED COMPONENTS system)
 
 catkin_package(
-  INCLUDE_DIRS include
-  LIBRARIES dtransmit_lib
+    INCLUDE_DIRS include ${Boost_INCLUDE_DIRS}
+  LIBRARIES dtransmit ${Boost_LIBRARIES}
 #  CATKIN_DEPENDS other_catkin_pkg
 #  DEPENDS system_lib
 )
