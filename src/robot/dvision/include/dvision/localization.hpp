@@ -96,7 +96,7 @@ class Localization
                    const bool& circle_detected,
                    const cv::Point2f& field_hull_real_center,
                    const std::vector<cv::Point2f>& field_hull_real,
-                   std::vector<cv::Point2f>& m_field_hull_real_rotated,
+                   std::vector<cv::Point2f>& field_hull_real_rotated,
                    const cv::Point2d& result_circle,
                    const std::vector<cv::Point2f>& goal_position,
                    //  std::vector<LineContainer>& all_lines,

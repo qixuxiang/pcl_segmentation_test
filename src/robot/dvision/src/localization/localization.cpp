@@ -251,13 +251,19 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
 
                 // 检测到大于2个球门柱点，且线片段与其距离均小于50cm
                 // Flip goal y coord
-                bool double_goal_pos_OK = goal_position_real_rotated.size() >= 2 &&
-                                          line_seg.DistanceFromLine(cv::Point2f(goal_position_real_rotated[0].x, -goal_position_real_rotated[0].y)) < parameters.loc.maxDistanceBothGoal &&
-                                          line_seg.DistanceFromLine(cv::Point2f(goal_position_real_rotated[1].x, -goal_position_real_rotated[1].y)) < parameters.loc.maxDistanceBothGoal;
-                bool single_goal_pos_OK = goal_position_real_rotated.size() == 1 &&
-                                          line_seg.DistanceFromLine(cv::Point2f(goal_position_real_rotated[0].x, -goal_position_real_rotated[0].y)) < parameters.loc.maxDistanceSingleGoal;
+                bool goal_pos_OK = false;
+                if (goal_position_real_rotated.size() == 2) {
+                    LineSegment goal_line(goal_position_real_rotated[0], goal_position_real_rotated[1]);
+                    goal_pos_OK = goal_position_real_rotated.size() >= 2 &&
+                                  line_seg.DistanceFromLine(cv::Point2f(goal_position_real_rotated[0].x, -goal_position_real_rotated[0].y)) < parameters.loc.maxDistanceBothGoal &&
+                                  line_seg.DistanceFromLine(cv::Point2f(goal_position_real_rotated[1].x, -goal_position_real_rotated[1].y)) < parameters.loc.maxDistanceBothGoal &&
+                                  GetDistance(goal_position_real_rotated[0], goal_position_real_rotated[1]) > 50;
 
-                if (double_goal_pos_OK || single_goal_pos_OK) {
+                } else if (goal_position_real_rotated.size() == 1) {
+                    goal_pos_OK = goal_position_real_rotated.size() == 1 &&
+                                  line_seg.DistanceFromLine(cv::Point2f(goal_position_real_rotated[0].x, -goal_position_real_rotated[0].y)) < parameters.loc.maxDistanceSingleGoal;
+                }
+                if (goal_pos_OK) {
                     // cout << "Distance from line to goal: [0]="
                     //      << line_seg.DistanceFromLine(goal_position_real_rotated[0])
                     //      << ", [1]=" << line_seg.DistanceFromLine(goal_position_real_rotated[1]) <<
@@ -344,6 +350,33 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
         double estimated_y = -circle_rotated_and_fliiped.y;
 
         AddObservation(cv::Point2d(estimated_x, estimated_y), MAX_FASHER * UPDATEWEAK, MAX_FASHER * UPDATEWEAK, CenterL);
+    }
+
+    // add mid point of two detected goal point
+    // use both estimated_x and estimated_y
+    if (goal_position_real_rotated.size() == 2) {
+        LineSegment goal_line(goal_position_real_rotated[0], goal_position_real_rotated[1]);
+        if (GetDistance(goal_position_real_rotated[0], goal_position_real_rotated[1]) > 50 && goal_line.GetAbsMinAngleDegree(HorLine) < 15) {
+            double estimated_x = -(goal_position_real_rotated[0].x + goal_position_real_rotated[1].x) / 2.0;
+            double estimated_y = -(goal_position_real_rotated[0].y + goal_position_real_rotated[1].y) / 2.0;
+            ROS_ERROR("add goal points (%f, %f) + (%f, %f) -> (%f, %f)",
+                      goal_position_real_rotated[0].x,
+                      goal_position_real_rotated[0].y,
+                      goal_position_real_rotated[1].x,
+                      goal_position_real_rotated[1].y,
+                      estimated_x,
+                      estimated_y);
+            LandmarkType line_type;
+            if (-estimated_x > 0) {
+                line_type = FrontL;
+                estimated_x += A2_;
+            } else {
+                line_type = BackL;
+                estimated_x -= A2_;
+            }
+            double low_PC = GetUpdateCoef(UPDATESTRONG, goal_line);
+            AddObservation(cv::Point2d(estimated_x, estimated_y), MAX_FASHER * low_PC, MAX_FASHER * low_PC, line_type);
+        }
     }
 
     if (at_least_one_observation_) {
