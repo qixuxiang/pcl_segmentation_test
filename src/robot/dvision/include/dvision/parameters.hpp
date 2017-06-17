@@ -99,6 +99,7 @@ struct GoalDetectorParameters
     bool active;
     int MinLineLength;
     int MaxOutField;
+    int MinNearFieldUpPoint;
     float DistanceToMerge;
     float NearestDistance;
     float FurthestDistance;
@@ -110,6 +111,8 @@ struct GoalDetectorParameters
     int doubleVote;
     int minDoubleLength;
     int minContinuesColor;
+    int extInvalidPoints;
+    int extTotalPoints;
 };
 
 struct LineDetectorParameters
@@ -164,9 +167,13 @@ struct LocalizationParameters
     float UPDATEWEAK;
     float TOTALGAIN;
     float VerLineMinDistanceToUpdate;
+    int optimizeCounter;
+    bool useDeadReck;
     bool useKalman;
     bool forwardRobotTrackerXY;
     bool forwardRobotTrackerZ;
+    int maxDistanceBothGoal;
+    int maxDistanceSingleGoal;
 };
 
 struct FieldModelParameters

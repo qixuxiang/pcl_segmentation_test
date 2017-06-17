@@ -94,6 +94,7 @@ Parameters::init(ros::NodeHandle* nh)
     GPARAM("/dvision/goal_detector/active", parameters.goal.active);
     GPARAM("/dvision/goal_detector/MinLineLength", parameters.goal.MinLineLength);
     GPARAM("/dvision/goal_detector/MaxOutField", parameters.goal.MaxOutField);
+    GPARAM("/dvision/goal_detector/MinNearFieldUpPoint", parameters.goal.MinNearFieldUpPoint);
     GPARAM("/dvision/goal_detector/DistanceToMerge", parameters.goal.DistanceToMerge);
     GPARAM("/dvision/goal_detector/NearestDistance", parameters.goal.NearestDistance);
     GPARAM("/dvision/goal_detector/FurthestDistance", parameters.goal.FurthestDistance);
@@ -105,6 +106,8 @@ Parameters::init(ros::NodeHandle* nh)
     GPARAM("/dvision/goal_detector/doubleVote", parameters.goal.doubleVote);
     GPARAM("/dvision/goal_detector/minDoubleLength", parameters.goal.minDoubleLength);
     GPARAM("/dvision/goal_detector/minContinuesColor", parameters.goal.minContinuesColor);
+    GPARAM("/dvision/goal_detector/extInvalidPoints", parameters.goal.extInvalidPoints);
+    GPARAM("/dvision/goal_detector/extTotalPoints", parameters.goal.extTotalPoints);
 
     // Get line detector parameters
     GPARAM("/dvision/line_detector/enable", parameters.line.enable);
@@ -155,9 +158,13 @@ Parameters::init(ros::NodeHandle* nh)
     GPARAM("/dvision/localization/UPDATEWEAK", parameters.loc.UPDATEWEAK);
     GPARAM("/dvision/localization/TOTALGAIN", parameters.loc.TOTALGAIN);
     GPARAM("/dvision/localization/VerLineMinDistanceToUpdate", parameters.loc.VerLineMinDistanceToUpdate);
+    GPARAM("/dvision/localization/optimizeCounter", parameters.loc.optimizeCounter);
+    GPARAM("/dvision/localization/useDeadReck", parameters.loc.useDeadReck);
     GPARAM("/dvision/localization/useKalman", parameters.loc.useKalman);
     GPARAM("/dvision/localization/forwardRobotTrackerXY", parameters.loc.forwardRobotTrackerXY);
     GPARAM("/dvision/localization/forwardRobotTrackerZ", parameters.loc.forwardRobotTrackerZ);
+    GPARAM("/dvision/localization/maxDistanceBothGoal", parameters.loc.maxDistanceBothGoal);
+    GPARAM("/dvision/localization/maxDistanceSingleGoal", parameters.loc.maxDistanceSingleGoal);
 
     // Get field parameters
     GPARAM("/dvision/field_model/field_length", parameters.field_model.field_length);

@@ -251,9 +251,11 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
 
                 // 检测到大于2个球门柱点，且线片段与其距离均小于50cm
                 // Flip goal y coord
-                bool double_goal_pos_OK = goal_position_real_rotated.size() >= 2 && line_seg.DistanceFromLine(cv::Point2f(goal_position_real_rotated[0].x, -goal_position_real_rotated[0].y)) < 20 &&
-                                          line_seg.DistanceFromLine(cv::Point2f(goal_position_real_rotated[1].x, -goal_position_real_rotated[1].y)) < 20;
-                bool single_goal_pos_OK = goal_position_real_rotated.size() == 1 && line_seg.DistanceFromLine(cv::Point2f(goal_position_real_rotated[0].x, -goal_position_real_rotated[0].y)) < 10;
+                bool double_goal_pos_OK = goal_position_real_rotated.size() >= 2 &&
+                                          line_seg.DistanceFromLine(cv::Point2f(goal_position_real_rotated[0].x, -goal_position_real_rotated[0].y)) < parameters.loc.maxDistanceBothGoal &&
+                                          line_seg.DistanceFromLine(cv::Point2f(goal_position_real_rotated[1].x, -goal_position_real_rotated[1].y)) < parameters.loc.maxDistanceBothGoal;
+                bool single_goal_pos_OK = goal_position_real_rotated.size() == 1 &&
+                                          line_seg.DistanceFromLine(cv::Point2f(goal_position_real_rotated[0].x, -goal_position_real_rotated[0].y)) < parameters.loc.maxDistanceSingleGoal;
 
                 if (double_goal_pos_OK || single_goal_pos_OK) {
                     // cout << "Distance from line to goal: [0]="
@@ -346,7 +348,7 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
 
     if (at_least_one_observation_) {
         UpdateVertexIdx();
-        if ((node_counter_ % 30 == 0) && previous_vertex_id_ > 0) {
+        if ((node_counter_ % parameters.loc.optimizeCounter == 0) && previous_vertex_id_ > 0) {
             optimizer.initializeOptimization();
             optimizer.optimize(10);
             Eigen::Vector3d tmpV;
@@ -484,7 +486,7 @@ Localization::UpdateVertexIdx()
         optimizer.addVertex(r);
     }
 
-    {
+    if (parameters.loc.useDeadReck) {
         g2o::EdgeSE2* e = new g2o::EdgeSE2;
         e->vertices()[0] = optimizer.vertex(previous_vertex_id_);
         e->vertices()[1] = optimizer.vertex(current_vertex_id_);

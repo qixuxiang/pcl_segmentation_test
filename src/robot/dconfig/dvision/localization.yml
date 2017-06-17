@@ -53,17 +53,20 @@ dvision:
     active:                     true
     MinLineLength:              30
     MaxOutField:                0
+    MinNearFieldUpPoint:        -20 # min distance between up point of goal post and field
     DistanceToMerge:            15
     NearestDistance:            0
     FurthestDistance:           1081
     NearMinLen:                 0
-    NearMaxLen:                 1920 #IMGWIDTH
+    NearMaxLen:                 640 #IMGWIDTH
     FarMinLen:                  0
-    FarMaxLen:                  1920 #IMGWIDTH
+    FarMaxLen:                  640 #IMGWIDTH
     jumpMax:                    2
     doubleVote:                 40
     minDoubleLength:            3
     minContinuesColor:          7
+    extInvalidPoints:           2 # invalid point number to stop dip
+    extTotalPoints:             10 # total points number to stop dip
   line_detector:
     enable:                     true
     showMask:                   false
@@ -112,6 +115,12 @@ dvision:
     UPDATEWEAK:                 0.05
     TOTALGAIN:                  100
     VerLineMinDistanceToUpdate: 70
+    optimizeCounter:            30 # counter to optimize location
+    # use kalman filter for localization
     useKalman:                  false
+    # use dead reck with delta motion data as edges
+    useDeadReck:                false
     forwardRobotTrackerXY:      false
     forwardRobotTrackerZ:       false
+    maxDistanceBothGoal:        20 # max distance between goal line and both goal posts
+    maxDistanceSingleGoal:      10 # max distance between goal line and single goal posts
