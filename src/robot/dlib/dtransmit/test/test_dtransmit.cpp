@@ -1,4 +1,3 @@
-#include <gtest/gtest.h>
 #include <ros/ros.h>
 #include <std_msgs/String.h>
 #include "dtransmit/dtransmit.hpp"
@@ -6,11 +5,12 @@
 // TODO(MWX): test on different machine, over wifi
 using namespace dtransmit;
 using namespace std;
-TEST(dtransmit, main) {
+int main(int argc, char** argv)
+{
 //    DTransmit d("127.0.0.1");
     DTransmit d("192.168.255.255");
 
-    int NUM = 100;
+    int NUM = 10;
 
     for(int i = 0; i < NUM; ++i) {
         d.add_recv<std_msgs::String>(2000 + i, [=](std_msgs::String& msg) {
@@ -18,9 +18,9 @@ TEST(dtransmit, main) {
         });
     }
 
+    d.startRecv();
 
-
-    for(int i = 0 ; i < 1000 ; ++i) {
+    for(int i = 0 ; i < 100 ; ++i) {
         std_msgs::String msg;
         std::stringstream ss;
         ss << "Hello dtransmit " << i;
@@ -34,11 +34,4 @@ TEST(dtransmit, main) {
 //        usleep(100);
         cout << endl;
     }
-}
-
-int main(int argc, char** argv)
-{
-    ros::init(argc, argv, "localization");
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
 }

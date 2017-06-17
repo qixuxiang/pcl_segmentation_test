@@ -28,6 +28,8 @@ public:
     template <typename ROSMSG>
     void send(PORT p, ROSMSG&);
 
+    void startRecv();
+
 private:
     template<typename ReadHandler>
     void startRecv(PORT p, ReadHandler handler);
@@ -45,12 +47,20 @@ private:
         Foo(boost::asio::io_service& service, PORT port) {
             socket = new boost::asio::ip::udp::socket(service, boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), port));
         }
+
+        ~Foo() {
+//            if(socket) {
+//                if(socket->is_open())
+//                    socket->close();
+//                delete socket;
+//            }
+        }
     };
 
     std::string m_broadcastAddress;
     boost::asio::io_service m_service;
 
-    std::thread* m_t;
+    std::thread m_t;
     boost::asio::ip::udp::endpoint m_remoteEndpoint;
     boost::asio::ip::udp::endpoint m_broadcastEndpoint;
     std::unordered_map<PORT, Foo> m_recvFoo;
@@ -87,54 +97,47 @@ void DTransmit::add_recv(PORT port, std::function<void(ROSMSG & )> callback) {
     };
     startRecv(port, m_recvFoo[port].readHandler);
 
-// TODO(MWX): better solution
+    // TODO(MWX): Memory Leak
+    // std::cout << "Add recv end" << std::endl;
+}
 
-    if(m_t) {
-        m_service.stop();
-        // m_t->join();
-        // delete m_t;
-    }
-
-    
-    m_t = new std::thread([&]() {
+void DTransmit::startRecv() {
+    m_t = std::thread([&]() {
         m_service.reset();
         m_service.run();
     });
-    m_t->detach();
-
-    // std::cout << "Add recv end" << std::endl;
-    
+    //m_t.detach();
 }
 
 void DTransmit::createSendSocket(PORT port) {
     using namespace boost::asio;
     ip::udp::endpoint broadcastEndpoint(ip::address::from_string(m_broadcastAddress), port);
-    auto socket = new ip::udp::socket(m_service, ip::udp::v4());
-    socket->set_option(socket_base::broadcast(true));
+    m_sendSockets[port] = new ip::udp::socket(m_service, ip::udp::v4());
+    m_sendSockets[port]->set_option(socket_base::broadcast(true));
 
     boost::system::error_code ec;
-    socket->connect(broadcastEndpoint, ec);
+    m_sendSockets[port]->connect(broadcastEndpoint, ec);
     if(ec) {
         ROS_ERROR("DTransmit create send socket error: %s", ec.message().c_str());
     }
 
-    m_sendSockets[port] = socket;
 }
 
 template <typename ROSMSG>
 void DTransmit::send(PORT port, ROSMSG& rosmsg) {
-    ROS_INFO("Sending through %d", port);
     if(!m_sendSockets.count(port)) {
        createSendSocket(port);
     }
     // serialize rosmsg
     uint32_t serial_size = ros::serialization::serializationLength(rosmsg);
-    std::unique_ptr<uint8_t> buffer(new uint8_t[serial_size]);
+    //std::unique_ptr<uint8_t> buffer(new uint8_t[serial_size]);
+    auto buffer = new uint8_t[serial_size];
 
-    ros::serialization::OStream stream(buffer.get(), serial_size);
+    ros::serialization::OStream stream(buffer, serial_size);
     ros::serialization::serialize(stream, rosmsg);
 
-    sendBuffer(m_sendSockets[port], buffer.get(), serial_size);
+    sendBuffer(m_sendSockets[port], buffer, serial_size);
+    delete[] buffer;
 }
 
 void DTransmit::sendBuffer(boost::asio::ip::udp::socket* socket, const void* buffer, std::size_t size) {
