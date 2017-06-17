@@ -78,14 +78,14 @@ template <typename ROSMSG>
 void DTransmit::addRosRecv(PORT port, std::function<void(ROSMSG &)> callback) {
     using namespace boost::asio;
     if(m_recvFoo.count(port)) {
-        ROS_WARN("Error in addRosRecv: port %d exist!", port);
+        ROS_ERROR("Error in addRosRecv: port %d exist!", port);
         return;
     }
     m_recvFoo[port] = Foo(m_service, port);
 
     m_recvFoo[port].readHandler = [=](const boost::system::error_code& error, std::size_t bytesRecved) {
         if(error) {
-            ROS_INFO("Error in RosRecv: %s", error.message().c_str());
+            ROS_ERROR("Error in RosRecv: %s", error.message().c_str());
         } else {
             ROSMSG msg;
 

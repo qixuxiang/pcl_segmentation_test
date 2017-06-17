@@ -66,14 +66,14 @@ void DTransmit::sendBuffer(boost::asio::ip::udp::socket* socket, const void* buf
 
 void DTransmit::addRawRecv(PORT port, std::function<void(const void*, std::size_t)> callback) {
     if(m_recvFoo.count(port)) {
-        ROS_WARN("Error in addRawRecv: port %d exist!", port);
+        ROS_ERROR("Error in addRawRecv: port %d exist!", port);
         return;
     }
     m_recvFoo[port] = Foo(m_service, port);
 
     m_recvFoo[port].readHandler = [=](const boost::system::error_code& error, std::size_t bytesRecved) {
         if(error) {
-            ROS_INFO("Error in RosRecv: %s", error.message().c_str());
+            ROS_ERROR("Error in RosRecv: %s", error.message().c_str());
         } else {
             callback(m_recvFoo[port].recvBuffer, bytesRecved);
         }
