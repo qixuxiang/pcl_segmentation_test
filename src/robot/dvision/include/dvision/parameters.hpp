@@ -171,6 +171,7 @@ struct LocalizationParameters
     int optimizeCounter;
     bool useDeadReck;
     bool useKalman;
+    bool useGoalPointLandMark;
     bool forwardRobotTrackerXY;
     bool forwardRobotTrackerZ;
     int maxDistanceBothGoal;

@@ -121,6 +121,7 @@ dvision:
     useKalman:                  false
     # use dead reck with delta motion data as edges
     useDeadReck:                false
+    useGoalPointLandMark:       false
     forwardRobotTrackerXY:      false
     forwardRobotTrackerZ:       false
     maxDistanceBothGoal:        20 # max distance between goal line and both goal posts

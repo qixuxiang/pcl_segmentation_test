@@ -311,11 +311,11 @@ GoalDetector::CheckDownPointDistance(const cv::Point& down, double& jump_double,
     // 根据down点与机器人的距离来选择不同的jump值
     double distance = GetDistance(down_real);
     if (distance < 200) {
-        jump_double = 40 * 1920 / 640;
+        jump_double = 40;
     } else if (distance >= 200 && distance < 300) {
-        jump_double = 23 * 1920 / 640;
+        jump_double = 23;
     } else {
-        jump_double = 15 * 1920 / 640;
+        jump_double = 15;
     }
 
     return true;

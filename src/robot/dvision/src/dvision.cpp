@@ -9,7 +9,6 @@ DVision::DVision(ros::NodeHandle* n)
   : DProcess(VISION_FREQ, false)
   , m_nh(n)
 {
-    parameters.init(n);
     m_projection.init(n);
     // m_ball.Init();
     m_circle.Init();
@@ -94,7 +93,7 @@ DVision::tick()
      ****************/
     m_loc_img = cv::Mat(500, 500, CV_8UC3, cv::Scalar(0, 0, 0));
 
-    if (m_data.see_field && m_data.see_line) {
+    if (m_data.see_field && m_data.see_line && m_data.see_goal || m_data.see_circle) {
         m_data.loc_ok = m_loc.Calculate(m_line.clustered_lines(),
                                         m_data.see_circle,
                                         m_field.field_hull_real_center(),
@@ -164,9 +163,6 @@ DVision::prepareVisionInfo(VisionInfo& m_data)
     // goal
     // TODO(corenel) Get global coord?
     std::vector<cv::Point2f> goal_position_rotated = m_projection.RotateTowardHeading(m_goal.goal_position());
-    m_data.see_goal = false;
-    m_data.see_both_goal = false;
-    m_data.see_unknown_goal = false;
 
     if (goal_position_rotated.size() >= 1) {
         m_data.see_goal = true;

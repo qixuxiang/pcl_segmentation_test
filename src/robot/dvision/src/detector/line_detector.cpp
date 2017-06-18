@@ -46,9 +46,9 @@ LineDetector::Process(cv::Mat& canny_img, cv::Mat& hsv_img, cv::Mat& gui_img, cv
     // 对v进行模糊,模糊结果存在canny_img中
     cv::blur(channels[2], canny_img, cv::Size(parameters.line.blurSize, parameters.line.blurSize));
     cv::Canny(canny_img, canny_img, parameters.line.cannyThreadshold, parameters.line.cannyThreadshold * 3, parameters.line.cannyaperture);
-    if (parameters.line.showCanny) {
-        // fuck
-    }
+    // if (parameters.line.showCanny) {
+    // fuck
+    // }
     canny_img.copyTo(canny_img_in_field, field_convex_hull);
 
     // detect white lines

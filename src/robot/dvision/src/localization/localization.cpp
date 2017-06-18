@@ -147,7 +147,7 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
 
     // Flip y from robot coord to field coord
     cv::Point2d circle_rotated_and_fliiped = result_circle_rotated;
-    circle_rotated_and_fliiped.y *= -1;
+    // circle_rotated_and_fliiped.y *= -1;
 
     all_lines.reserve(clustered_lines_rotated.size());
     all_features.reserve(5);
@@ -165,13 +165,12 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
     for (size_t i = 0; i < clustered_lines_rotated.size(); i++) {
         LineSegment line_seg = clustered_lines_rotated[i];
         // flip y coord from robot coord to field coord
-        line_seg.P1.y *= -1;
-        line_seg.P2.y *= -1;
+        // line_seg.P1.y *= -1;
+        // line_seg.P2.y *= -1;
         // 线片段长度大于预设值
         if (line_seg.GetLength() > parameters.loc.minLineLen) {
             // 取中点mid
             cv::Point2d mid = line_seg.GetMiddle();
-
             // 线片段与VerLine夹角小于45度
             if (line_seg.GetAbsMinAngleDegree(VerLine) < 45) {
                 // 线片段类型默认为VerUndef
@@ -255,13 +254,13 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
                 if (goal_position_real_rotated.size() == 2) {
                     LineSegment goal_line(goal_position_real_rotated[0], goal_position_real_rotated[1]);
                     goal_pos_OK = goal_position_real_rotated.size() >= 2 &&
-                                  line_seg.DistanceFromLine(cv::Point2f(goal_position_real_rotated[0].x, -goal_position_real_rotated[0].y)) < parameters.loc.maxDistanceBothGoal &&
-                                  line_seg.DistanceFromLine(cv::Point2f(goal_position_real_rotated[1].x, -goal_position_real_rotated[1].y)) < parameters.loc.maxDistanceBothGoal &&
-                                  GetDistance(goal_position_real_rotated[0], goal_position_real_rotated[1]) > 50;
+                                  line_seg.DistanceFromLine(cv::Point2f(goal_position_real_rotated[0].x, goal_position_real_rotated[0].y)) < parameters.loc.maxDistanceBothGoal &&
+                                  line_seg.DistanceFromLine(cv::Point2f(goal_position_real_rotated[1].x, goal_position_real_rotated[1].y)) < parameters.loc.maxDistanceBothGoal &&
+                                  GetDistance(goal_position_real_rotated[0], goal_position_real_rotated[1]) > 50 && goal_line.GetAbsMinAngleDegree(HorLine) < 15;
 
                 } else if (goal_position_real_rotated.size() == 1) {
                     goal_pos_OK = goal_position_real_rotated.size() == 1 &&
-                                  line_seg.DistanceFromLine(cv::Point2f(goal_position_real_rotated[0].x, -goal_position_real_rotated[0].y)) < parameters.loc.maxDistanceSingleGoal;
+                                  line_seg.DistanceFromLine(cv::Point2f(goal_position_real_rotated[0].x, goal_position_real_rotated[0].y)) < parameters.loc.maxDistanceSingleGoal;
                 }
                 if (goal_pos_OK) {
                     // cout << "Distance from line to goal: [0]="
@@ -354,7 +353,7 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
 
     // add mid point of two detected goal point
     // use both estimated_x and estimated_y
-    if (goal_position_real_rotated.size() == 2) {
+    if (parameters.loc.useGoalPointLandMark && goal_position_real_rotated.size() == 2) {
         LineSegment goal_line(goal_position_real_rotated[0], goal_position_real_rotated[1]);
         if (GetDistance(goal_position_real_rotated[0], goal_position_real_rotated[1]) > 50 && goal_line.GetAbsMinAngleDegree(HorLine) < 15) {
             double estimated_x = -(goal_position_real_rotated[0].x + goal_position_real_rotated[1].x) / 2.0;
@@ -379,19 +378,6 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
         }
     }
 
-    if (at_least_one_observation_) {
-        UpdateVertexIdx();
-        if ((node_counter_ % parameters.loc.optimizeCounter == 0) && previous_vertex_id_ > 0) {
-            optimizer.initializeOptimization();
-            optimizer.optimize(10);
-            Eigen::Vector3d tmpV;
-            optimizer.vertex(previous_vertex_id_)->getEstimateData(tmpV.data());
-            location_.x = tmpV(0);
-            location_.y = tmpV(1);
-
-            ROS_WARN("Localization: (%f, %f)", location().x, location().y);
-        }
-    }
     if (parameters.monitor.update_loc_img) {
         double offssx = 250;
         double offssy = 250;
@@ -424,17 +410,32 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
         }
         // Center circle
         if (circle_detected) {
-            cv::circle(m_loc_img, cv::Point(result_circle_rotated.x * ratioo + offssx, result_circle_rotated.y * ratioo + offssy), 75 * ratioo, blueColor(), 2, 8);
+            cv::circle(m_loc_img, cv::Point(result_circle_rotated.x * ratioo + offssx, -result_circle_rotated.y * ratioo + offssy), 75 * ratioo, blueColor(), 2, 8);
         }
         // Goal
         for (size_t i = 0; i < goal_position_real_rotated.size(); i++) {
-            cv::circle(m_loc_img, cv::Point(goal_position_real_rotated[i].x * ratioo + offssx, goal_position_real_rotated[i].y * ratioo + offssy), 2, redColor(), 2, 8);
+            cv::circle(m_loc_img, cv::Point(goal_position_real_rotated[i].x * ratioo + offssx, -goal_position_real_rotated[i].y * ratioo + offssy), 2, redColor(), 2, 8);
         }
         // Axis
         cv::line(m_loc_img, cv::Point(offssx, offssy), cv::Point(50 + offssx, offssy), yellowColor(), 2, 8);
-        cv::line(m_loc_img, cv::Point(offssx, offssy), cv::Point(offssx, 50 + offssy), redColor(), 2, 8);
+        cv::line(m_loc_img, cv::Point(offssx, offssy), cv::Point(offssx, -50 + offssy), redColor(), 2, 8);
     }
-    return true;
+
+    if (at_least_one_observation_) {
+        UpdateVertexIdx();
+        if ((node_counter_ % parameters.loc.optimizeCounter == 0) && previous_vertex_id_ > 0) {
+            optimizer.initializeOptimization();
+            optimizer.optimize(10);
+            Eigen::Vector3d tmpV;
+            optimizer.vertex(previous_vertex_id_)->getEstimateData(tmpV.data());
+            location_.x = tmpV(0);
+            location_.y = tmpV(1);
+
+            ROS_WARN("Localization: (%f, %f)", location().x, location().y);
+            return true;
+        }
+    }
+    return false;
 }
 
 // graph

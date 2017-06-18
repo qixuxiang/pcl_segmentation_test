@@ -169,6 +169,7 @@ Parameters::update()
     GPARAM("/dvision/localization/optimizeCounter", parameters.loc.optimizeCounter);
     GPARAM("/dvision/localization/useDeadReck", parameters.loc.useDeadReck);
     GPARAM("/dvision/localization/useKalman", parameters.loc.useKalman);
+    GPARAM("/dvision/localization/useGoalPointLandMark", parameters.loc.useGoalPointLandMark);
     GPARAM("/dvision/localization/forwardRobotTrackerXY", parameters.loc.forwardRobotTrackerXY);
     GPARAM("/dvision/localization/forwardRobotTrackerZ", parameters.loc.forwardRobotTrackerZ);
     GPARAM("/dvision/localization/maxDistanceBothGoal", parameters.loc.maxDistanceBothGoal);
