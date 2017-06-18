@@ -22,7 +22,16 @@ DVision::DVision(ros::NodeHandle* n)
     m_concurrent.push([] {
         //     ROS_INFO("concurrent");
     });
+
     m_transmitter = new dtransmit::DTransmit(parameters.udpBroadcastAddress);
+    if(parameters.simulation) {
+        ROS_INFO("Simulation mode!");
+        m_transmitter->addRosRecv<VisionInfo>(dconstant::network::monitorBroadcastAddressBase + parameters.robotId, [&](VisionInfo& msg){
+            m_data = msg;
+        });
+    }
+
+
     m_sub_action_cmd = m_nh->subscribe("/humanoid/MotionInfo", 100, &DVision::motionCallback, this);
     m_sub_save_img = m_nh->subscribe("/humanoid/SaveImg", 100, &DVision::saveImgCallback, this);
     m_pub = m_nh->advertise<VisionInfo>("/humanoid/VisionInfo", 100);
@@ -36,13 +45,16 @@ void
 DVision::tick()
 {
     ROS_DEBUG("dvision tick");
-
     /**********
      * Update *
      **********/
+    if(parameters.simulation) {
+        m_pub.publish(m_data);
+        return;
+    }
 
     auto frame = m_camera.capture();
-    VisionInfo m_data;
+    m_data = VisionInfo();
 
     m_projection.updateExtrinsic(m_pitch, m_yaw);
 
@@ -119,6 +131,7 @@ DVision::tick()
 
     prepareVisionInfo(m_data);
     m_pub.publish(m_data);
+
     m_transmitter->sendRos(dconstant::network::robotBroadcastAddressBase + parameters.robotId, m_data);
 
     // TODO(MWX): simulating mode
@@ -184,6 +197,19 @@ DVision::prepareVisionInfo(VisionInfo& m_data)
     cv::Point2d result_circle_rotated = m_projection.RotateTowardHeading(m_circle.result_circle());
     m_data.circle_field.x = result_circle_rotated.x;
     m_data.circle_field.y = result_circle_rotated.y;
+
+    auto& lines = m_line.clustered_lines();
+    m_data.lines.resize(lines.size());
+    for(uint32_t i = 0; i < lines.size(); ++i) {
+        auto& p1 = lines[i].P1;
+        m_data.lines[i].endpoint1.x = p1.x;
+        m_data.lines[i].endpoint1.y = p1.y;
+
+        auto& p2 = lines[i].P2;
+        m_data.lines[i].endpoint2.x = p2.x;
+        m_data.lines[i].endpoint2.y = p2.y;
+    }
+//    m_line.clustered_lines()
     // ball
     // if (m_data.loc_ok) {
     //     // TODO(corenel) Rotate angle is correct?

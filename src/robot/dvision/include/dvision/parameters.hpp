@@ -222,6 +222,7 @@ struct Parameters
 
     std::string udpBroadcastAddress;
     int robotId;
+    bool simulation;
 
     void init(ros::NodeHandle* nh);
 };

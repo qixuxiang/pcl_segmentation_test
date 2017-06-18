@@ -1,7 +1,7 @@
 import QtQuick 2.3
 import QtQuick.Controls 1.2
 import DMonitor 1.0
-import "../js/componentCreation.js" as RobotSpawner
+import "../js/componentCreation.js" as Spawner
 
 ApplicationWindow {
     id: root
@@ -23,6 +23,7 @@ ApplicationWindow {
 
         property var updateRate: 30
         property var robots: []
+        property var balls: []
 
         Timer {
             interval: 1000 / parent.updateRate
@@ -44,10 +45,16 @@ ApplicationWindow {
                 rbt.update();
                 rbt.setIsMonitor(controlArea.modelTab.isMonitor)
             })
+
+            balls.forEach(function(ball, index, array){
+                ball.update();
+                ball.setIsMonitor(controlArea.modelTab.isMonitor);
+            })
         }
 
         Component.onCompleted: {
-            robots = RobotSpawner.createObjects();
+            robots = Spawner.createRobots();
+            balls = Spawner.createBalls();
             field.update()
         }
 

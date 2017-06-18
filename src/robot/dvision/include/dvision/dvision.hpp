@@ -52,6 +52,7 @@ class DVision : public dprocess::DProcess<DVision>
     // added by yyj
     int m_yaw;
     int m_pitch;
+    VisionInfo m_data;
     dmotion::MotionInfo m_motion_info;
     SaveImg m_save_img;
     void motionCallback(const dmotion::MotionInfo::ConstPtr& msg);

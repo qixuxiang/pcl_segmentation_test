@@ -17,6 +17,7 @@ void
 Parameters::init(ros::NodeHandle* nh)
 {
     GPARAM("/ZJUDancer/RobotId", parameters.robotId);
+    GPARAM("/ZJUDancer/Simulation", parameters.simulation);
     GPARAM("/ZJUDancer/udpBroadcastAddress", parameters.udpBroadcastAddress);
 
     // Get camera parameters

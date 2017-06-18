@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(dmonitor)
 #LIST(APPEND CMAKE_MODULE_PATH ${dvision_SOURCE_DIR}/cmake_modules)
 
-add_definitions(-std=c++11 -Wall  -Wextra -Wfloat-equal -Wno-unused-result) #-Weffc++ -pedantic
+add_definitions(-std=c++11 -Wall -g  -Wextra -Wfloat-equal -Wno-unused-result) #-Weffc++ -pedantic
 
 find_package(catkin REQUIRED
   COMPONENTS 
@@ -37,11 +37,16 @@ add_executable(dmonitor
     src/main.cpp
     src/robot.cpp
     src/field.cpp
+    src/ball.cpp
+    src/baseObject.cpp
     include/dmonitor/robot.hpp
     include/dmonitor/field.hpp
+    include/dmonitor/ball.hpp
+    include/dmonitor/baseObject.hpp
     src/qml.qrc
     src/qml/main.qml
     src/qml/Robot.qml
+    src/qml/Ball.qml
     src/js/componentCreation.js
     )
 

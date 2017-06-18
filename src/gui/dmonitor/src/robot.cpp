@@ -11,12 +11,9 @@
 
 namespace dmonitor {
 
-Robot::Robot(QQuickItem *parent) : QQuickPaintedItem(parent)
+Robot::Robot(QQuickItem *parent) : BaseObject(parent)
 {
-    connect(this, &Robot::xChanged,
-            this, &Robot::onxyChanged);
-    connect(this, &Robot::yChanged,
-            this, &Robot::onxyChanged);
+    m_lastRecvTime = QTime::currentTime().addSecs(-MAX_UNSEEN_SEC * 2);
 }
 
 Robot::~Robot()
@@ -36,51 +33,50 @@ void Robot::init()
 
     setWidth(40);
     setHeight(40);
-
-//    for(int i = 0; ; ++i) {
-//        m_transmitter->sendRos(dconstant::network::monitorBroadcastAddressBase + m_robotId, m_simVisionInfo);
-//    }
 }
 
-void Robot::paint(QPainter *painter)
+void Robot::simModeUpdate()
 {
-    if(!m_field){
-        qDebug() << "Robot field not set!" << endl;
-        return;
-    }
+    setVisible(true);
+    m_ball->setVisible(true);
 
-    painter->setRenderHint(QPainter::Antialiasing);
-
-    if(!m_isMonitor) {
-        simUpdate();
-    } else {
-        moUpdate();
-    }
-    drawRobot(painter);
-}
-
-void Robot::simUpdate()
-{
     // update vision info according to xy
-    auto realRobot = m_field->getOnRealCoordinate(QPointF(x() + width() / 2, y() + width() / 2));
+    auto realRobot = m_field->getOnRealCoordinate(QPointF(x() + width() / 2, y() + height() / 2));
     m_simVisionInfo.robot_pos.x = realRobot.x();
     m_simVisionInfo.robot_pos.y = realRobot.y();
+    if(!m_ball) {
+        qDebug() << "ball not set" << endl;
+    } else {
+        auto realBall = m_field->getOnRealCoordinate(QPointF(m_ball->x() + m_ball->width() / 2, m_ball->y() + m_ball->height() /2));
+        m_simVisionInfo.ball_global.x = realBall.x();
+        m_simVisionInfo.ball_global.y = realBall.y();
+    }
+    m_transmitter->sendRos(dconstant::network::monitorBroadcastAddressBase + m_robotId, m_simVisionInfo);
+}
 
-    if(!m_isMonitor) {
-        m_transmitter->sendRos(dconstant::network::monitorBroadcastAddressBase + m_robotId, m_simVisionInfo);
+void Robot::monitorModeUpdate()
+{
+    auto imgPos = m_field->getOnImageCoordiante(m_realPos);
+    setX(imgPos.x() - width() / 2);
+    setY(imgPos.y() - height() / 2);
+
+    QTime now = QTime::currentTime();
+    int last = m_lastRecvTime.secsTo(now);
+    if(last > MAX_UNSEEN_SEC) {
+        setVisible(false);
+        m_ball->setVisible(false);
+    } else {
+        setVisible(true);
+
+        if(m_simVisionInfo.see_ball)
+            m_ball->setVisible(true);
+        else
+            m_ball->setVisible(false);
     }
 }
 
-void Robot::moUpdate()
-{
-    // draw robot according to localized position
-    auto imgPos = m_field->getOnImageCoordiante(m_robotPos);
-    setX(imgPos.x() - width() / 2);
-    setY(imgPos.y() - height() / 2);
-}
 
-
-void Robot::drawRobot(QPainter* painter) {
+void Robot::drawMyself(QPainter* painter) {
     painter->translate(width() / 2, height() / 2);
     painter->rotate(90 - m_heading);
     std::vector<QPointF> points {
@@ -104,34 +100,17 @@ void Robot::drawRobot(QPainter* painter) {
 }
 
 
-
 void Robot::onRecv(dvision::VisionInfo &msg)
 {
     // TODO(MWX): delta data
     if(m_isMonitor) {
-        qDebug() << "recv dvision info";
+        m_lastRecvTime = QTime::currentTime();
         m_heading = msg.robot_pos.z;
-        m_robotPos = QPointF(msg.robot_pos.x, msg.robot_pos.y);
-        m_ballPos = QPointF(msg.ball_global.x, msg.ball_global.y);
+        m_realPos = QPointF(msg.robot_pos.x, msg.robot_pos.y);
+        if(m_ball)
+            m_ball->setPos(QPointF(msg.ball_global.x, msg.ball_global.y));
     }
 }
-
-
-void Robot::onxyChanged()
-{
-}
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -147,10 +126,11 @@ QString Robot::address() const
     return m_address;
 }
 
-Field *Robot::field() const
+Ball* Robot::ball() const
 {
-    return m_field;
+    return m_ball;
 }
+
 
 void Robot::setRobotId(int id)
 {
@@ -167,22 +147,12 @@ void Robot::setAddress(QString address)
     m_address = address;
 }
 
-void Robot::setField(Field *field)
+void Robot::setBall(Ball* ball)
 {
-    m_field = field;
-}
-
-
-void Robot::setIsMonitor(bool isMonitor)
-{
-    if (m_isMonitor == isMonitor)
+    if (m_ball == ball)
         return;
 
-    m_isMonitor = isMonitor;
-}
-bool Robot::isMonitor() const
-{
-    return m_isMonitor;
+    m_ball = ball;
 }
 
 } // namespace dmonitor

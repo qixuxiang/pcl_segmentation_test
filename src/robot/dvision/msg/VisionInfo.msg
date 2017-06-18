@@ -14,3 +14,4 @@ geometry_msgs/Vector3 left_goal
 geometry_msgs/Vector3 right_goal
 geometry_msgs/Vector3 unknown_goal
 geometry_msgs/Vector3 robot_pos
+dvision/Line[] lines
