@@ -24,7 +24,7 @@ dvision:
     h1:                         89
     s0:                         70
     s1:                         255
-    v0:                         25
+    v0:                         10
     v1:                         157
     active:                     false
     erode:                      1
@@ -32,7 +32,7 @@ dvision:
     erode2:                     3
     dilate2:                    0
     maxContourCount:            3
-    minArea:                    0
+    minArea:                    10
     maxDownDiffPixel:           400
     approxPoly:                 0.02
     maxAcceptDistance:          10.81
@@ -41,20 +41,20 @@ dvision:
     enable:                     true
     showMask:                   false
     showResult:                 false
-    showAllLines:               false
+    showAllLines:               true
     showResLine:                true
-    showVote:                   false
+    showVote:                   true
     h0:                         37
     h1:                         110
-    s0:                         0
+    s0:                         10
     s1:                         86
     v0:                         54
     v1:                         255
     active:                     true
-    MinLineLength:              30
+    MinLineLength:              40
     MaxOutField:                0
     MinNearFieldUpPoint:        -20 # min distance between up point of goal post and field
-    DistanceToMerge:            15
+    DistanceToMerge:            30
     NearestDistance:            0
     FurthestDistance:           1081
     NearMinLen:                 0
@@ -65,13 +65,14 @@ dvision:
     doubleVote:                 40
     minDoubleLength:            3
     minContinuesColor:          7
-    extInvalidPoints:           2 # invalid point number to stop dip
-    extTotalPoints:             10 # total points number to stop dip
+    extInvalidPoints:           1 # invalid point number to stop dip
+    extTotalPoints:             5 # total points number to stop dip
   line_detector:
     enable:                     true
+    showUnmerged:               false
     showMask:                   false
     showResult:                 true
-    showAllLine:                false
+    showAllLine:                true
     showVote:                   false
     showCanny:                  false
     h0:                         37
@@ -81,20 +82,20 @@ dvision:
     v0:                         54
     v1:                         255
     active:                     false
-    MinLineLength:              80 # min length for hough line
+    MinLineLength:              100 # min length for hough line
     rhoHough:                   1 # distance resolution of the accumulator in pixels
     thetaHough:                 45 # angle resolution of the accumulator in radians
-    thresholdHough:             20 # accumulator threshold parameter
+    thresholdHough:             15 # accumulator threshold parameter
     maxLineGapHough:            20 # max allowed gap between points on the same line to link them.
-    AngleToMerge:               15
+    AngleToMerge:               20
     DistanceToMerge:            30
     jumpMax:                    20
     jumpMin:                    3
     widthCheck:                 0.07
     aprxDist:                   true
     doubleVote:                 60
-    greenVote:                  60
-    colorVote:                  90
+    greenVote:                  70
+    colorVote:                  70
     doubleVUse:                 true
     greenVUse:                  true
     colorVUse:                  true
@@ -109,18 +110,23 @@ dvision:
     cannyaperture:              3
   localization:
     enable:                     true
-    minLineLen:                 150
+    minLineLen:                 70
     UPDATENORMAL:               0.1
     UPDATESTRONG:               0.2
     UPDATEWEAK:                 0.05
-    TOTALGAIN:                  100
+    TOTALGAIN:                  1
     VerLineMinDistanceToUpdate: 70
     optimizeCounter:            30 # counter to optimize location
     # use kalman filter for localization
     useKalman:                  false
     # use dead reck with delta motion data as edges
     useDeadReck:                false
+    useGoalPointLandMark:       true
     forwardRobotTrackerXY:      false
     forwardRobotTrackerZ:       false
-    maxDistanceBothGoal:        20 # max distance between goal line and both goal posts
-    maxDistanceSingleGoal:      10 # max distance between goal line and single goal posts
+    maxDistanceBothGoal:        30 # max distance between goal line and both goal posts
+    maxDistanceSingleGoal:      20 # max distance between goal line and single goal posts
+    # ver near line classification
+    minFieldArea:               40000 # min field area
+    minDisFromCenter:           200 # min distance from hull center
+

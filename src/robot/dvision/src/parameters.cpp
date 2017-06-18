@@ -7,7 +7,7 @@ namespace dvision {
 
 #define GPARAM(x, y)                                                                                                                                                                                   \
     do {                                                                                                                                                                                               \
-        if (!nh->getParam(x, y)) {                                                                                                                                                                     \
+        if (!m_nh->getParam(x, y)) {                                                                                                                                                                   \
             ROS_FATAL("Projection get pararm error!");                                                                                                                                                 \
             throw std::runtime_error("Projection get param error!");                                                                                                                                   \
         }                                                                                                                                                                                              \
@@ -15,6 +15,13 @@ namespace dvision {
 
 void
 Parameters::init(ros::NodeHandle* nh)
+{
+    m_nh = nh;
+    update();
+}
+
+void
+Parameters::update()
 {
     vector<double> dist_coeff;
 
@@ -111,6 +118,7 @@ Parameters::init(ros::NodeHandle* nh)
 
     // Get line detector parameters
     GPARAM("/dvision/line_detector/enable", parameters.line.enable);
+    GPARAM("/dvision/line_detector/showUnmerged", parameters.line.showUnmerged);
     GPARAM("/dvision/line_detector/showMask", parameters.line.showMask);
     GPARAM("/dvision/line_detector/showResult", parameters.line.showResult);
     GPARAM("/dvision/line_detector/showAllLine", parameters.line.showAllLine);
@@ -161,10 +169,13 @@ Parameters::init(ros::NodeHandle* nh)
     GPARAM("/dvision/localization/optimizeCounter", parameters.loc.optimizeCounter);
     GPARAM("/dvision/localization/useDeadReck", parameters.loc.useDeadReck);
     GPARAM("/dvision/localization/useKalman", parameters.loc.useKalman);
+    GPARAM("/dvision/localization/useGoalPointLandMark", parameters.loc.useGoalPointLandMark);
     GPARAM("/dvision/localization/forwardRobotTrackerXY", parameters.loc.forwardRobotTrackerXY);
     GPARAM("/dvision/localization/forwardRobotTrackerZ", parameters.loc.forwardRobotTrackerZ);
     GPARAM("/dvision/localization/maxDistanceBothGoal", parameters.loc.maxDistanceBothGoal);
     GPARAM("/dvision/localization/maxDistanceSingleGoal", parameters.loc.maxDistanceSingleGoal);
+    GPARAM("/dvision/localization/minFieldArea", parameters.loc.minFieldArea);
+    GPARAM("/dvision/localization/minDisFromCenter", parameters.loc.minDisFromCenter);
 
     // Get field parameters
     GPARAM("/dvision/field_model/field_length", parameters.field_model.field_length);

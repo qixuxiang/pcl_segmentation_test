@@ -17,6 +17,7 @@
 #include "dvision/localization.hpp"
 #include "dvision/projection.hpp"
 #include "dvision/utils.hpp"
+#include "std_msgs/String.h"
 #include <vector>
 
 namespace dvision {
@@ -31,6 +32,7 @@ class DVision : public dprocess::DProcess<DVision>
     ros::NodeHandle* m_nh;
     ros::Subscriber m_sub_action_cmd;
     ros::Subscriber m_sub_save_img;
+    ros::Subscriber m_sub_reload_config;
     ros::Publisher m_pub;
     Camera m_camera;
     Projection m_projection;
@@ -53,6 +55,7 @@ class DVision : public dprocess::DProcess<DVision>
     SaveImg m_save_img;
     void motionCallback(const dmotion::MotionInfo::ConstPtr& msg);
     void saveImgCallback(const SaveImg::ConstPtr& save_img_msg);
+    void reloadConfigCallback(const std_msgs::String::ConstPtr&);
     void prepareVisionInfo(VisionInfo& m_data);
     void showDebugImg();
 };

@@ -316,6 +316,8 @@ MergeLinesOnce(std::vector<LineSegment> resLinesReal, const double& maxDegree, c
             mergedLine.Clip(box);
             clusteredLines[index].P1 = cv::Point2f(mergedLine.P1.x, mergedLine.P1.y);
             clusteredLines[index].P2 = cv::Point2f(mergedLine.P2.x, mergedLine.P2.y);
+            // std::cout << "mergedLine.GetProbability(): " << mergedLine.GetProbability() << std::endl;
+            // clusteredLines[index].SetProbability(mergedLine.GetProbability());
 
             // cout << " Merged Line = " << mergedLine.P1 << "  " << mergedLine.P2 << endl;
             // cout << "-- -- >      END     < -- --" << endl;

@@ -83,7 +83,7 @@ GoalDetector::GetPosts(cv::Mat& canny_img,
 
     // void HoughLinesP(InputArray image, OutputArray lines, double rho, double
     // theta, int threshold, double minLineLength=0, double maxLineGap=0 )
-    HoughLinesP(canny_img, linesP, 1, M_PI / 45, 10, MinLineLength, 10);
+    cv::HoughLinesP(canny_img, linesP, 1, M_PI / 45, 10, MinLineLength, 20);
     std::vector<LineSegment> all_ver_lines;
     for (size_t i = 0; i < linesP.size(); i++) {
         // lP (x_1, y_1, x_2, y_2)
@@ -207,7 +207,7 @@ GoalDetector::GetPosts(cv::Mat& canny_img,
             continue;
         }
         // 线片段下端点须在场地凸包内
-        double downDistance2Field = pointPolygonTest(field_hull, down, true);
+        double downDistance2Field = cv::pointPolygonTest(field_hull, down, true);
         if (downDistance2Field < MaxOutField) {
             // cout << "Goal: down not in field" << endl;
             continue;
@@ -278,7 +278,7 @@ GoalDetector::GetPosts(cv::Mat& canny_img,
     }
     if (SHOWGUI && parameters.goal.showResult) {
         for (size_t i = 0; i < res_lines.size(); i++) {
-            cv::line(gui_img, res_lines[i].P1, res_lines[i].P2, blueColor(), 2);
+            cv::line(gui_img, res_lines[i].P1, res_lines[i].P2, redColor(), 2);
         }
     }
     return res_lines.size() > 0;
@@ -305,17 +305,17 @@ GoalDetector::CheckDownPointDistance(const cv::Point& down, double& jump_double,
         // ROS_ERROR("Erorr in programming!");
         return false;
     }
-    double down_distance_to_field = pointPolygonTest(field_hull, down, true);
+    double down_distance_to_field = cv::pointPolygonTest(field_hull, down, true);
     if (down_distance_to_field < parameters.goal.MaxOutField)
         return false;
     // 根据down点与机器人的距离来选择不同的jump值
     double distance = GetDistance(down_real);
     if (distance < 200) {
-        jump_double = 40 * 1920 / 640;
+        jump_double = 40;
     } else if (distance >= 200 && distance < 300) {
-        jump_double = 23 * 1920 / 640;
+        jump_double = 23;
     } else {
-        jump_double = 15 * 1920 / 640;
+        jump_double = 15;
     }
 
     return true;
@@ -362,7 +362,7 @@ GoalDetector::VoteGoalPostPoint(LineSegment& tmp_line,
         cv::Vec3b hsvC = (cv::Vec3b)*it_hsv_left;
 
         // Canny高响应（如球门柱左边缘线上的某个等分点的垂线段碰到了右边缘线）
-        // 且左右边缘线像素距离大于minDoubleLength
+        // 且左右边缘线像素距离大于bleLength
         if (val > 0 && k > parameters.goal.minDoubleLength) {
             // 在guiImg上画出来
             if (safe_to_show >= 2 && SHOWGUI && parameters.goal.showVote) {

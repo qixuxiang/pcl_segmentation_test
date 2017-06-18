@@ -115,7 +115,7 @@ CircleDetector::GetCircle(const double& H2, std::vector<LineSegment>& clustered_
                 sum += circle_point[cCounter];
                 valid_cCounter++;
             } else {
-                ROS_WARN("fucking center point (%f, %f)", circle_point[cCounter].x, circle_point[cCounter].y);
+                ROS_DEBUG("fucking center point (%f, %f)", circle_point[cCounter].x, circle_point[cCounter].y);
             }
         }
         if (valid_cCounter > 0) {

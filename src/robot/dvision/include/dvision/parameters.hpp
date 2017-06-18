@@ -118,6 +118,7 @@ struct GoalDetectorParameters
 struct LineDetectorParameters
 {
     bool enable;
+    bool showUnmerged;
     bool showMask;
     bool showResult;
     bool showAllLine;
@@ -170,10 +171,13 @@ struct LocalizationParameters
     int optimizeCounter;
     bool useDeadReck;
     bool useKalman;
+    bool useGoalPointLandMark;
     bool forwardRobotTrackerXY;
     bool forwardRobotTrackerZ;
     int maxDistanceBothGoal;
     int maxDistanceSingleGoal;
+    int minFieldArea;
+    int minDisFromCenter;
 };
 
 struct FieldModelParameters
@@ -210,6 +214,10 @@ struct Parameters
     MonitorParameters monitor;
 
     void init(ros::NodeHandle* nh);
+    void update();
+
+  private:
+    ros::NodeHandle* m_nh;
 };
 
 struct HSVRange

@@ -37,7 +37,7 @@ LineSegment::LineSegment(const cv::Point2d center, double angle, double length, 
 LineSegment::LineSegment(const LineSegment& l)
   : P1(l.P1)
   , P2(l.P2)
-  , probability_(l.probability_)
+  , probability_(l.GetProbability())
 {
 }
 

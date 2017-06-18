@@ -20,9 +20,10 @@ DVision::DVision(ros::NodeHandle* n)
     m_concurrent.push([] {
         //     ROS_INFO("concurrent");
     });
-    m_sub_action_cmd = m_nh->subscribe("/humanoid/MotionInfo", 100, &DVision::motionCallback, this);
-    m_sub_save_img = m_nh->subscribe("/humanoid/SaveImg", 100, &DVision::saveImgCallback, this);
-    m_pub = m_nh->advertise<VisionInfo>("/humanoid/VisionInfo", 100);
+    m_sub_action_cmd = m_nh->subscribe("/humanoid/MotionInfo", 1, &DVision::motionCallback, this);
+    m_sub_save_img = m_nh->subscribe("/humanoid/SaveImg", 1, &DVision::saveImgCallback, this);
+    m_sub_reload_config = m_nh->subscribe("/humanoid/ReloadVisionConfig", 1, &DVision::reloadConfigCallback, this);
+    m_pub = m_nh->advertise<VisionInfo>("/humanoid/VisionInfo", 1);
 }
 
 DVision::~DVision()
@@ -147,6 +148,12 @@ DVision::saveImgCallback(const SaveImg::ConstPtr& save_img_msg)
 }
 
 void
+DVision::reloadConfigCallback(const std_msgs::String::ConstPtr&)
+{
+    parameters.update();
+}
+
+void
 DVision::prepareVisionInfo(VisionInfo& m_data)
 {
     // localization
@@ -156,9 +163,6 @@ DVision::prepareVisionInfo(VisionInfo& m_data)
     // goal
     // TODO(corenel) Get global coord?
     std::vector<cv::Point2f> goal_position_rotated = m_projection.RotateTowardHeading(m_goal.goal_position());
-    m_data.see_goal = false;
-    m_data.see_both_goal = false;
-    m_data.see_unknown_goal = false;
 
     if (goal_position_rotated.size() >= 1) {
         m_data.see_goal = true;
@@ -199,18 +203,6 @@ DVision::showDebugImg()
     if (parameters.monitor.update_gui_img) {
         cv::namedWindow("gui", CV_WINDOW_NORMAL);
         cv::imshow("gui", m_gui_img);
-        // using for change hsv of white
-        // cv::createTrackbar("h_low", "gui", &parameters.goal.h0, 255);
-        // cv::createTrackbar("h_high", "gui", &parameters.goal.h1, 255);
-        // cv::createTrackbar("s_low", "gui", &parameters.goal.s0, 255);
-        // cv::createTrackbar("s_high", "gui", &parameters.goal.s1, 255);
-        // cv::createTrackbar("v_low", "gui", &parameters.goal.v0, 255);
-        // cv::createTrackbar("v_high", "gui", &parameters.goal.v1, 255);
-        cv::createTrackbar("MinLineLength", "gui", &parameters.line.MinLineLength, 255);
-        cv::createTrackbar("AngleToMerge", "gui", &parameters.line.AngleToMerge, 255);
-        cv::createTrackbar("DistanceToMerge", "gui", &parameters.line.DistanceToMerge, 255);
-        cv::createTrackbar("confiusedDist", "gui", &parameters.circle.confiusedDist, 255);
-
         cv::waitKey(1);
     }
 }

@@ -65,7 +65,7 @@ def init_skill():
 def mainloop():
     """Main loop for dbehaviour."""
     # init node
-    rospy.init_node("dbehavior_node", anonymous=True, log_level=rospy.DEBUG)
+    rospy.init_node("dbehavior_node", anonymous=True, log_level=rospy.INFO)
     rospy.loginfo("dbehavior node started")
 
     # init blackboard
@@ -78,7 +78,8 @@ def mainloop():
     while not rospy.is_shutdown():
         global skill_instance
         # init behaviour request
-        gglobal.init_req()
+        # FIXME(corenel) Fucking python reference
+        # gglobal.init_req()
         # init skill instance
         init_skill()
         # tick skill
