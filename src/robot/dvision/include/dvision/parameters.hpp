@@ -176,6 +176,8 @@ struct LocalizationParameters
     bool forwardRobotTrackerZ;
     int maxDistanceBothGoal;
     int maxDistanceSingleGoal;
+    int minFieldArea;
+    int minDisFromCenter;
 };
 
 struct FieldModelParameters

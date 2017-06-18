@@ -171,7 +171,7 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
             // 取中点mid
             cv::Point2d mid = line_seg.GetMiddle();
             // 线片段与VerLine夹角小于45度
-            if (line_seg.GetAbsMinAngleDegree(VerLine) < 45) {
+            if (line_seg.GetAbsMinAngleDegree(VerLine) < 30) {
                 // 线片段类型默认为VerUndef
                 LineType this_type = VerUndef;
                 // 与VerLine的夹角，取值范围为[-90, 90]
@@ -190,7 +190,7 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
                     // 机器人在场地之内时，可根据mid.y来判断是LeftL还是RightL
                     if (mid.y > 0) {
                         this_type = VerLeft;
-                        // 这个estimateY算出来的怎么感觉像是机器人自身的y的估计值
+                        // estimateY是机器人自身的y的估计值
                         estimated_y = B2_ - mid.y;
                         ltype = LeftL;
                     } else {
@@ -202,9 +202,9 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
                     // 同时在信息矩阵那边，xFasher=0
                     AddObservation(cv::Point2d(0, estimated_y), 0, MAX_FASHER * GetUpdateCoef(UPDATENORMAL, line_seg), ltype);
                     // 机器人在场地白线之外时
-                    // 若线片段距离检测到的场地凸包中心距离大于70/2 cm
+                    // 若线片段距离检测到的场地凸包中心距离大于75 cm
                     // 并且检测到的场地凸包面积大于4 m^2
-                } else if (line_seg.DistanceFromLine(field_hull_real_center) > (parameters.loc.VerLineMinDistanceToUpdate / 2.) && cv::contourArea(field_hull_real_rotated) > 40000) {
+                } else if (line_seg.DistanceFromLine(field_hull_real_center) > parameters.loc.minDisFromCenter && cv::contourArea(field_hull_real_rotated) > parameters.loc.minFieldArea) {
                     LandmarkType ltype = CenterL;
                     LineSegment l2_est = line_seg;
                     if (line_seg.P1.x > line_seg.P2.x) {
@@ -222,6 +222,9 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
                         this_type = VerLeftNear;
                         estimated_y = B2_ - mid.y;
                         ltype = LeftL;
+                        ROS_WARN("NearVerLine!");
+                        ROS_WARN("dis from hull center: %f", line_seg.DistanceFromLine(field_hull_real_center));
+                        ROS_WARN("hull area: %f", cv::contourArea(field_hull_real_rotated));
                         // 同理
                     } else {
                         this_type = VerRightNear;
@@ -231,7 +234,7 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
                     AddObservation(cv::Point2d(0, estimated_y), 0, MAX_FASHER * GetUpdateCoef(UPDATENORMAL, line_seg), ltype);
                 }
                 all_lines.push_back(LineContainer(line_seg, this_type));
-            } else {
+            } else if (line_seg.GetAbsMinAngleDegree(HorLine) < 30) {
                 LineType this_type = HorUndef;
                 double angle_diff_hor = line_seg.GetExteriorAngleDegree(HorLine);
                 if (angle_diff_hor < -90)
@@ -239,33 +242,28 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
                 if (angle_diff_hor > 90)
                     angle_diff_hor += -180;
 
-                // 检测到中心圆，且线片段到其距离小于100cm
-                if (circle_detected && DistanceFromLineSegment(line_seg, circle_rotated_and_fliiped) < 100) {
+                // 检测到中心圆，且线片段到其距离小于30cm
+                if (circle_detected && DistanceFromLineSegment(line_seg, circle_rotated_and_fliiped) < 30) {
                     this_type = HorCenter;
                     double estimated_x = -mid.x;
                     // 注意这边也是只加了estimateX，Y=0，信息矩阵中yFasher=0
                     AddObservation(cv::Point2d(estimated_x, 0), MAX_FASHER * UPDATENORMAL, 0, CenterL);
                 }
 
-                // 检测到大于2个球门柱点，且线片段与其距离均小于50cm
+                // 检测到大于2个球门柱点，且线片段与其距离均小于20cm
                 // Flip goal y coord
                 bool goal_pos_OK = false;
-                if (goal_position_real_rotated.size() == 2) {
+                if (goal_position_real_rotated.size() >= 2) {
                     LineSegment goal_line(goal_position_real_rotated[0], goal_position_real_rotated[1]);
-                    goal_pos_OK = goal_position_real_rotated.size() >= 2 &&
-                                  line_seg.DistanceFromLine(cv::Point2f(goal_position_real_rotated[0].x, goal_position_real_rotated[0].y)) < parameters.loc.maxDistanceBothGoal &&
-                                  line_seg.DistanceFromLine(cv::Point2f(goal_position_real_rotated[1].x, goal_position_real_rotated[1].y)) < parameters.loc.maxDistanceBothGoal &&
-                                  GetDistance(goal_position_real_rotated[0], goal_position_real_rotated[1]) > 50 && goal_line.GetAbsMinAngleDegree(HorLine) < 15;
-
-                } else if (goal_position_real_rotated.size() == 1) {
-                    goal_pos_OK = goal_position_real_rotated.size() == 1 &&
-                                  line_seg.DistanceFromLine(cv::Point2f(goal_position_real_rotated[0].x, goal_position_real_rotated[0].y)) < parameters.loc.maxDistanceSingleGoal;
+                    goal_pos_OK = line_seg.DistanceFromLine(goal_position_real_rotated[0]) < parameters.loc.maxDistanceBothGoal &&
+                                  line_seg.DistanceFromLine(goal_position_real_rotated[1]) < parameters.loc.maxDistanceBothGoal;
+                    // && GetDistance(goal_position_real_rotated[0], goal_position_real_rotated[1]) > 50 && goal_line.GetAbsMinAngleDegree(HorLine) < 15;
                 }
+                // } else if (goal_position_real_rotated.size() == 1) {
+                //     goal_pos_OK = goal_position_real_rotated.size() == 1 &&
+                //                   line_seg.DistanceFromLine(cv::Point2f(goal_position_real_rotated[0].x, goal_position_real_rotated[0].y)) < parameters.loc.maxDistanceSingleGoal;
+                // }
                 if (goal_pos_OK) {
-                    // cout << "Distance from line to goal: [0]="
-                    //      << line_seg.DistanceFromLine(goal_position_real_rotated[0])
-                    //      << ", [1]=" << line_seg.DistanceFromLine(goal_position_real_rotated[1]) <<
-                    //      endl;
                     LandmarkType typel = CenterL;
                     double estimated_x = 0;
                     if (mid.x > 0) {
@@ -291,55 +289,43 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
     // 但是现在的僵硬情况在于，球门线的后面还可能检测到一条球门后线，于是此时有三条线
     // 则此步骤中，在球门线与球门后线的判断中，球门后线就被当作了球门线，则会使得自定位x值不准
     // for (size_t i = 0; i < all_lines.size(); i++) {
-    //   // 找一条HorUndef的hI
-    //   LineContainer hI = all_lines[i];
-    //   if (hI.type != HorUndef)
-    //     continue;
-    //   for (size_t j = i; j < all_lines.size(); j++) {
-    //     // 找一条HorUndef的hJ
-    //     LineContainer hJ = all_lines[j];
-    //     if (hJ.type != HorUndef)
-    //       continue;
-    //     cv::Point2d midI = hI.lineTransformed.GetMiddle();
-    //     cv::Point2d midJ = hJ.lineTransformed.GetMiddle();
-    //     double distanceToEachOther =
-    //         dist3D_Segment_to_Segment(hI.lineTransformed, hJ.lineTransformed);
+    //     // 找一条HorUndef的hI
+    //     LineContainer hI = all_lines[i];
+    //     if (hI.type_ != HorUndef)
+    //         continue;
+    //     for (size_t j = i; j < all_lines.size(); j++) {
+    //         // 找一条HorUndef的hJ
+    //         LineContainer hJ = all_lines[j];
+    //         if (hJ.type_ != HorUndef)
+    //             continue;
+    //         cv::Point2d midI = hI.line_transformed_.GetMiddle();
+    //         cv::Point2d midJ = hJ.line_transformed_.GetMiddle();
+    //         double distanceToEachOther = dist3D_Segment_to_Segment(hI.line_transformed_, hJ.line_transformed_);
     //
-    //     double midPointsLSAngleToOne =
-    //         hI.lineTransformed.GetAbsMinAngleDegree(LineSegment(midI, midJ));
-    //     //
-    //     如果两个线片段之间的距离小于1.5E（禁区宽度）且大于0.5E，且其夹角小于30度
-    //     // 且中点连线与hI的夹角大于25度
-    //     if (distanceToEachOther < E * 1.5 && distanceToEachOther > E * 0.5 &&
-    //         hI.lineTransformed.GetAbsMinAngleDegree(hJ.lineTransformed) < 30 &&
-    //         midPointsLSAngleToOne > 25) {
-    //       bool hJ_Is_Goal_Line =
-    //           hJ.lineTransformed.DistanceFromLine(cv::Point(0, 0)) >
-    //           hI.lineTransformed.DistanceFromLine(cv::Point(0, 0));
-    //       // 则选择hI与hJ中距离机器人较远的一条为Goal Line
-    //       cv::Point2d mid = hJ_Is_Goal_Line ? midJ : midI;
-    //       double estimatedX = 0;
-    //       // 且其与机器人的距离必须大于120cm
-    //       if ((hJ_Is_Goal_Line ? hJ.lineTransformed : hI.lineTransformed)
-    //               .DistanceFromLine(cv::Point(0, 0)) > 120) {
-    //         LandmarkType typel = CenterL;
-    //         if (mid.x > 0) {
-    //           estimatedX = A2 - mid.x;
-    //           typel = FrontL;
-    //         } else {
-    //           estimatedX = -A2 + abs(mid.x);
-    //           typel = BackL;
+    //         double midPointsLSAngleToOne = hI.line_transformed_.GetAbsMinAngleDegree(LineSegment(midI, midJ));
+    //         //
+    //         // 如果两个线片段之间的距离小于1 .5E（禁区宽度）且大于0.5E，且其夹角小于30度
+    //         // 且中点连线与hI的夹角大于25度
+    //         if (distanceToEachOther < E_ * 1.5 && distanceToEachOther > E_ * 0.5 && hI.line_transformed_.GetAbsMinAngleDegree(hJ.line_transformed_) < 30 && midPointsLSAngleToOne > 25) {
+    //             bool hJ_Is_Goal_Line = hJ.line_transformed_.DistanceFromLine(cv::Point(0, 0)) > hI.line_transformed_.DistanceFromLine(cv::Point(0, 0));
+    //             // 则选择hI与hJ中距离机器人较远的一条为Goal Line
+    //             cv::Point2d mid = hJ_Is_Goal_Line ? midJ : midI;
+    //             double estimatedX = 0;
+    //             // 且其与机器人的距离必须大于120cm
+    //             if ((hJ_Is_Goal_Line ? hJ.line_transformed_ : hI.line_transformed_).DistanceFromLine(cv::Point(0, 0)) > 120) {
+    //                 LandmarkType typel = CenterL;
+    //                 if (mid.x > 0) {
+    //                     estimatedX = A2_ - mid.x;
+    //                     typel = FrontL;
+    //                 } else {
+    //                     estimatedX = -A2_ + abs(mid.x);
+    //                     typel = BackL;
+    //                 }
+    //                 double lowPC = GetUpdateCoef(UPDATEWEAK, hJ_Is_Goal_Line ? hJ.line_transformed_ : hI.line_transformed_);
+    //                 AddObservation(cv::Point2d(estimatedX, 0), MAX_FASHER * lowPC, 0, typel);
+    //             }
     //         }
-    //         double lowPC =
-    //             GetUpdateCoef(UPDATESTRONG, hJ_Is_Goal_Line ?
-    //             hJ.lineTransformed
-    //                                                         :
-    //                                                         hI.lineTransformed);
-    //         AddObservation(cv::Point2d(estimatedX, 0), MAX_FASHER * lowPC, 0,
-    //         typel);
-    //       }
     //     }
-    //   }
     // }
 
     // 再次添加中心圆，不过此处的将x与y都用到了
@@ -347,14 +333,14 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
         double estimated_x = -circle_rotated_and_fliiped.x;
         double estimated_y = -circle_rotated_and_fliiped.y;
 
-        AddObservation(cv::Point2d(estimated_x, estimated_y), MAX_FASHER * UPDATEWEAK, MAX_FASHER * UPDATEWEAK, CenterL);
+        AddObservation(cv::Point2d(estimated_x, estimated_y), MAX_FASHER * UPDATESTRONG, MAX_FASHER * UPDATESTRONG, CenterL);
     }
 
     // add mid point of two detected goal point
     // use both estimated_x and estimated_y
     if (parameters.loc.useGoalPointLandMark && goal_position_real_rotated.size() == 2) {
-        LineSegment goal_line(goal_position_real_rotated[0], goal_position_real_rotated[1]);
-        if (GetDistance(goal_position_real_rotated[0], goal_position_real_rotated[1]) > 50 && goal_line.GetAbsMinAngleDegree(HorLine) < 15) {
+        LineSegment goal_line(goal_position_real_rotated[0], goal_position_real_rotated[1], 1.0);
+        if (GetDistance(goal_position_real_rotated[0], goal_position_real_rotated[1]) > 100 && goal_line.GetAbsMinAngleDegree(HorLine) < 15) {
             double estimated_x = -(goal_position_real_rotated[0].x + goal_position_real_rotated[1].x) / 2.0;
             double estimated_y = -(goal_position_real_rotated[0].y + goal_position_real_rotated[1].y) / 2.0;
             ROS_ERROR("add goal points (%f, %f) + (%f, %f) -> (%f, %f)",
@@ -372,7 +358,7 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
                 line_type = BackL;
                 estimated_x -= A2_;
             }
-            double low_PC = GetUpdateCoef(UPDATESTRONG, goal_line);
+            double low_PC = GetUpdateCoef(UPDATENORMAL, goal_line);
             AddObservation(cv::Point2d(estimated_x, estimated_y), MAX_FASHER * low_PC, MAX_FASHER * low_PC, line_type);
         }
     }
@@ -424,12 +410,13 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
         UpdateVertexIdx();
         if ((node_counter_ % parameters.loc.optimizeCounter == 0) && previous_vertex_id_ > 0) {
             optimizer.initializeOptimization();
-            optimizer.optimize(10);
+            optimizer.optimize(1);
             Eigen::Vector3d tmpV;
             optimizer.vertex(previous_vertex_id_)->getEstimateData(tmpV.data());
             location_.x = tmpV(0);
             location_.y = tmpV(1);
 
+            // ROS_WARN("Localization: (%f, %f)", location_.x, location_.y);
             ROS_WARN("Localization: (%f, %f)", location().x, location().y);
             return true;
         }

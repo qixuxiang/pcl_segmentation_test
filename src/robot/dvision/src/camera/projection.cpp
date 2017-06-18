@@ -157,7 +157,8 @@ Projection::CalcHeadingOffset(std::vector<LineSegment>& clustered_lines, bool ci
                 // heading_offset_vec.back()
                 //      << endl;
             }
-            if (goal_position.size() >= 2 && line_seg.DistanceFromLine(goal_position[0]) < 50 && line_seg.DistanceFromLine(goal_position[1]) < 50) {
+            if (goal_position.size() == 2 && line_seg.DistanceFromLine(goal_position[0]) < parameters.loc.maxDistanceBothGoal &&
+                line_seg.DistanceFromLine(goal_position[1]) < parameters.loc.maxDistanceBothGoal) {
                 heading_offset_vec.push_back(angle_diff_ver);
                 // cout << "CalcHeadingOffset: goal line angle " <<
                 // heading_offset_vec.back()
@@ -167,8 +168,20 @@ Projection::CalcHeadingOffset(std::vector<LineSegment>& clustered_lines, bool ci
     }
     if (!heading_offset_vec.empty()) {
         double heading_offset_avg = accumulate(heading_offset_vec.begin(), heading_offset_vec.end(), 0.0) / heading_offset_vec.size();
-        // cout << "CalcHeadingOffset: " << heading_offset_avg << endl;
-        m_heading_offset = M_PI / 180 * heading_offset_avg;
+        // remove angle far from average
+        int valid_counter = 0;
+        double sum = 0;
+        for (size_t counter = 0; counter < heading_offset_vec.size(); counter++) {
+            if (std::abs(heading_offset_vec[counter] - heading_offset_avg) < 15) {
+                sum += heading_offset_vec[counter];
+                valid_counter++;
+            }
+        }
+        if (valid_counter > 0) {
+            heading_offset_avg = sum / valid_counter;
+            // cout << "CalcHeadingOffset: " << heading_offset_avg << endl;
+            m_heading_offset = M_PI / 180 * heading_offset_avg;
+        }
     }
 }
 

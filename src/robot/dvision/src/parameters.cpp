@@ -174,6 +174,8 @@ Parameters::update()
     GPARAM("/dvision/localization/forwardRobotTrackerZ", parameters.loc.forwardRobotTrackerZ);
     GPARAM("/dvision/localization/maxDistanceBothGoal", parameters.loc.maxDistanceBothGoal);
     GPARAM("/dvision/localization/maxDistanceSingleGoal", parameters.loc.maxDistanceSingleGoal);
+    GPARAM("/dvision/localization/minFieldArea", parameters.loc.minFieldArea);
+    GPARAM("/dvision/localization/minDisFromCenter", parameters.loc.minDisFromCenter);
 
     // Get field parameters
     GPARAM("/dvision/field_model/field_length", parameters.field_model.field_length);
