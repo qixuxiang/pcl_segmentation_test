@@ -131,9 +131,6 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
         return false;
     }
 
-    std::vector<LineContainer> all_lines;
-    std::vector<FeatureContainer> all_features;
-
     // Rotate everthing!
     std::vector<LineSegment> clustered_lines_rotated;
     cv::Point2d result_circle_rotated;
@@ -149,6 +146,8 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
     cv::Point2d circle_rotated_and_fliiped = result_circle_rotated;
     // circle_rotated_and_fliiped.y *= -1;
 
+    std::vector<LineContainer> all_lines;
+    std::vector<FeatureContainer> all_features;
     all_lines.reserve(clustered_lines_rotated.size());
     all_features.reserve(5);
 
@@ -533,7 +532,7 @@ Localization::UpdateVertexIdx()
         information(2, 2) = 1;
         e->setInformation(information);
         optimizer.addEdge(e);
-        ROS_INFO("add Edges: %d -> dead_reck (%f, %f)", current_vertex_id_, dead_reck.x, dead_reck.y);
+        ROS_INFO("add Edges: %d -> dead_reck (%f, %f), info(%d, %d)", current_vertex_id_, dead_reck.x, dead_reck.y, 200, 200);
     }
 }
 
@@ -576,7 +575,7 @@ Localization::AddObservation(cv::Point2d observation, const double& x_fasher, co
         optimizer.addEdge(e);
     }
     at_least_one_observation_ = true;
-    ROS_INFO("add Edges: %d -> %d (%f, %f)", current_vertex_id_, type, observation.x, observation.y);
+    ROS_INFO("add Edges: %d -> %d (%f, %f), info(%lf, %lf)", current_vertex_id_, type, observation.x, observation.y, x_fasher, y_fasher);
     return true;
 }
 
@@ -588,8 +587,8 @@ Localization::location()
     res.x = location_.x;
     res.y = location_.y;
     // TODO(corenel) getHeading from camera
-    // res.z = camera_projections_->getHeading();
-    res.z = 0;
+    res.z = camera_projections_->GetHeading();
+    // res.z = 0;
     if (parameters.loc.useKalman) {
         res.x = location_kalman_.x;
         res.y = location_kalman_.y;
@@ -623,21 +622,27 @@ double
 Localization::GetUpdateCoef(const double& coef, const cv::Point2f& point)
 {
     double distance = GetDistance(point);
+    // ROS_WARN("DIstance: %f", distance);
 
-    if (distance > 800) {
+    if (distance > 800.0) {
+        // ROS_WARN("DIstance > 800, return 0");
         return 0;
     }
-    if (distance < 300) {
+    if (distance < 300.0) {
+        // ROS_WARN("DIstance < 300, return %f", coef);
         return coef;
     }
-
-    return coef * (1 - (distance / 800));
+    // ROS_WARN("DIstance ~ (300, 800), return %f", coef * (1 - (distance / 800.0)));
+    return coef * (1 - (distance / 800.0));
 }
 
 double
 Localization::GetUpdateCoef(const double& coef, LineSegment line)
 {
-    return GetUpdateCoef(coef, line.GetClosestPointOnLineSegment(cv::Point2d(0, 0))) * line.GetProbability();
+    double coef_updated = GetUpdateCoef(coef, line.GetClosestPointOnLineSegment(cv::Point2d(0, 0))) * line.GetProbability();
+    // ROS_WARN("line prob: %f", line.GetProbability());
+    // ROS_WARN("updated coef: %f", coef_updated);
+    return coef_updated;
 }
 
 } // namespace dvision

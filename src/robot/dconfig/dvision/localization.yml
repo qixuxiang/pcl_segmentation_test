@@ -114,7 +114,7 @@ dvision:
     UPDATENORMAL:               0.1
     UPDATESTRONG:               0.2
     UPDATEWEAK:                 0.05
-    TOTALGAIN:                  100
+    TOTALGAIN:                  1
     VerLineMinDistanceToUpdate: 70
     optimizeCounter:            30 # counter to optimize location
     # use kalman filter for localization

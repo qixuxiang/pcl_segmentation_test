@@ -93,7 +93,7 @@ DVision::tick()
      ****************/
     m_loc_img = cv::Mat(500, 500, CV_8UC3, cv::Scalar(0, 0, 0));
 
-    if (m_data.see_field && m_data.see_line && m_data.see_goal || m_data.see_circle) {
+    if (m_data.see_field && m_data.see_line) {
         m_data.loc_ok = m_loc.Calculate(m_line.clustered_lines(),
                                         m_data.see_circle,
                                         m_field.field_hull_real_center(),

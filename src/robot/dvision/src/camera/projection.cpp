@@ -80,6 +80,8 @@ Projection::getOnImageCoordinate(const std::vector<LineSegment>& lines, std::vec
         getOnImageCoordinate(lines[i].P2, tmp);
         res_lines[i].P2.x = tmp.x;
         res_lines[i].P2.y = tmp.y;
+
+        res_lines[i].SetProbability(lines[i].GetProbability());
     }
     return true;
 }
@@ -97,6 +99,8 @@ Projection::getOnRealCoordinate(const std::vector<LineSegment>& lines, std::vect
         getOnRealCoordinate(lines[i].P2, tmp);
         res_lines[i].P2.x = tmp.x;
         res_lines[i].P2.y = tmp.y;
+
+        res_lines[i].SetProbability(lines[i].GetProbability());
     }
     return true;
 }
