@@ -1,32 +1,45 @@
 #pragma once
 #include <QQuickPaintedItem>
+#include "dconfig/dconstant.hpp"
 
 // TODO(MWX): field config
 
+
+using namespace dconstant::geometry;
 namespace dmonitor {
 class Field : public QQuickPaintedItem {
     Q_OBJECT
-//    Q_PROPERTY(int m_width READ getWidth WRITE setWidth NOTIFY widthChanged)
-//    Q_PROPERTY(int m_height READ getHeight WRITE setHeight NOTIFY heightChanged)
 public:
     Field(QQuickItem* parent = 0);
-    void paint(QPainter *painter) override;
     ~Field();
+    void paint(QPainter *painter) override;
+    void drawField(QPainter* painter);
 
-// setter & getter
-//    inline int getWidth() { return m_width; }
-//    inline void setWidth(int w) { m_width = w; }
+    // convert point's coordinate from real(center of the field) to image (up left corner) for drawing
+    QPointF getOnImageCoordiante(QPointF real);
+    QPointF getOnRealCoordinate(QPointF img);
+    QPointF flipFromOrigin(QPointF p);
+    QRectF flipFromOrigin(QRectF rect);
 
-//    inline int getHeight() { return m_height; }
-//    inline int setHeight(int h) { m_height = h; }
+    void drawCross(QPainter *painter, QPointF real);
+private:
+    // Field geometry in cm, refer to RoboCup Humanoid Rules
+    int m_fieldLength = fieldLength;
+    int m_fieldWidth = fieldWidth;
+    int m_goalDepth = goalDepth;
+    int m_goalWidth = goalWidth;
+    int m_goalHeight = goalHeight;
+    int m_goalAreaLength = goalAreaLength;
+    int m_goalAreaWidth = goalAreaWidth;
+    int m_penaltyMarkDistance = penaltyMarkDistance;
+    int m_centerCircleDiameter = centerCircleDiameter;
+    int m_borderStripWidth = borderStripWidth;
+    int m_lineWidth = lineWidth;
 
-//signals:
-//    void widthChanged();
-//    void heightChanged();
+    int m_imageWidth = m_fieldLength + m_borderStripWidth * 2;
+    int m_imageHeight = m_fieldWidth + m_borderStripWidth * 2;
 
-//private:
-//    int m_width;
-//    int m_height;
-
+    // color
+    QColor m_grassGreen = QColor(1, 142, 14);
 };
 }

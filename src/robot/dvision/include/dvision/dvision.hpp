@@ -18,6 +18,7 @@
 #include "dvision/projection.hpp"
 #include "dvision/utils.hpp"
 #include "std_msgs/String.h"
+#include "dtransmit/dtransmit.hpp"
 #include <vector>
 
 namespace dvision {
@@ -37,6 +38,8 @@ class DVision : public dprocess::DProcess<DVision>
     Camera m_camera;
     Projection m_projection;
     dprocess::DConcurrent m_concurrent;
+    dtransmit::DTransmit* m_transmitter;
+    // todo add broadcast address config
 
     // detectors and loc
     BallDetector m_ball;
@@ -51,6 +54,7 @@ class DVision : public dprocess::DProcess<DVision>
     // added by yyj
     int m_yaw;
     int m_pitch;
+    VisionInfo m_data;
     dmotion::MotionInfo m_motion_info;
     SaveImg m_save_img;
     void motionCallback(const dmotion::MotionInfo::ConstPtr& msg);

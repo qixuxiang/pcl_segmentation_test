@@ -48,8 +48,25 @@ private:
         Foo() {
         }
 
+        // https://stackoverflow.com/a/39665940
         Foo(boost::asio::io_service& service, PORT port) {
-            socket = new boost::asio::ip::udp::socket(service, boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), port));
+            // construct the socket
+            socket = new boost::asio::ip::udp::socket(service);
+
+            // open it
+            boost::asio::ip::udp::endpoint rx_endpoint_(boost::asio::ip::udp::v4(), port);
+            boost::system::error_code error;
+            socket->open(rx_endpoint_.protocol(), error);
+            if(error) {
+                ROS_ERROR("Can't open recv socket");
+            } else {
+               // then set it for reuse and bind it
+                socket->set_option(boost::asio::ip::udp::socket::reuse_address(true));
+                socket->bind(rx_endpoint_, error);
+                if(error) {
+                    ROS_ERROR("Can't bind recv socket");
+                }
+            }
         }
 
         ~Foo() {

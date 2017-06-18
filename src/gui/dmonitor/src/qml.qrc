@@ -1,5 +1,8 @@
 <RCC>
     <qresource prefix="/">
-        <file>main.qml</file>
+        <file>js/componentCreation.js</file>
+        <file>qml/main.qml</file>
+        <file>qml/Robot.qml</file>
+        <file>qml/Ball.qml</file>
     </qresource>
 </RCC>

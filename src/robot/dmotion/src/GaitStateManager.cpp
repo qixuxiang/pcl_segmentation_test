@@ -18,6 +18,8 @@ GaitStateManager::GaitStateManager(ros::NodeHandle* nh)
 
     m_sub_reload_config = m_nh->subscribe("/humanoid/ReloadMotionConfig", 1, &GaitStateManager::reload_gaitdata, this);
     m_pub = m_nh->advertise<dmotion::MotionInfo>("/humanoid/MotionInfo", 1);
+
+
 }
 
 GaitStateManager::~GaitStateManager() = default;
@@ -198,9 +200,11 @@ GaitStateManager::platCtrl(double& targetYaw, double& targetPitch)
     m_motion_info.vy = robot->m_robotCtrl.getWalkVelY();
     m_motion_info.curPlat.x = estimated_plat.m_x;
     m_motion_info.curPlat.y = estimated_plat.m_y;
+
     m_motion_info.deltaData.x = tempD.m_x;
     m_motion_info.deltaData.y = tempD.m_y;
     m_motion_info.deltaData.z = tempD.m_angle;
+
     m_motion_info.deltaData.x = robot->m_robotCtrl.robot_x;
     m_motion_info.deltaData.y = robot->m_robotCtrl.robot_x;
     m_motion_info.deltaData.z = robot->m_robotCtrl.robot_t;

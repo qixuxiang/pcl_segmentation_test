@@ -12,7 +12,6 @@ Projection::Projection()
 void
 Projection::init(ros::NodeHandle* nh)
 {
-    parameters.init(nh);
     m_dist.init();
     m_ipm.Init(parameters.camera.extrinsic_para, parameters.camera.fx, parameters.camera.fy, parameters.camera.undistCx, parameters.camera.undistCy);
 }
@@ -140,7 +139,6 @@ Projection::RotateTowardHeading(const std::vector<LineSegment>& in)
 bool
 Projection::CalcHeadingOffset(std::vector<LineSegment>& clustered_lines, bool circle_detected, const Point2d& result_circle, const std::vector<cv::Point2f>& goal_position)
 {
-    // Ver line in robot coord
     LineSegment VerLine(cv::Point(0, -10), cv::Point(0, 10));
     std::vector<double> heading_offset_vec;
     for (auto line_seg : clustered_lines) {

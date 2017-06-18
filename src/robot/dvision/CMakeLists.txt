@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(dvision)
 
-add_definitions(-std=c++11 -Wall -O2 -Wextra -Wno-unused-result) #-Wfloat-equal -Weffc++ -pedantic
+add_definitions(-std=c++11 -Wall -g -Wextra -Wno-unused-result) #-Wfloat-equal -Weffc++ -pedantic
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake_modules/")
 
@@ -10,6 +10,8 @@ find_package(catkin REQUIRED
   geometry_msgs
   message_generation
   dprocess
+  dtransmit
+  dconfig
   darknetcxx)
 
 find_package(SuiteSparse REQUIRED)
@@ -22,6 +24,7 @@ find_package(G2O REQUIRED)
 add_message_files(
   FILES
   SaveImg.msg
+  Line.msg
   VisionInfo.msg
 )
 

@@ -1,0 +1,82 @@
+#include <QPainter>
+#include "dmonitor/baseObject.hpp"
+
+namespace dmonitor {
+BaseObject::BaseObject(QQuickItem *parent) : QQuickPaintedItem(parent) {
+    connect(this, &BaseObject::xChanged, this, &BaseObject::onxyChanged);
+    connect(this, &BaseObject::yChanged, this, &BaseObject::onxyChanged);
+}
+
+BaseObject::~BaseObject() {
+
+}
+
+void BaseObject::init()
+{
+
+}
+
+Field* BaseObject::field() const {
+    return m_field;
+}
+
+bool BaseObject::isMonitor() const {
+    return m_isMonitor;
+}
+
+void BaseObject::paint(QPainter *painter)
+{
+   if(!m_enabled)
+       return;
+
+   if(!m_field) {
+       qDebug() << "Field not set!" << endl;
+       return;
+   }
+
+   painter->setRenderHint(QPainter::Antialiasing);
+
+   if(m_isMonitor) {
+       monitorModeUpdate();
+   } else {
+       simModeUpdate();
+   }
+   drawMyself(painter);
+}
+
+bool BaseObject::enabled() const
+{
+    return m_enabled;
+}
+
+void BaseObject::setField(Field *field) {
+    m_field = field;
+}
+
+void BaseObject::setIsMonitor(bool isMonitor) {
+    m_isMonitor = isMonitor;
+}
+
+void BaseObject::onxyChanged()
+{
+
+}
+
+void BaseObject::monitorModeUpdate()
+{
+    auto imgPos = m_field->getOnImageCoordiante(m_realPos);
+    setX(imgPos.x() - width() / 2);
+    setY(imgPos.y() - height() / 2);
+}
+
+void BaseObject::simModeUpdate()
+{
+    // set position back
+}
+
+void BaseObject::setEnable(bool enabled)
+{
+    m_enabled = enabled;
+}
+
+} // namespace dmonitor
