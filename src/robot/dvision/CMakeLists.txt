@@ -43,7 +43,7 @@ include_directories(include ${catkin_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR} ${CSPAR
 #g2o_solver_csparse g2o_solver_dense g2o_solver_pcg g2o_stuff g2o_types_icp
 #g2o_types_sba g2o_types_sim3 g2o_types_slam2d g2o_types_slam3d)
 
-SET(G2O_LIBS 
+SET(G2O_LIBS
     ${G2O_CORE_LIBRARY}
     ${G2O_STUFF_LIBRARY}
     ${G2O_CLI_LIBRARY}
@@ -84,6 +84,7 @@ add_library(dvisionlib
   src/tools/line_segment.cpp
   src/tools/utils.cpp
   src/tools/kalman.cpp
+  src/tools/ball_tracker.cpp
   )
 target_link_libraries(dvisionlib ${catkin_LIBRARIES} ${OpenCV_LIBS} ${CSPARSE_LIBRARY} ${G2O_LIBS}) # ${Boost_LIBRARIES})
 add_dependencies(dvisionlib ${PROJECT_NAME}_generate_messages_cpp)

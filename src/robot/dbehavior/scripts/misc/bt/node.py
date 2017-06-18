@@ -397,6 +397,13 @@ class Action(Node):
         # print head, position
         self.lookat(head.x, head.y, speed, speed)
 
+    def gaze_at_fuck(self, speed=1):
+        """Gaze at field position."""
+        head = self.bb.vision.cmd_head_ball_track
+        # print head, position
+        rospy.loginfo("Fuck at ({}, {})".format(head.y, head.z))
+        self.lookat(head.y, head.z, speed, speed)
+
     def gaze_ball(self):
         """Gaze ball."""
         if self.world.see_ball:
@@ -405,7 +412,8 @@ class Action(Node):
                     self.world.ball_field.x > 10:
                 self.lookat(0, 60, 1, 1)
             else:
-                self.gaze_at(self.world.ball_field)
+                # self.gaze_at(self.world.ball_field)
+                self.gaze_at_fuck(self.world.ball_field)
             return True
         else:
             return False
