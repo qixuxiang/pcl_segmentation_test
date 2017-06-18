@@ -60,7 +60,7 @@ void DTransmit::sendBuffer(boost::asio::ip::udp::socket* socket, const void* buf
     boost::system::error_code ec;
     socket->send(boost::asio::buffer(buffer, size), 0, ec);
     if(ec) {
-        ROS_ERROR("DTransmit can't send Ros buffer: %s", ec.message().c_str());
+        // ROS_WARN("DTransmit can't send Ros buffer: %s", ec.message().c_str());
     }
 }
 

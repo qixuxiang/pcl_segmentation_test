@@ -7,8 +7,9 @@ using namespace dtransmit;
 using namespace std;
 int main()
 {
-//    DTransmit d("127.0.0.1");
-    DTransmit d("192.168.255.255");
+    DTransmit d("127.0.0.1");
+//    DTransmit d("192.168.255.255");
+    int portBase = 26334;
 
     struct Foo {
         int x = 1;
@@ -20,8 +21,8 @@ int main()
     int NUM = 10;
 
     for(int i = 0; i < NUM; ++i) {
-        d.addRosRecv<std_msgs::String>(2000 + i, [=](std_msgs::String &msg) {
-            ROS_INFO("%d heard: [%s]", 2000 + i, msg.data.c_str());
+        d.addRosRecv<std_msgs::String>(portBase + i, [=](std_msgs::String &msg) {
+            ROS_INFO("%d heard: [%s]", portBase + i, msg.data.c_str());
         });
     }
 
@@ -37,7 +38,7 @@ int main()
 
     d.startService();
 
-    for(int i = 0 ; i < 100 ; ++i) {
+    for(int i = 0 ; i < 10 ; ++i) {
         std_msgs::String msg;
         std::stringstream ss;
         ss << "Hello dtransmit " << i;
@@ -46,7 +47,7 @@ int main()
         ROS_INFO("Sending: [%s]", msg.data.c_str());
 
         for(int j = 0; j < NUM; ++j) {
-            d.sendRos<std_msgs::String>(2000 + j, msg);
+            d.sendRos<std_msgs::String>(portBase + j, msg);
         }
 //        usleep(100);
         cout << endl;

@@ -1,9 +1,8 @@
 var Robot;
 var robots = [];
-var udpAddress = "192.168.255.255";
+var robotnum = 6;
 
 function createObjects() {
-    console.log("Create ");
     Robot = Qt.createComponent("../qml/Robot.qml");
 
     if(Robot.status === Component.Ready)
@@ -17,14 +16,13 @@ function createObjects() {
 
 function finishRobotCreation() {
    if(Robot.status === Component.Ready) {
-       for(var i = 1; i <= 6; ++i) {
+       for(var i = 1; i <= robotnum; ++i) {
            var rbt = Robot.createObject(drawArea, {"robotId": i,
                                                    "width": 10,
                                                    "height": 10,
-                                                   "address": udpAddress})
+                                                   "address": udpAddress,
+                                                   "field": field})
            robots.push(rbt);
-           rbt.x = Math.floor(Math.random() * 900)
-           rbt.y = Math.floor(Math.random() * 600)
        }
 
        for(i = 0; i < robots.length; ++i) {

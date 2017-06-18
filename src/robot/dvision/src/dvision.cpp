@@ -2,6 +2,7 @@
 //     Author: Wenxing Mei <mwx36mwx@gmail.com>
 
 #include "dvision/dvision.hpp"
+#include "dconfig/dconstant.hpp"
 
 namespace dvision {
 static const int VISION_FREQ = 30;
@@ -118,7 +119,9 @@ DVision::tick()
 
     prepareVisionInfo(m_data);
     m_pub.publish(m_data);
-    m_transmitter->sendRos(2000 + parameters.robotId, m_data);
+    m_transmitter->sendRos(dconstant::network::robotBroadcastAddressBase + parameters.robotId, m_data);
+
+    // TODO(MWX): simulating mode
 
     /****************
      * Post process *

@@ -9,6 +9,7 @@ find_package(catkin REQUIRED
   roscpp
   dvision
   dtransmit
+  dconfig
 )
 
 catkin_package(

@@ -11,6 +11,7 @@ find_package(catkin REQUIRED
   message_generation
   dprocess
   dtransmit
+  dconfig
   darknetcxx)
 
 find_package(SuiteSparse REQUIRED)

@@ -1,8 +1,11 @@
 #pragma once
 #include <QQuickPaintedItem>
+#include "dconfig/dconstant.hpp"
 
 // TODO(MWX): field config
 
+
+using namespace dconstant::geometry;
 namespace dmonitor {
 class Field : public QQuickPaintedItem {
     Q_OBJECT
@@ -21,17 +24,17 @@ public:
     void drawCross(QPainter *painter, QPointF real);
 private:
     // Field geometry in cm, refer to RoboCup Humanoid Rules
-    int m_fieldLength = 900;
-    int m_fieldWidth = 600;
-    int m_goalDepth = 60;
-    int m_goalWidth = 260;
-    int m_goalHeight = 180;
-    int m_goalAreaLength = 100;
-    int m_goalAreaWidth = 500;
-    int m_penaltyMarkDistance = 210;
-    int m_centerCircleDiameter = 150;
-    int m_borderStripWidth = 70;
-    int m_lineWidth = 5;
+    int m_fieldLength = fieldLength;
+    int m_fieldWidth = fieldWidth;
+    int m_goalDepth = goalDepth;
+    int m_goalWidth = goalWidth;
+    int m_goalHeight = goalHeight;
+    int m_goalAreaLength = goalAreaLength;
+    int m_goalAreaWidth = goalAreaWidth;
+    int m_penaltyMarkDistance = penaltyMarkDistance;
+    int m_centerCircleDiameter = centerCircleDiameter;
+    int m_borderStripWidth = borderStripWidth;
+    int m_lineWidth = lineWidth;
 
     int m_imageWidth = m_fieldLength + m_borderStripWidth * 2;
     int m_imageHeight = m_fieldWidth + m_borderStripWidth * 2;
