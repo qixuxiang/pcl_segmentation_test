@@ -80,7 +80,7 @@ Localization::Init()
 {
     InitG2OGraph();
     optimizer.setAlgorithm(opt_algo_);
-    optimizer.setVerbose(false);
+    optimizer.setVerbose(true);
     ROS_INFO("Localization Init() finished");
     return true;
 }
@@ -358,8 +358,8 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
                 line_type = BackL;
                 estimated_x -= A2_;
             }
-            double low_PC = GetUpdateCoef(UPDATENORMAL, goal_line);
-            AddObservation(cv::Point2d(estimated_x, estimated_y), MAX_FASHER * low_PC, MAX_FASHER * low_PC, line_type);
+            double low_PC = GetUpdateCoef(UPDATESTRONG, goal_line);
+            AddObservation(cv::Point2d(0, estimated_y), 0, MAX_FASHER * low_PC, line_type);
         }
     }
 
@@ -410,7 +410,7 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
         UpdateVertexIdx();
         if ((node_counter_ % parameters.loc.optimizeCounter == 0) && previous_vertex_id_ > 0) {
             optimizer.initializeOptimization();
-            optimizer.optimize(1);
+            optimizer.optimize(10);
             Eigen::Vector3d tmpV;
             optimizer.vertex(previous_vertex_id_)->getEstimateData(tmpV.data());
             location_.x = tmpV(0);

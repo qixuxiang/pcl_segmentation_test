@@ -20,10 +20,10 @@ DVision::DVision(ros::NodeHandle* n)
     m_concurrent.push([] {
         //     ROS_INFO("concurrent");
     });
-    m_sub_action_cmd = m_nh->subscribe("/humanoid/MotionInfo", 100, &DVision::motionCallback, this);
-    m_sub_save_img = m_nh->subscribe("/humanoid/SaveImg", 100, &DVision::saveImgCallback, this);
+    m_sub_action_cmd = m_nh->subscribe("/humanoid/MotionInfo", 1, &DVision::motionCallback, this);
+    m_sub_save_img = m_nh->subscribe("/humanoid/SaveImg", 1, &DVision::saveImgCallback, this);
     m_sub_reload_config = m_nh->subscribe("/humanoid/ReloadVisionConfig", 1, &DVision::reloadConfigCallback, this);
-    m_pub = m_nh->advertise<VisionInfo>("/humanoid/VisionInfo", 100);
+    m_pub = m_nh->advertise<VisionInfo>("/humanoid/VisionInfo", 1);
 }
 
 DVision::~DVision()
