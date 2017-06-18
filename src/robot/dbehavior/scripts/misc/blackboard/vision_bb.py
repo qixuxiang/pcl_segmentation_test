@@ -31,3 +31,5 @@ class VisionBlackBoard(VisionInfo):
         self.right_goal = Vector3(UNKNOWN, UNKNOWN, 0)
         self.unknown_goal = Vector3(UNKNOWN, UNKNOWN, 0)
         self.robot_pos = Vector3(UNKNOWN, UNKNOWN, 0)
+        # add by yyj
+        self.cmd_head_ball_track = Vector3(0, UNKNOWN, UNKNOWN)

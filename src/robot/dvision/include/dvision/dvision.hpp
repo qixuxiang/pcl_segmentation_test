@@ -17,6 +17,7 @@
 #include "dvision/localization.hpp"
 #include "dvision/projection.hpp"
 #include "dvision/utils.hpp"
+#include "dvision/ball_tracker.hpp"
 #include "std_msgs/String.h"
 #include "dtransmit/dtransmit.hpp"
 #include <vector>
@@ -52,8 +53,12 @@ class DVision : public dprocess::DProcess<DVision>
     // image
     cv::Mat m_hsv_img, m_canny_img, m_gui_img, m_loc_img;
     // added by yyj
-    int m_yaw;
+    BalllTracker m_ball_tracker;
+    int m_center_pitch;
+    int m_center_yaw;
     int m_pitch;
+    int m_yaw;
+
     VisionInfo m_data;
     dmotion::MotionInfo m_motion_info;
     SaveImg m_save_img;

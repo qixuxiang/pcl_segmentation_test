@@ -18,11 +18,11 @@ DVision::DVision(ros::NodeHandle* n)
     m_goal.Init();
     m_line.Init();
     m_loc.Init();
+    m_ball_tracker.Init(parameters.camera.extrinsic_para, parameters.camera.fx, parameters.camera.fy, parameters.camera.undistCx, parameters.camera.undistCy);
 
     m_concurrent.push([] {
         //     ROS_INFO("concurrent");
     });
-
     m_sub_action_cmd = m_nh->subscribe("/humanoid/MotionInfo", 1, &DVision::motionCallback, this);
     m_sub_save_img = m_nh->subscribe("/humanoid/SaveImg", 1, &DVision::saveImgCallback, this);
     m_sub_reload_config = m_nh->subscribe("/humanoid/ReloadVisionConfig", 1, &DVision::reloadConfigCallback, this);
@@ -94,6 +94,16 @@ DVision::tick()
         m_data.see_circle = m_circle.Process(m_line.clustered_lines());
     }
 
+    if (m_data.see_circle){
+      if(m_ball_tracker.Process(m_circle.result_circle().x, m_circle.result_circle().y, static_cast<double>(m_pitch), static_cast<double>(m_yaw))){
+        m_data.cmd_head_ball_track.x = 0;
+        m_data.cmd_head_ball_track.y = m_ball_tracker.m_out_pitch / M_PI * 180;
+        m_data.cmd_head_ball_track.z = m_ball_tracker.m_out_yaw / M_PI * 180;
+        // cout << "c_pitch: " << m_data.cmd_head_ball_track.y << endl;
+        // cout << "c_yaw: " << m_data.cmd_head_ball_track.z << endl;
+      }
+
+    }
     /*****************
      * Goal Detector *
      *****************/
