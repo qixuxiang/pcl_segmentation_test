@@ -39,8 +39,9 @@ add_executable(dmonitor
     include/dmonitor/robot.hpp
     include/dmonitor/field.hpp
     src/qml.qrc
-    src/main.qml
-    src/componentCreation.js
+    src/qml/main.qml
+    src/qml/Robot.qml
+    src/js/componentCreation.js
     )
 
 

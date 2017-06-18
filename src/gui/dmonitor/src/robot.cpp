@@ -56,7 +56,7 @@ QString Robot::address() const
 
 void Robot::setRobotId(int id)
 {
-    qDebug() << "set robot id" << id << endl;
+    qDebug() << "set robot id" << id;
     if (m_robotId == id)
         return;
 

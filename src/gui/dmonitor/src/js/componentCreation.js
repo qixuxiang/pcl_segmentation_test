@@ -1,35 +1,36 @@
-var component;
+var Robot;
 var robots = [];
+var udpAddress = "192.168.255.255";
 
 function createObjects() {
-    console.log("Create !");
-    component = Robot;
-    if(component.status === Component.Ready)
-        finishCreation();
+    console.log("Create ");
+    Robot = Qt.createComponent("../qml/Robot.qml");
+
+    if(Robot.status === Component.Ready)
+        finishRobotCreation();
     else
-        component.statusChanged.connect(finishCreation);
+        Robot.statusChanged.connect(finishCreation);
+
+    return robots;
 }
 
 
-function finishCreation() {
-   if(component.status === Component.Ready) {
+function finishRobotCreation() {
+   if(Robot.status === Component.Ready) {
        for(var i = 1; i <= 6; ++i) {
-           var rbt = component.createObject(Robot, {"robotId": i, "width": 10, "height": 10, "address": "192.168.255.255"})
+           var rbt = Robot.createObject(drawArea, {"robotId": i,
+                                                   "width": 10,
+                                                   "height": 10,
+                                                   "address": udpAddress})
            robots.push(rbt);
+           rbt.x = Math.floor(Math.random() * 900)
+           rbt.y = Math.floor(Math.random() * 600)
        }
 
        for(i = 0; i < robots.length; ++i) {
            robots[i].init();
        }
-   } else if (component.status === Component.Error) {
-       // Error Handling
-       console.log('Error loading component: ', component.errorString())
+   } else if (Robot.status === Component.Error) {
+       console.log('Error loading Robot: ', Robot.errorString())
    }
-}
-
-
-function updateRobot() {
-    for(var i = 0; i < robots.length; ++i) {
-        robots[i].update();
-    }
 }

@@ -1,52 +1,57 @@
 import QtQuick 2.3
 import QtQuick.Controls 1.2
 import DMonitor 1.0
-import "componentCreation.js" as MyScript
+import "../js/componentCreation.js" as RobotSpawner
 
 ApplicationWindow {
     id: root
     visible: true
-    width: 900
-    height: 600
+    width: drawArea.width + 300
+    height: drawArea.height + 20
+    color: "white"
     title: qsTr("DMonitor")
 
     property string udpAddress: '127.0.0.1'
 
 
     Rectangle {
-        anchors.fill: parent
-        color: "black"
-        property var updateRate: 30
+        id: drawArea
+        x: 10
+        y: 10
+        width: field.width
+        height: field.height
+        //color: "black"
 
+        property var updateRate: 30
+        property var robots: []
 
         Timer {
             interval: 1000 / parent.updateRate
             running: true
             repeat: true
-            onTriggered: parent.updateView()
+            onTriggered: drawArea.updateView()
         }
 
-
+        // create field before robots
         Field {
             id: field
+            width: 900
+            height: 600
         }
 
-        // list view robot
-
-//        Robot {
-//            id: robot
-//            address: root.udpAddress
-//            robotId: 1
-//            width: 10
-//            height:10
-//        }
 
         function updateView() {
-            field.update();
-            MyScript.updateRobot();
+            console.log(drawArea.width, drawArea.height)
+            robots.forEach(function(rbt, index, array) {
+               rbt.update()
+            })
         }
 
-        Component.onCompleted: MyScript.createObjects();
+        Component.onCompleted: {
+            robots = RobotSpawner.createObjects();
+            // field only needs to paint once
+            field.update()
+        }
 
 
     }
