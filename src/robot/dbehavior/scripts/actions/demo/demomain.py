@@ -12,6 +12,7 @@ Moving around:
         w
    a    s    d
 
+p : step
 x : turn around
 z : turn left; c : turn right
 
@@ -39,6 +40,7 @@ moveBindings = {
 		'x':(0, 0, 1),
 		'z':(1, 0, 1),
 		'c':(1, 0, -1),
+        'p':(0, 0, 0),
 		}
 
 speedBindings={
@@ -93,7 +95,7 @@ def main():
 			x = moveBindings[key][0] * speed
 			y = moveBindings[key][1] * speed
 			th = moveBindings[key][2] * turn
-			if abs(x) > 1 or abs(y) > 1 or abs(th) > 1:
+			if abs(x) > 1 or abs(y) > 1 or abs(th) > 1 or key == 'p':
 				cmd.gait_type = ActionCmd.WENXI
 				cmd.cmd_vel.linear = Vector3(x, y, 0)
 				cmd.cmd_vel.angular = Vector3(0, 0, th)
