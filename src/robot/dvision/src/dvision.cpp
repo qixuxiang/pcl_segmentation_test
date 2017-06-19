@@ -23,8 +23,8 @@ DVision::DVision(ros::NodeHandle* n)
     m_concurrent.push([] {
         //     ROS_INFO("concurrent");
     });
-    m_sub_action_cmd = m_nh->subscribe("/humanoid/MotionInfo", 1, &DVision::motionCallback, this);
-    m_sub_save_img = m_nh->subscribe("/humanoid/SaveImg", 1, &DVision::saveImgCallback, this);
+    m_sub_motion_info = m_nh->subscribe("/humanoid/MotionInfo", 1, &DVision::motionCallback, this);
+    m_sub_behaviour_info = m_nh->subscribe("/humanoid/BehaviourInfo", 1, &DVision::behaviourCallback, this);
     m_sub_reload_config = m_nh->subscribe("/humanoid/ReloadVisionConfig", 1, &DVision::reloadConfigCallback, this);
     m_pub = m_nh->advertise<VisionInfo>("/humanoid/VisionInfo", 1);
 
@@ -161,13 +161,14 @@ DVision::motionCallback(const dmotion::MotionInfo::ConstPtr& motion_msg)
 }
 
 void
-DVision::saveImgCallback(const SaveImg::ConstPtr& save_img_msg)
+DVision::behaviourCallback(const dbehavior::BehaviourInfo::ConstPtr& behaviour_msg)
 {
-    m_save_img = *save_img_msg;
-    if (m_save_img.IsSaveImg) {
+    m_behaviour_info = *behaviour_msg;
+    if (m_behaviour_info.save_image) {
         auto frame = m_camera.capture();
         std::string path_str;
         path_str = "p_" + std::to_string(m_pitch) + "_y_" + std::to_string(m_yaw) + " ";
+        ROS_INFO("save_image! %s", path_str);
         frame.save(path_str);
     }
 }
