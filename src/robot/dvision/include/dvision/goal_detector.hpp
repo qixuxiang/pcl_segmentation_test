@@ -45,7 +45,8 @@ class GoalDetector : public IDetector
                            double& left_avg,
                            double& right_avg,
                            int& vote_for_double_left,
-                           int& vote_for_double_right);
+                           int& vote_for_double_right,
+                           std::vector<cv::Point>& goal_post_points);
     inline std::vector<cv::Point2f> goal_position()
     {
         return goal_position_;

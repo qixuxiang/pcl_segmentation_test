@@ -527,4 +527,19 @@ SortFuncDescending(const std::vector<cv::Point>& i, const std::vector<cv::Point>
 {
     return cv::contourArea(i, false) > cv::contourArea(j, false);
 }
+
+bool
+getOnGlobalCoordinate(const cv::Point3d& robot_pos, const std::vector<LineSegment>& clustered_lines, std::vector<LineSegment>& res_lines)
+{
+    for (size_t i = 0; i < clustered_lines.size(); i++) {
+        res_lines[i] = LineSegment(
+          RotateAroundPoint(clustered_lines[i].P1, -Radian2Degree(robot_pos.z)), RotateAroundPoint(clustered_lines[i].P2, -Radian2Degree(robot_pos.z)), clustered_lines[i].GetProbability());
+        res_lines[i].P1.x += robot_pos.x;
+        res_lines[i].P1.y += robot_pos.y;
+        res_lines[i].P2.x += robot_pos.x;
+        res_lines[i].P2.y += robot_pos.y;
+    }
+    return true;
+}
+
 } // namespace dvision

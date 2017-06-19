@@ -161,4 +161,7 @@ DistanceFromLineSegment(const LineSegment& line, const cv::Point2f& p);
 
 bool
 SortFuncDescending(const std::vector<cv::Point>& i, const std::vector<cv::Point>& j);
+
+bool
+getOnGlobalCoordinate(const cv::Point3d& robot_pos, const std::vector<LineSegment>& clustered_lines, std::vector<LineSegment>& res_lines);
 } // namespace dvision

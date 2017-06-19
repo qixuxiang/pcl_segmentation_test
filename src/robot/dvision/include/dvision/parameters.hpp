@@ -98,9 +98,11 @@ struct GoalDetectorParameters
     int v1;
     bool active;
     int MinLineLength;
+    int MaxLineGap;
     int MaxOutField;
     int MinNearFieldUpPoint;
     float DistanceToMerge;
+    float AngleToMerge;
     float NearestDistance;
     float FurthestDistance;
     int NearMinLen;
@@ -113,6 +115,7 @@ struct GoalDetectorParameters
     int minContinuesColor;
     int extInvalidPoints;
     int extTotalPoints;
+    int cutOffInvalidPoints;
 };
 
 struct LineDetectorParameters
@@ -234,7 +237,6 @@ struct Parameters
   private:
     ros::NodeHandle* m_nh;
 };
-
 
 extern Parameters parameters;
 }

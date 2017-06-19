@@ -9,7 +9,7 @@ msg = """
 Reading from the keyboard  and Publishing to Motion!
 ---------------------------
 Moving around:
-        w    
+        w
    a    s    d
 
 x : turn around
@@ -74,7 +74,7 @@ def getKey():
 def main():
 	speed = 1.5
 	turn = 2
-	pitch = 40
+	pitch = 0
 	yaw = 0
 
 	cmd = ActionCmd()
@@ -106,9 +106,9 @@ def main():
 		elif key in speedBindings.keys():
 			speed = speed * speedBindings[key][0]
 			turn = turn * speedBindings[key][1]
-			print vels(speed,turn)		
+			print vels(speed,turn)
 		elif key == helpBinding:
-			print msg		
+			print msg
 		elif key == goalieBinding:
 			cmd.gait_type = ActionCmd.GOALIE
 		elif key == standupBackBinding:
