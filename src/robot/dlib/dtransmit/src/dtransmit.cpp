@@ -64,7 +64,7 @@ void DTransmit::sendBuffer(boost::asio::ip::udp::socket* socket, const void* buf
     }
 }
 
-void DTransmit::addRawRecv(PORT port, std::function<void(const void*, std::size_t)> callback) {
+void DTransmit::addRawRecv(PORT port, std::function<void(void*, std::size_t)> callback) {
     if(m_recvFoo.count(port)) {
         ROS_ERROR("Error in addRawRecv: port %d exist!", port);
         return;

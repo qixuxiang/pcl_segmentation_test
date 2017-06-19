@@ -8,7 +8,6 @@ using namespace std;
 int main()
 {
     DTransmit d("127.0.0.1");
-//    DTransmit d("192.168.255.255");
     int portBase = 26334;
 
     struct Foo {
@@ -16,13 +15,11 @@ int main()
         double y = 2;
         string s = "hello";
     } foo;
-
-
     int NUM = 10;
 
     for(int i = 0; i < NUM; ++i) {
         d.addRosRecv<std_msgs::String>(portBase + i, [=](std_msgs::String &msg) {
-            ROS_INFO("%d heard: [%s]", portBase + i, msg.data.c_str());
+            //ROS_INFO("%d heard: [%s]", portBase + i, msg.data.c_str());
         });
     }
 
@@ -32,6 +29,7 @@ int main()
             throw std::runtime_error("Received raw size not correct");
         }
         Foo* f = (Foo*) buffer;
+        cout << buffer << endl;
         printf("recv: %d %lf %s", f->x, f->y, f->s.c_str());
         recv = true;
     });
@@ -43,14 +41,10 @@ int main()
         std::stringstream ss;
         ss << "Hello dtransmit " << i;
         msg.data = ss.str();
-
-        ROS_INFO("Sending: [%s]", msg.data.c_str());
-
+//        ROS_INFO("Sending: [%s]", msg.data.c_str());
         for(int j = 0; j < NUM; ++j) {
             d.sendRos<std_msgs::String>(portBase + j, msg);
         }
-//        usleep(100);
-        cout << endl;
     }
 
     // test send raw

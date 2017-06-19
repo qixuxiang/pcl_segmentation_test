@@ -8,6 +8,7 @@ find_package(catkin REQUIRED
   COMPONENTS 
   roscpp
   dvision
+  ros_h264_streamer
 )
 
 find_package(OpenCV 3 REQUIRED)

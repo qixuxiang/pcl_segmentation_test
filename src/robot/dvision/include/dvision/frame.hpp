@@ -3,8 +3,13 @@
 
 #pragma once
 #include <opencv2/opencv.hpp>
+#include <memory>
 #include <ros/ros.h>
 #include <string>
+#include <cv_bridge/cv_bridge.h>
+#include "ros_h264_streamer/h264_encoder.h"
+#include "ros_h264_streamer/h264_decoder.h"
+#include "dvision/parameters.hpp"
 
 namespace dvision {
 class Frame
@@ -84,6 +89,16 @@ class Frame
 
     void save(std::string path);
 
+    // h264 encode & decode
+    // Mat --> cv_bridge::CvImage --> ImageMsg --> Encoding --> H264EncoderResult --> raw buffer(pointer, size) --> Decoding --> ImageMsg --> cv_bridge::CvImagePtr --> Mat
+    static void initEncoder();
+
+    std::unique_ptr<uint8_t> encode(int& length);
+
+    static std::unique_ptr<uint8_t> encode(cv::Mat& src, int& length);
+
+    void decode(void* buffer);
+
   private:
     uint8_t* m_yuv; // raw yuv image
     cv::Mat m_bgr;
@@ -93,5 +108,10 @@ class Frame
     int m_width;
     int m_height;
     bool m_converted;
+
+    // h264 encoding
+    static ros_h264_streamer::H264Decoder* m_decoder;
+    static ros_h264_streamer::H264Encoder* m_encoder;
+    bool encoderInited = false;
 };
 } // namespace dvision

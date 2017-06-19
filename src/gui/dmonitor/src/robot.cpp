@@ -31,17 +31,19 @@ void Robot::init()
     m_transmitter->addRosRecv<dvision::VisionInfo>(port, std::bind(&Robot::onRecv, this, std::placeholders::_1));
     m_transmitter->startService();
 
-    setWidth(40);
-    setHeight(40);
 }
 
 void Robot::simModeUpdate()
 {
+    double scale = m_field->getScale();
+    setWidth(m_triangleBBoxWidth / scale);
+    setHeight(m_triangleBBoxHeight / scale);
+
     setVisible(true);
     m_ball->setVisible(true);
 
     // update vision info according to xy
-    auto realRobot = m_field->getOnRealCoordinate(QPointF(x() + width() / 2, y() + height() / 2));
+    auto realRobot = m_field->getOnRealCoordinate(QPointF(x() + m_triangleBBoxWidth / 2, y() + m_triangleBBoxHeight / 2));
     m_simVisionInfo.robot_pos.x = realRobot.x();
     m_simVisionInfo.robot_pos.y = realRobot.y();
     if(!m_ball) {
@@ -54,11 +56,16 @@ void Robot::simModeUpdate()
     m_transmitter->sendRos(dconstant::network::monitorBroadcastAddressBase + m_robotId, m_simVisionInfo);
 }
 
+
+// monitor mode: set(0, 0), draw(x, y)
+// sim mode: set(x, y), draw(0, 0)
+
 void Robot::monitorModeUpdate()
 {
-    auto imgPos = m_field->getOnImageCoordiante(m_realPos);
-    setX(imgPos.x() - width() / 2);
-    setY(imgPos.y() - height() / 2);
+    setX(0);
+    setY(0);
+    setWidth(m_field->width());
+    setHeight(m_field->height());
 
     QTime now = QTime::currentTime();
     int last = m_lastRecvTime.secsTo(now);
@@ -76,19 +83,28 @@ void Robot::monitorModeUpdate()
 }
 
 
+
 void Robot::drawMyself(QPainter* painter) {
-    painter->translate(width() / 2, height() / 2);
+    double scale = m_field->getScale();
+    if(m_isMonitor) {
+        auto imgPos = m_field->getOnImageCoordiante(m_realPos);
+        painter->translate(imgPos.x(), imgPos.y());
+    } else {
+        painter->translate(-m_triangleBBoxWidth / scale / 2, -m_triangleBBoxHeight / scale / 2);
+    }
+
+    painter->scale(1 / scale, 1 / scale);
     painter->rotate(90 - m_heading);
+
+    // draw robot
     std::vector<QPointF> points {
         QPointF(0, -15),
         QPointF(10, 10),
         QPointF(-10, 10)
     };
-    QPen pen(m_color, 0);
 
-    painter->setClipping(false);
+    QPen pen(m_color, 0);
     painter->setPen(pen);
-    painter->setPen(m_color);
     painter->setBrush(m_color);
     painter->drawPolygon(points.data(), points.size());
 
@@ -96,7 +112,38 @@ void Robot::drawMyself(QPainter* painter) {
     painter->rotate(m_heading - 90);
     painter->setPen(Qt::black);
     painter->drawText(QPointF(-5, 5), QString("%1").arg(m_robotId));
-    painter->translate(-width() / 2, -height() / 2);
+    painter->scale(scale, scale);
+    if(m_isMonitor) {
+        auto imgPos = m_field->getOnImageCoordiante(m_realPos);
+        painter->translate(-imgPos.x() + m_triangleBBoxWidth / scale / 2, -imgPos.y() + m_triangleBBoxHeight / scale / 2);
+        drawLines(painter);
+        drawCircle(painter);
+    } else {
+        painter->translate(m_triangleBBoxWidth / scale / 2, m_triangleBBoxHeight / scale / 2);
+    }
+}
+
+void Robot::drawLines(QPainter* painter) {
+    foreach (const dvision::Line& line, m_monVisionInfo.lines) {
+        auto& p1 = line.endpoint1;
+        auto& p2 = line.endpoint2;
+
+        auto pp1 = m_field->getOnImageCoordiante(QPointF(p1.x, p1.y));
+        auto pp2 = m_field->getOnImageCoordiante(QPointF(p2.x, p2.y));
+
+        painter->setPen(QPen(Qt::white, 2));
+        painter->drawLine(pp1, pp2);
+    }
+}
+
+void Robot::drawCircle(QPainter* painter) {
+    auto circleCenter = m_field->getOnImageCoordiante(QPointF(m_monVisionInfo.circle_field.x, m_monVisionInfo.circle_field.y));
+
+    double circleDiamater = dconstant::geometry::centerCircleDiameter / m_field->getScale();
+    QRectF foo(circleCenter.x() - circleDiamater / 2,circleCenter.y() - circleDiamater / 2, circleDiamater, circleDiamater);
+    painter->setBrush(QBrush());
+    painter->drawEllipse(foo);
+
 }
 
 
@@ -104,9 +151,16 @@ void Robot::onRecv(dvision::VisionInfo &msg)
 {
     // TODO(MWX): delta data
     if(m_isMonitor) {
-        m_lastRecvTime = QTime::currentTime();
-        m_heading = msg.robot_pos.z;
-        m_realPos = QPointF(msg.robot_pos.x, msg.robot_pos.y);
+        m_monVisionInfo = msg;
+        m_heading = msg.robot_pos.z * 180.0 / M_PI;
+        auto robotPos = QPointF(msg.robot_pos.x, msg.robot_pos.y);
+
+        if(robotPos.x() != 0.0 && robotPos.y() != 0.0) {
+            qDebug() << robotPos << m_heading;
+            m_realPos = robotPos;
+            m_lastRecvTime = QTime::currentTime();
+        }
+
         if(m_ball)
             m_ball->setPos(QPointF(msg.ball_global.x, msg.ball_global.y));
     }

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(dvision)
 
-add_definitions(-std=c++11 -Wall -g -Wextra -Wno-unused-result) #-Wfloat-equal -Weffc++ -pedantic
+add_definitions(-std=c++11 -Wall) # -g -Wextra -Wno-unused-result) #-Wfloat-equal -Weffc++ -pedantic
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake_modules/")
 
@@ -12,6 +12,8 @@ find_package(catkin REQUIRED
   dprocess
   dtransmit
   dconfig
+  ros_h264_streamer
+  cv_bridge
   darknetcxx)
 
 find_package(SuiteSparse REQUIRED)
@@ -74,7 +76,6 @@ add_library(dvisionlib
   src/parameters.cpp
   src/camera/camera.cpp
   src/camera/camera_dummy.cpp
-  src/camera/calibration.cpp
   src/camera/distortionModel.cpp
   src/camera/ipm.cpp
   src/camera/projection.cpp
@@ -105,6 +106,17 @@ target_link_libraries(cvcalib ${OpenCV_LIBS})
 add_executable(capture src/tools/capture.cpp)
 target_link_libraries(capture dvisionlib)
 
+add_executable(videowriter test/test_videowriter.cpp)
+target_link_libraries(videowriter dvisionlib ${Opencv_LIBS})
+
+add_executable(test_frame test/test_frame.cpp)
+target_link_libraries(test_frame dvisionlib ${OpenCV_LIBS})
+
+add_executable(test_frameSend test/test_frameSend.cpp)
+target_link_libraries(test_frameSend dvisionlib ${OpenCV_LIBS})
+
+add_executable(test_frameRecv test/test_frameRecv.cpp)
+target_link_libraries(test_frameRecv dvisionlib ${OpenCV_LIBS})
 ## TEST
 catkin_add_gtest(test_cameraDummy test/test_cameraDummy.cpp)
 target_link_libraries(test_cameraDummy dvisionlib)

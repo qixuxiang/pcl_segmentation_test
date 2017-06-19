@@ -8,8 +8,8 @@ ApplicationWindow {
     visible: true
     width: drawArea.width + controlArea.width + controlArea.anchors.leftMargin + 10 * 2
     height: drawArea.height + 10 * 2
-    color: "black"
     title: qsTr("DMonitor")
+    onWidthChanged: drawArea.width = width - (controlArea.width + controlArea.anchors.leftMargin + 10 * 2)
 
     property string udpAddress: '127.0.0.1'
 
@@ -20,6 +20,10 @@ ApplicationWindow {
         y: 10
         width: field.width
         height: field.height
+        onWidthChanged: {
+            field.width = width
+            field.update()
+        }
 
         property var updateRate: 30
         property var robots: []
@@ -55,7 +59,7 @@ ApplicationWindow {
         Component.onCompleted: {
             robots = Spawner.createRobots();
             balls = Spawner.createBalls();
-            field.update()
+            field.update();
         }
 
 
@@ -69,7 +73,6 @@ ApplicationWindow {
         anchors.left: drawArea.right
         anchors.topMargin: 10
         anchors.leftMargin: 6
-        color: "black"
         property alias modelTab: modelTab
 
         TabView {

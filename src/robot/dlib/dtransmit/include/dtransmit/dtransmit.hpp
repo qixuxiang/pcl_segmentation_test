@@ -28,7 +28,7 @@ public:
     template <typename ROSMSG>
     void sendRos(PORT port, ROSMSG &);
 
-    void addRawRecv(PORT port, std::function<void(const void*, std::size_t)> callback);
+    void addRawRecv(PORT port, std::function<void(void*, std::size_t)> callback);
 
     void sendRaw(PORT port, const void* buffer, std::size_t size);
 
@@ -44,7 +44,7 @@ private:
     struct Foo {
         boost::asio::ip::udp::socket* socket;
         std::function<void(const boost::system::error_code& , std::size_t)> readHandler;
-        uint8_t recvBuffer[1500];
+        uint8_t recvBuffer[65535];
         Foo() {
         }
 

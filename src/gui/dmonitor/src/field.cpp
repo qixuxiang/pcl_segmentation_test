@@ -7,27 +7,33 @@ Field::Field(QQuickItem *parent) : QQuickPaintedItem(parent)
 {
 }
 
+void Field::init()
+{
+   //setWidth(m_imageWidth);
+   //setHeight(m_imageHeight);
+}
+
 void Field::paint(QPainter *painter)
 {
-   setWidth(m_imageWidth);
-   setHeight(m_imageHeight);
-   drawField(painter);
+    m_scale = m_imageWidth / width();
+    double h = width() / m_imageRatio;
+    setHeight(h);
+    drawField(painter);
 }
 
 void Field::drawField(QPainter *painter)
 {
     // antialiasing
     painter->setRenderHint(QPainter::Antialiasing);
-
     // draw background
-    painter->fillRect(0, 0, m_imageWidth, m_imageHeight, m_grassGreen);
+    painter->fillRect(1, 1, width() - 2, height() - 1, m_grassGreen);
 
 
     // draw border
     QPointF upleftCorner = getOnImageCoordiante(QPoint(-m_fieldLength / 2, m_fieldWidth / 2));
     QRectF border(upleftCorner, flipFromOrigin(upleftCorner));
 
-    QPen pen(Qt::white, m_lineWidth);
+    QPen pen(Qt::white, m_lineWidth / m_scale);
     painter->setPen(pen);
     painter->drawRect(border);
 
@@ -55,29 +61,29 @@ void Field::drawField(QPainter *painter)
     QRectF centerCircle(circleUpleft, flipFromOrigin(circleUpleft));
     painter->drawEllipse(centerCircle);
     auto center = getOnImageCoordiante(QPointF(0, 0));
-    QPointF x(center.x() - 2.5, center.y());
-    QPointF y(center.x() + 2.5, center.y());
+    QPointF x(center.x() - m_lineWidth / m_scale / 2, center.y());
+    QPointF y(center.x() + m_lineWidth / m_scale / 2, center.y());
     painter->drawLine(x, y);
 
     // draw penalty mark
     QPointF leftPenalty = getOnImageCoordiante(QPointF(-m_fieldLength / 2 + m_penaltyMarkDistance, 0));
     drawCross(painter, leftPenalty);
     drawCross(painter, flipFromOrigin(leftPenalty));
-
 }
+
 
 void Field::drawCross(QPainter* painter, QPointF img) {
     // draw horizontal line
     {
-        QPointF x(img.x() - 5, img.y());
-        QPointF y(img.x() + 5, img.y());
+        QPointF x(img.x() - m_lineWidth / m_scale, img.y());
+        QPointF y(img.x() + m_lineWidth / m_scale, img.y());
         painter->drawRect(QRectF(x, y));
     }
 
     // draw vertical line
     {
-        QPointF x(img.x(), img.y() - 5);
-        QPointF y(img.x(), img.y() + 5);
+        QPointF x(img.x(), img.y() - m_lineWidth / m_scale);
+        QPointF y(img.x(), img.y() + m_lineWidth / m_scale);
         painter->drawRect(QRectF(x, y));
     }
 }
@@ -85,15 +91,15 @@ void Field::drawCross(QPainter* painter, QPointF img) {
 QPointF Field::getOnImageCoordiante(QPointF real)
 {
     QPointF res;
-    res.setX(m_imageWidth / 2 + real.x());
-    res.setY(m_imageHeight/ 2 - real.y());
+    res.setX(width() / 2 + real.x() / m_scale);
+    res.setY(height() / 2 - real.y() / m_scale);
     return res;
 }
 
 QPointF Field::getOnRealCoordinate(QPointF img) {
     QPointF res;
-    res.setX(img.x() - m_imageWidth / 2);
-    res.setY(-img.y() + m_imageHeight /2);
+    res.setX((img.x() - width() / 2) * m_scale);
+    res.setY((-img.y() + height() /2) * m_scale);
     return res;
 }
 
@@ -114,6 +120,11 @@ QRectF Field::flipFromOrigin(QRectF rect)
    auto y = flipFromOrigin(bottomRight);
 
    return QRectF(y, x);
+}
+
+double Field::getScale()
+{
+    return m_scale;
 }
 
 
