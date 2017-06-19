@@ -74,7 +74,7 @@ def getKey():
 def main():
 	speed = 1.5
 	turn = 2
-	pitch = 40
+	pitch = 0
 	yaw = 0
 
 	cmd = ActionCmd()

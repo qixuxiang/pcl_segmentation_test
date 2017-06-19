@@ -1,0 +1,7 @@
+.git
+dconfig/dmotion
+dconfig/dvision
+build*
+devel
+cmake-build-debug
+.idea

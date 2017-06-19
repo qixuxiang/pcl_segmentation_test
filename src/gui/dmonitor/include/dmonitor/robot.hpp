@@ -21,6 +21,7 @@ public:
     void simModeUpdate() override;
     void monitorModeUpdate() override;
     void drawMyself(QPainter* painter) override;
+    void drawLines(QPainter *painter);
     Q_INVOKABLE void init() override;
 
     // qml read
@@ -28,6 +29,7 @@ public:
     QString address() const;
     Ball* ball() const;
 
+    void drawCircle(QPainter *painter);
 public slots:
     void setRobotId(int robotId);
     void setAddress(QString address);
@@ -35,8 +37,9 @@ public slots:
     void setBall(Ball* ball);
 
 private:
-    dvision::VisionInfo m_simVisionInfo;
     dtransmit::DTransmit* m_transmitter;
+    dvision::VisionInfo m_simVisionInfo;
+    dvision::VisionInfo m_monVisionInfo;
 
     QTime m_lastRecvTime;
     Ball* m_ball = nullptr;
@@ -46,6 +49,8 @@ private:
     QPointF m_realPos;
     QPointF m_ballPos;
     double m_heading;
+    int m_triangleBBoxWidth = 40;
+    int m_triangleBBoxHeight = 40;
     QColor m_color = QColor(255, 167, 0);
     const int MAX_UNSEEN_SEC = 15;
 };

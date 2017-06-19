@@ -14,12 +14,14 @@ public:
     ~Field();
     void paint(QPainter *painter) override;
     void drawField(QPainter* painter);
+    Q_INVOKABLE void init();
 
     // convert point's coordinate from real(center of the field) to image (up left corner) for drawing
     QPointF getOnImageCoordiante(QPointF real);
     QPointF getOnRealCoordinate(QPointF img);
     QPointF flipFromOrigin(QPointF p);
     QRectF flipFromOrigin(QRectF rect);
+    double getScale();
 
     void drawCross(QPainter *painter, QPointF real);
 private:
@@ -38,6 +40,8 @@ private:
 
     int m_imageWidth = m_fieldLength + m_borderStripWidth * 2;
     int m_imageHeight = m_fieldWidth + m_borderStripWidth * 2;
+    double m_imageRatio = (double)m_imageWidth / m_imageHeight;
+    double m_scale = 1;
 
     // color
     QColor m_grassGreen = QColor(1, 142, 14);

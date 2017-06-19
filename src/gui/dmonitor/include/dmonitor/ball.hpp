@@ -17,7 +17,6 @@ public:
 private:
     int m_id;
     QPointF m_realPos;
-    Field* m_field;
 
     int m_diameter = dconstant::ballSize::diameter;
     QColor m_color = QColor(255, 64, 64);
