@@ -78,8 +78,7 @@ def mainloop():
     while not rospy.is_shutdown():
         global skill_instance
         # init behaviour request
-        # FIXME(corenel) Fucking python reference
-        # gglobal.init_req()
+        gglobal.init_req()
         # init skill instance
         init_skill()
         # tick skill

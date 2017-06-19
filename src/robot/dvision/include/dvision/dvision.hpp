@@ -2,13 +2,16 @@
 //     Author: Wenxing Mei <mwx36mwx@gmail.com>
 
 #pragma once
+#include "dbehavior/BehaviourInfo.h"
 #include "dmotion/ActionCmd.h"
 #include "dmotion/MotionInfo.h"
 #include "dprocess/dconcurrent.hpp"
 #include "dprocess/dprocess.hpp"
+#include "dtransmit/dtransmit.hpp"
 #include "dvision/SaveImg.h"
 #include "dvision/VisionInfo.h"
 #include "dvision/ball_detector.hpp"
+#include "dvision/ball_tracker.hpp"
 #include "dvision/camera.hpp"
 #include "dvision/circle_detector.hpp"
 #include "dvision/field_detector.hpp"
@@ -17,9 +20,7 @@
 #include "dvision/localization.hpp"
 #include "dvision/projection.hpp"
 #include "dvision/utils.hpp"
-#include "dvision/ball_tracker.hpp"
 #include "std_msgs/String.h"
-#include "dtransmit/dtransmit.hpp"
 #include <vector>
 
 namespace dvision {
@@ -32,8 +33,8 @@ class DVision : public dprocess::DProcess<DVision>
 
   private:
     ros::NodeHandle* m_nh;
-    ros::Subscriber m_sub_action_cmd;
-    ros::Subscriber m_sub_save_img;
+    ros::Subscriber m_sub_motion_info;
+    ros::Subscriber m_sub_behaviour_info;
     ros::Subscriber m_sub_reload_config;
     ros::Publisher m_pub;
     Camera m_camera;
@@ -61,9 +62,9 @@ class DVision : public dprocess::DProcess<DVision>
 
     VisionInfo m_data;
     dmotion::MotionInfo m_motion_info;
-    SaveImg m_save_img;
+    dbehavior::BehaviourInfo m_behaviour_info;
     void motionCallback(const dmotion::MotionInfo::ConstPtr& msg);
-    void saveImgCallback(const SaveImg::ConstPtr& save_img_msg);
+    void behaviourCallback(const dbehavior::BehaviourInfo::ConstPtr& msg);
     void reloadConfigCallback(const std_msgs::String::ConstPtr&);
     void prepareVisionInfo(VisionInfo& m_data);
     void showDebugImg();

@@ -103,9 +103,11 @@ Parameters::update()
     GPARAM("/dvision/goal_detector/v1", parameters.goal.v1);
     GPARAM("/dvision/goal_detector/active", parameters.goal.active);
     GPARAM("/dvision/goal_detector/MinLineLength", parameters.goal.MinLineLength);
+    GPARAM("/dvision/goal_detector/MaxLineGap", parameters.goal.MaxLineGap);
     GPARAM("/dvision/goal_detector/MaxOutField", parameters.goal.MaxOutField);
     GPARAM("/dvision/goal_detector/MinNearFieldUpPoint", parameters.goal.MinNearFieldUpPoint);
     GPARAM("/dvision/goal_detector/DistanceToMerge", parameters.goal.DistanceToMerge);
+    GPARAM("/dvision/goal_detector/AngleToMerge", parameters.goal.AngleToMerge);
     GPARAM("/dvision/goal_detector/NearestDistance", parameters.goal.NearestDistance);
     GPARAM("/dvision/goal_detector/FurthestDistance", parameters.goal.FurthestDistance);
     GPARAM("/dvision/goal_detector/NearMinLen", parameters.goal.NearMinLen);
@@ -118,6 +120,7 @@ Parameters::update()
     GPARAM("/dvision/goal_detector/minContinuesColor", parameters.goal.minContinuesColor);
     GPARAM("/dvision/goal_detector/extInvalidPoints", parameters.goal.extInvalidPoints);
     GPARAM("/dvision/goal_detector/extTotalPoints", parameters.goal.extTotalPoints);
+    GPARAM("/dvision/goal_detector/cutOffInvalidPoints", parameters.goal.cutOffInvalidPoints);
 
     // Get line detector parameters
     GPARAM("/dvision/line_detector/enable", parameters.line.enable);

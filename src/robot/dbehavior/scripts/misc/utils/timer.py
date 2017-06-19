@@ -86,4 +86,4 @@ class Timer(object):
 
     def finished(self):
         """Return wheather we have reached our target time of not."""
-        return self.elapsed() >= self.timeTarget
+        return self.elapsed() >= int(round(self.timeTarget.to_sec()))

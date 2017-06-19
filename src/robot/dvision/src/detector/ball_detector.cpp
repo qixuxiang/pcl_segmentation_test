@@ -61,7 +61,7 @@ BallDetector::~BallDetector()
 }
 
 bool
-BallDetector::GetBall(cv::Mat& frame, VisionInfo& m_data, Projection& m_projection)
+BallDetector::GetBall(const cv::Mat& frame, VisionInfo& m_data, Projection& m_projection)
 {
     // ROS_DEBUG("BallDetector Tick");
 

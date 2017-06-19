@@ -23,17 +23,15 @@ DVision::DVision(ros::NodeHandle* n)
     m_concurrent.push([] {
         //     ROS_INFO("concurrent");
     });
-    m_sub_action_cmd = m_nh->subscribe("/humanoid/MotionInfo", 1, &DVision::motionCallback, this);
-    m_sub_save_img = m_nh->subscribe("/humanoid/SaveImg", 1, &DVision::saveImgCallback, this);
+    m_sub_motion_info = m_nh->subscribe("/humanoid/MotionInfo", 1, &DVision::motionCallback, this);
+    m_sub_behaviour_info = m_nh->subscribe("/humanoid/BehaviourInfo", 1, &DVision::behaviourCallback, this);
     m_sub_reload_config = m_nh->subscribe("/humanoid/ReloadVisionConfig", 1, &DVision::reloadConfigCallback, this);
     m_pub = m_nh->advertise<VisionInfo>("/humanoid/VisionInfo", 1);
 
     m_transmitter = new dtransmit::DTransmit(parameters.udpBroadcastAddress);
-    if(parameters.simulation) {
+    if (parameters.simulation) {
         ROS_INFO("Simulation mode!");
-        m_transmitter->addRosRecv<VisionInfo>(dconstant::network::monitorBroadcastAddressBase + parameters.robotId, [&](VisionInfo& msg){
-            m_data = msg;
-        });
+        m_transmitter->addRosRecv<VisionInfo>(dconstant::network::monitorBroadcastAddressBase + parameters.robotId, [&](VisionInfo& msg) { m_data = msg; });
     }
 }
 
@@ -48,7 +46,7 @@ DVision::tick()
     /**********
      * Update *
      **********/
-    if(parameters.simulation) {
+    if (parameters.simulation) {
         m_pub.publish(m_data);
         return;
     }
@@ -94,15 +92,14 @@ DVision::tick()
         m_data.see_circle = m_circle.Process(m_line.clustered_lines());
     }
 
-    if (m_data.see_circle){
-      if(m_ball_tracker.Process(m_circle.result_circle().x, m_circle.result_circle().y, static_cast<double>(m_pitch), static_cast<double>(m_yaw))){
-        m_data.cmd_head_ball_track.x = 0;
-        m_data.cmd_head_ball_track.y = m_ball_tracker.m_out_pitch / M_PI * 180;
-        m_data.cmd_head_ball_track.z = m_ball_tracker.m_out_yaw / M_PI * 180;
-        // cout << "c_pitch: " << m_data.cmd_head_ball_track.y << endl;
-        // cout << "c_yaw: " << m_data.cmd_head_ball_track.z << endl;
-      }
-
+    if (m_data.see_circle) {
+        if (m_ball_tracker.Process(m_circle.result_circle().x, m_circle.result_circle().y, static_cast<double>(m_pitch), static_cast<double>(m_yaw))) {
+            m_data.cmd_head_ball_track.x = 0;
+            m_data.cmd_head_ball_track.y = m_ball_tracker.m_out_pitch / M_PI * 180;
+            m_data.cmd_head_ball_track.z = m_ball_tracker.m_out_yaw / M_PI * 180;
+            // cout << "c_pitch: " << m_data.cmd_head_ball_track.y << endl;
+            // cout << "c_yaw: " << m_data.cmd_head_ball_track.z << endl;
+        }
     }
     /*****************
      * Goal Detector *
@@ -164,13 +161,14 @@ DVision::motionCallback(const dmotion::MotionInfo::ConstPtr& motion_msg)
 }
 
 void
-DVision::saveImgCallback(const SaveImg::ConstPtr& save_img_msg)
+DVision::behaviourCallback(const dbehavior::BehaviourInfo::ConstPtr& behaviour_msg)
 {
-    m_save_img = *save_img_msg;
-    if (m_save_img.IsSaveImg) {
+    m_behaviour_info = *behaviour_msg;
+    if (m_behaviour_info.save_image) {
         auto frame = m_camera.capture();
         std::string path_str;
         path_str = "p_" + std::to_string(m_pitch) + "_y_" + std::to_string(m_yaw) + " ";
+        ROS_INFO("save_image! %s", path_str);
         frame.save(path_str);
     }
 }
@@ -189,48 +187,41 @@ DVision::prepareVisionInfo(VisionInfo& m_data)
     m_data.robot_pos.y = m_loc.location().y;
     m_data.robot_pos.z = m_loc.location().z;
     // goal
-    // TODO(corenel) Get global coord?
-    std::vector<cv::Point2f> goal_position_rotated = m_projection.RotateTowardHeading(m_goal.goal_position());
-
-    if (goal_position_rotated.size() >= 1) {
+    std::vector<cv::Point2f> goal_global = getOnGlobalCoordinate(m_loc.location(), m_goal.goal_position());
+    if (goal_global.size() >= 1) {
         m_data.see_goal = true;
-        m_data.left_goal.x = goal_position_rotated[0].x;
-        m_data.left_goal.y = goal_position_rotated[0].y;
-        if (goal_position_rotated.size() == 2) {
+        m_data.left_goal.x = goal_global[0].x;
+        m_data.left_goal.y = goal_global[0].y;
+        if (goal_global.size() == 2) {
             m_data.see_both_goal = true;
-            m_data.right_goal.x = goal_position_rotated[1].x;
-            m_data.right_goal.y = goal_position_rotated[1].y;
-        } else if (goal_position_rotated.size() == 3) {
+            m_data.right_goal.x = goal_global[1].x;
+            m_data.right_goal.y = goal_global[1].y;
+        } else if (goal_global.size() == 3) {
             m_data.see_unknown_goal = true;
-            m_data.unknown_goal.x = goal_position_rotated[2].x;
-            m_data.unknown_goal.y = goal_position_rotated[2].y;
+            m_data.unknown_goal.x = goal_global[2].x;
+            m_data.unknown_goal.y = goal_global[2].y;
         }
     }
     // circle
-    cv::Point2d result_circle_rotated = m_projection.RotateTowardHeading(m_circle.result_circle());
-    m_data.circle_field.x = result_circle_rotated.x;
-    m_data.circle_field.y = result_circle_rotated.y;
-
-    auto& lines = m_line.clustered_lines();
-    m_data.lines.resize(lines.size());
-    for(uint32_t i = 0; i < lines.size(); ++i) {
-        auto& p1 = lines[i].P1;
+    cv::Point2d circle_global = getOnGlobalCoordinate(m_loc.location(), m_circle.result_circle());
+    m_data.circle_field.x = circle_global.x;
+    m_data.circle_field.y = circle_global.y;
+    // lines
+    std::vector<LineSegment> lines_global = getOnGlobalCoordinate(m_loc.location(), m_line.clustered_lines());
+    m_data.lines.resize(lines_global.size());
+    for (uint32_t i = 0; i < lines_global.size(); ++i) {
+        auto& p1 = lines_global[i].P1;
         m_data.lines[i].endpoint1.x = p1.x;
         m_data.lines[i].endpoint1.y = p1.y;
 
-        auto& p2 = lines[i].P2;
+        auto& p2 = lines_global[i].P2;
         m_data.lines[i].endpoint2.x = p2.x;
         m_data.lines[i].endpoint2.y = p2.y;
     }
-//    m_line.clustered_lines()
     // ball
-    // if (m_data.loc_ok) {
-    //     // TODO(corenel) Rotate angle is correct?
-    //     cv::Point2f ball_global;
-    //     ball_global = m_projection.RotateTowardHeading(cv::Point2f(m_data.ball_field.x, m_data.ball_field.y));
-    //     m_data.ball_global.x = ball_global.x;
-    //     m_data.ball_global.y = ball_global.y;
-    // }
+    // cv::Point2f ball_global = getOnGlobalCoordinate(m_loc.location(), cv::Point2f(m_data.ball_field.x, m_data.ball_field.y));
+    // m_data.ball_global.x = ball_global.x;
+    // m_data.ball_global.y = ball_global.y;
 }
 
 void

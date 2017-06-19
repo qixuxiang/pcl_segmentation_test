@@ -49,8 +49,8 @@ find_package(catkin REQUIRED
 ## Generate messages in the 'msg' folder
 add_message_files(
   FILES
-  BehaviourShareData.msg
-  TeamShareData.msg
+  BehaviourInfo.msg
+  TeamInfo.msg
 )
 
 ## Generate services in the 'srv' folder

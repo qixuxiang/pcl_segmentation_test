@@ -57,4 +57,4 @@ def get_req():
 def init_req():
     """Init BehaviourRequest."""
     global _b_req
-    _b_req = BehaviourRequest()
+    _b_req.reinit()

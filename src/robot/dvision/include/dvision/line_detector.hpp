@@ -25,7 +25,6 @@ class LineDetector : public IDetector
     bool Process(cv::Mat& m_canny_img, cv::Mat& m_hsv_img, cv::Mat& m_gui_img, cv::Mat& field_convex_hull, cv::Mat& field_binary_raw, Projection& m_projection);
 
     // bool
-    // GetLines(cv::Mat& rawHSV, cv::Mat& fieldMask, cv::Mat& guiImg, Projection& projections, const bool& showGui, const cv::Mat& lineBinary, const cv::Rect& box, std::vector<LineSegment>& resLines);
     bool GetLines(cv::Mat& raw_hsv, cv::Mat& field_mask, cv::Mat& gui_img, const bool& SHOWGUI, const cv::Mat& line_binary, std::vector<LineSegment>& res_lines);
 
     inline std::vector<LineSegment>& clustered_lines()
