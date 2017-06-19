@@ -538,6 +538,16 @@ getOnGlobalCoordinate(const cv::Point3d& robot_pos, const std::vector<LineSegmen
     return out_lines;
 }
 
+std::vector<cv::Point2f>
+getOnGlobalCoordinate(const cv::Point3d& robot_pos, const std::vector<cv::Point2f>& in_points)
+{
+    std::vector<cv::Point2f> out_points(in_points.size());
+    for (size_t i = 0; i < in_points.size(); i++) {
+        out_points[i] = getOnGlobalCoordinate(robot_pos, in_points[i]);
+    }
+    return out_points;
+}
+
 cv::Point2f
 getOnGlobalCoordinate(const cv::Point3d& robot_pos, const cv::Point2f& in_point)
 {

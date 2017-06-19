@@ -165,6 +165,9 @@ SortFuncDescending(const std::vector<cv::Point>& i, const std::vector<cv::Point>
 std::vector<LineSegment>
 getOnGlobalCoordinate(const cv::Point3d& robot_pos, const std::vector<LineSegment>& in_lines);
 
+std::vector<cv::Point2f>
+getOnGlobalCoordinate(const cv::Point3d& robot_pos, const std::vector<cv::Point2f>& in_points);
+
 cv::Point2f
 getOnGlobalCoordinate(const cv::Point3d& robot_pos, const cv::Point2f& in_point);
 
