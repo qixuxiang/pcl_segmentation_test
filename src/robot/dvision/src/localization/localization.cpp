@@ -43,23 +43,6 @@ Localization::Localization()
   , at_least_one_observation_(false)
   , node_counter_(0)
 {
-    A_ = parameters.field_model.field_length;
-    B_ = parameters.field_model.field_width;
-    D_ = parameters.field_model.goal_width;
-    E_ = parameters.field_model.goal_area_length;
-    F_ = parameters.field_model.goal_area_width;
-    G_ = parameters.field_model.penalty_mark_distance;
-    H_ = parameters.field_model.center_circle_diameter;
-    I_ = parameters.field_model.border_strip_width;
-    A2_ = A_ / 2.;
-    B2_ = B_ / 2.;
-    D2_ = D_ / 2.;
-    H2_ = H_ / 2.;
-    E2_ = E_ / 2.;
-    F2_ = F_ / 2.;
-    G2_ = G_ / 2.;
-    I2_ = I_ / 2.;
-
     // create the linear solver
     linear_solver_ = new g2o::LinearSolverCSparse<g2o::BlockSolverX::PoseMatrixType>();
     // create the block solver on the top of the linear solver
@@ -78,9 +61,26 @@ Localization::~Localization()
 bool
 Localization::Init()
 {
+    // read field model
+    A_ = parameters.field_model.field_length;
+    B_ = parameters.field_model.field_width;
+    D_ = parameters.field_model.goal_width;
+    E_ = parameters.field_model.goal_area_length;
+    F_ = parameters.field_model.goal_area_width;
+    G_ = parameters.field_model.penalty_mark_distance;
+    H_ = parameters.field_model.center_circle_diameter;
+    I_ = parameters.field_model.border_strip_width;
+    A2_ = A_ / 2.;
+    B2_ = B_ / 2.;
+    D2_ = D_ / 2.;
+    H2_ = H_ / 2.;
+    E2_ = E_ / 2.;
+    F2_ = F_ / 2.;
+    G2_ = G_ / 2.;
+    I2_ = I_ / 2.;
     InitG2OGraph();
     optimizer.setAlgorithm(opt_algo_);
-    optimizer.setVerbose(true);
+    optimizer.setVerbose(false);
     ROS_INFO("Localization Init() finished");
     return true;
 }
@@ -98,16 +98,22 @@ Localization::Update(Projection& projection)
     //     location_kalman_.y = parameters.locClicked.y;
     // }
 
-    kalmanI_.GetPrediction();
-    cv::Point2d kal_res = kalmanI_.Update(cv::Point2d(location_.x, location_.y));
-    location_kalman_.x = kal_res.x;
-    location_kalman_.y = kal_res.y;
+    if (parameters.loc.useKalman) {
+        kalmanI_.GetPrediction();
+        cv::Point2d kal_res = kalmanI_.Update(cv::Point2d(location_.x, location_.y));
+        location_kalman_.x = kal_res.x;
+        location_kalman_.y = kal_res.y;
+    }
 
     {
         boundry_n(location_.x, -A2_ - I_, A2_ + I_);
         boundry_n(location_.y, -B2_ - I_, B2_ + I_);
         boundry_n(location_kalman_.x, -A2_ - I_, A2_ + I_);
         boundry_n(location_kalman_.y, -B2_ - I_, B2_ + I_);
+        // location_.x = boundry_n(location_.x, -A2_ - I_, A2_ + I_);
+        // location_.y = boundry_n(location_.y, -B2_ - I_, B2_ + I_);
+        // location_kalman_.x = boundry_n(location_kalman_.x, -A2_ - I_, A2_ + I_);
+        // location_kalman_.y = boundry_n(location_kalman_.y, -B2_ - I_, B2_ + I_);
     }
 
     return true;
@@ -359,7 +365,7 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
                 estimated_x -= A2_;
             }
             double low_PC = GetUpdateCoef(UPDATESTRONG, goal_line);
-            AddObservation(cv::Point2d(0, estimated_y), 0, MAX_FASHER * low_PC, line_type);
+            AddObservation(cv::Point2d(estimated_x, estimated_y), MAX_FASHER * low_PC, MAX_FASHER * low_PC, line_type);
         }
     }
 
@@ -416,11 +422,12 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
             location_.x = tmpV(0);
             location_.y = tmpV(1);
 
-            // ROS_WARN("Localization: (%f, %f)", location_.x, location_.y);
-            ROS_WARN("Localization: (%f, %f)", location().x, location().y);
+            ROS_WARN("Localization: (%f, %f)", location_.x, location_.y);
+            ROS_WARN("Localization_Kalman: (%f, %f)", location().x, location().y);
             return true;
         }
     }
+    // ROS_WARN("robot pos: (%f, %f)", location_.x, location_.y);
     return false;
 }
 
@@ -519,7 +526,7 @@ Localization::UpdateVertexIdx()
         information(2, 2) = 1;
         e->setInformation(information);
         optimizer.addEdge(e);
-        ROS_INFO("add Edges: %d -> dead_reck (%f, %f), info(%d, %d)", current_vertex_id_, dead_reck.x, dead_reck.y, 200, 200);
+        // ROS_INFO("add Edges: %d -> dead_reck (%f, %f), info(%d, %d)", current_vertex_id_, dead_reck.x, dead_reck.y, 200, 200);
     }
 }
 
@@ -562,7 +569,7 @@ Localization::AddObservation(cv::Point2d observation, const double& x_fasher, co
         optimizer.addEdge(e);
     }
     at_least_one_observation_ = true;
-    ROS_INFO("add Edges: %d -> %d (%f, %f), info(%lf, %lf)", current_vertex_id_, type, observation.x, observation.y, x_fasher, y_fasher);
+    // ROS_INFO("add Edges: %d -> %d (%f, %f), info(%lf, %lf)", current_vertex_id_, type, observation.x, observation.y, x_fasher, y_fasher);
     return true;
 }
 

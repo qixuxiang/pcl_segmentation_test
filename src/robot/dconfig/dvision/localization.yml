@@ -10,16 +10,17 @@ dvision:
     enable:                     true
     minLineLen:                 20 # min line length for circle line
     maxLineLen:                 150 # max line length for circle line
-    maxDistBetween2LS:          30 # max distance between two circle lines
+    maxDistBetween2LS:          20 # max distance between two circle lines
     radiusMaxCoef:              1.5 # max coef for valid radius
     radiusMinCoef:              0.7 # min coef for valid radius
-    confiusedDist:              30 # distance for confused center point
+    confiusedDist:              20 # distance for confused center point
     minLineSegmentCount:        3 # how many circle points at least
   field_detector:
     enable:                     true
     showMask:                   false
     showResult:                 true
     showDebug:                  false
+    # HSV range for green and white
     h0:                         33
     h1:                         89
     s0:                         70
@@ -27,12 +28,14 @@ dvision:
     v0:                         10
     v1:                         157
     active:                     false
+    # erode and dilate
     erode:                      1
     dilate:                     1
     erode2:                     3
     dilate2:                    0
-    maxContourCount:            3
-    minArea:                    10
+    # filter valid field hull
+    maxContourCount:            3 # number of detected field hull to merge
+    minArea:                    50 # min area for valid field hull
     maxDownDiffPixel:           400
     approxPoly:                 0.02
     maxAcceptDistance:          10.81
@@ -41,9 +44,10 @@ dvision:
     enable:                     true
     showMask:                   false
     showResult:                 false
-    showAllLines:               true
+    showAllLines:               false
     showResLine:                true
-    showVote:                   true
+    showVote:                   false
+    # HSV range for white color
     h0:                         37
     h1:                         110
     s0:                         10
@@ -51,22 +55,31 @@ dvision:
     v0:                         54
     v1:                         255
     active:                     true
-    MinLineLength:              40
+    # hough line detection
+    MinLineLength:              20
+    MaxLineGap:                 15
+    # field threshold for up and down point of goal post
     MaxOutField:                0
     MinNearFieldUpPoint:        -20 # min distance between up point of goal post and field
-    DistanceToMerge:            30
+    # line segment merge
+    DistanceToMerge:            10
+    AngleToMerge:               20
+    # for check distance box
     NearestDistance:            0
     FurthestDistance:           1081
     NearMinLen:                 0
     NearMaxLen:                 640 #IMGWIDTH
     FarMinLen:                  0
     FarMaxLen:                  640 #IMGWIDTH
+    # goal post validation check
     jumpMax:                    2
     doubleVote:                 40
     minDoubleLength:            3
     minContinuesColor:          7
+    # goal post goes down
     extInvalidPoints:           1 # invalid point number to stop dip
     extTotalPoints:             5 # total points number to stop dip
+    cutOffInvalidPoints:        5
   line_detector:
     enable:                     true
     showUnmerged:               false
@@ -75,6 +88,7 @@ dvision:
     showAllLine:                true
     showVote:                   false
     showCanny:                  false
+    # HSV range for white lines
     h0:                         37
     h1:                         110
     s0:                         0
@@ -82,20 +96,23 @@ dvision:
     v0:                         54
     v1:                         255
     active:                     false
-    MinLineLength:              100 # min length for hough line
+    # hough line
+    MinLineLength:              40 # min length for hough line
     rhoHough:                   1 # distance resolution of the accumulator in pixels
     thetaHough:                 45 # angle resolution of the accumulator in radians
     thresholdHough:             15 # accumulator threshold parameter
-    maxLineGapHough:            20 # max allowed gap between points on the same line to link them.
-    AngleToMerge:               20
+    maxLineGapHough:            10 # max allowed gap between points on the same line to link them.
+    # line merge
+    AngleToMerge:               15
     DistanceToMerge:            30
-    jumpMax:                    20
+    # line validation check
+    jumpMax:                    10
     jumpMin:                    3
     widthCheck:                 0.07
     aprxDist:                   true
     doubleVote:                 60
     greenVote:                  70
-    colorVote:                  70
+    colorVote:                  60
     doubleVUse:                 true
     greenVUse:                  true
     colorVUse:                  true
@@ -105,28 +122,34 @@ dvision:
     doubleVEnd:                 1
     greenVEnd:                  1
     colorVEnd:                  1
+    # canny
     cannyThreadshold:           23
     blurSize:                   6
     cannyaperture:              3
   localization:
     enable:                     true
     minLineLen:                 70
+    # confidence level score for info matrix
     UPDATENORMAL:               0.1
     UPDATESTRONG:               0.2
     UPDATEWEAK:                 0.05
     TOTALGAIN:                  1
+    # for out-of-field detection
     VerLineMinDistanceToUpdate: 70
-    optimizeCounter:            30 # counter to optimize location
+    # counter to optimize location
+    optimizeCounter:            10
     # use kalman filter for localization
-    useKalman:                  false
+    useKalman:                  true
     # use dead reck with delta motion data as edges
-    useDeadReck:                false
+    useDeadReck:                true
+    # use average of goal points to estimate y or not
     useGoalPointLandMark:       true
     forwardRobotTrackerXY:      false
     forwardRobotTrackerZ:       false
-    maxDistanceBothGoal:        30 # max distance between goal line and both goal posts
-    maxDistanceSingleGoal:      20 # max distance between goal line and single goal posts
+    # max distance between goal line and both goal posts
+    maxDistanceBothGoal:        30
+    # max distance between goal line and single goal posts
+    maxDistanceSingleGoal:      20
     # ver near line classification
     minFieldArea:               40000 # min field area
     minDisFromCenter:           200 # min distance from hull center
-

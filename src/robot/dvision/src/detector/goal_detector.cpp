@@ -75,7 +75,9 @@ GoalDetector::GetPosts(cv::Mat& canny_img,
     rec.width = parameters.camera.width;
     rec.height = parameters.camera.height;
     const int MinLineLength = parameters.goal.MinLineLength;
+    const int MaxLineGap = parameters.goal.MaxLineGap;
     const int DistanceToMerge = parameters.goal.DistanceToMerge;
+    const int AngleToMerge = parameters.goal.AngleToMerge;
     const int MaxOutField = parameters.goal.MaxOutField;
     const int MinNearFieldUpPoint = parameters.goal.MinNearFieldUpPoint;
 
@@ -83,13 +85,13 @@ GoalDetector::GetPosts(cv::Mat& canny_img,
 
     // void HoughLinesP(InputArray image, OutputArray lines, double rho, double
     // theta, int threshold, double minLineLength=0, double maxLineGap=0 )
-    cv::HoughLinesP(canny_img, linesP, 1, M_PI / 45, 10, MinLineLength, 20);
+    cv::HoughLinesP(canny_img, linesP, 1, M_PI / 45, 10, MinLineLength, MaxLineGap);
     std::vector<LineSegment> all_ver_lines;
+    std::vector<cv::Point> goal_post_points;
     for (size_t i = 0; i < linesP.size(); i++) {
         // lP (x_1, y_1, x_2, y_2)
         cv::Vec4i lP = linesP[i];
         LineSegment tmp_line(cv::Point2d(lP[0], lP[1]), cv::Point2d(lP[2], lP[3]));
-        // std::vector<cv::Point> goalPostPoints;
         // 与竖直线夹角小于15度
         if (tmp_line.GetAbsMinAngleDegree(LineSegment(cv::Point(0, 0), cv::Point(0, 100))) < 15) {
             // 画出所有Hough到的竖直线
@@ -112,8 +114,9 @@ GoalDetector::GetPosts(cv::Mat& canny_img,
                 continue;
             }
 
+            goal_post_points.clear();
             for (size_t j = 0; j < midds.size(); j++) {
-                if (!VoteGoalPostPoint(tmp_line, midds[j], jump_double, SHOWGUI, gui_img, raw_hsv, canny_img, left_avg, right_avg, vote_for_double_left, vote_for_double_right)) {
+                if (!VoteGoalPostPoint(tmp_line, midds[j], jump_double, SHOWGUI, gui_img, raw_hsv, canny_img, left_avg, right_avg, vote_for_double_left, vote_for_double_right, goal_post_points)) {
                     continue;
                 }
             }
@@ -126,41 +129,28 @@ GoalDetector::GetPosts(cv::Mat& canny_img,
                 {
                     LineSegment tmp_line_changed = tmp_line;
 
-                    // 球门柱下端点下探避免
-                    // {
-                    //   cv::Point validDown =
-                    //       (tmp_line.P1.y < tmp_line.P2.y) ? tmp_line.P2 : tmp_line.P1;
-                    //
-                    //   // 按y升序排列
-                    //   sort(goalPostPoints.begin(), goalPostPoints.end(),
-                    //        [](const cv::Point &lhs, const cv::Point &rhs) {
-                    //          return lhs.y < rhs.y;
-                    //        });
-                    //   // 如果line的下端点与高响应点距离大于10
-                    //   // 则将line的下端点换为高响应点集合的下端点
-                    //   if (GetDistance(goalPostPoints.back(), validDown) > 10) {
-                    //     validDown = goalPostPoints.back();
-                    //   }
-                    //   // 如果一个高响应点与其下的高响应点的距离大于10
-                    //   // 即出现goal post下探到禁区线的情况
-                    //   // 则将line的下端点换为该高响应点
-                    //   for (size_t l = 0; l < goalPostPoints.size() - 1; ++l) {
-                    //     if (GetDistance(goalPostPoints[l], goalPostPoints[l + 1]) >=
-                    //     10) {
-                    //       // cout << "orig down (" << validDown.x << "," <<
-                    //       validDown.y
-                    //       //      << ") / valid down (" << goalPostPoints[l].x << ","
-                    //       //      << goalPostPoints[l].y << ")" << endl;
-                    //       validDown = goalPostPoints[l];
-                    //     }
-                    //   }
-                    //   // 替换line的下端点
-                    //   if (tmp_line_changed.P1.y < tmp_line_changed.P2.y) {
-                    //     tmp_line_changed.P2 = validDown;
-                    //   } else {
-                    //     tmp_line_changed.P1 = validDown;
-                    //   }
-                    // }
+                    {
+                        // 球门柱下端点下探避免
+                        cv::Point valid_down = tmp_line.GetDownPoint();
+
+                        // 按y升序排列
+                        sort(goal_post_points.begin(), goal_post_points.end(), [](const cv::Point& lhs, const cv::Point& rhs) { return lhs.y < rhs.y; });
+                        // 如果line的下端点与高响应点距离大于10
+                        // 则将line的下端点换为高响应点集合的下端点
+                        if (GetDistance(goal_post_points.back(), valid_down) > parameters.goal.cutOffInvalidPoints) {
+                            valid_down = goal_post_points.back();
+                        }
+                        // 如果一个高响应点与其下的高响应点的距离大于10
+                        // 即出现goal post下探到禁区线的情况
+                        // 则将line的下端点换为该高响应点
+                        for (size_t l = 0; l < goal_post_points.size() - 1; ++l) {
+                            if (GetDistance(goal_post_points[l], goal_post_points[l + 1]) >= 10) {
+                                valid_down = goal_post_points[l];
+                            }
+                        }
+                        // 替换line的下端点
+                        tmp_line_changed.SetDownPoint(valid_down);
+                    }
 
                     // 平移，将球门柱左边缘线或右边缘线向中间平移
                     if (left_OK) {
@@ -181,7 +171,7 @@ GoalDetector::GetPosts(cv::Mat& canny_img,
     }
 
     // 线段融合
-    MergeLinesMax(all_ver_lines, 30, DistanceToMerge, all_lines, rec);
+    MergeLinesMax(all_ver_lines, AngleToMerge, DistanceToMerge, all_lines, rec);
 
     for (size_t i = 0; i < all_lines.size(); i++) {
         LineSegment tmp_line = all_lines[i];
@@ -220,43 +210,45 @@ GoalDetector::GetPosts(cv::Mat& canny_img,
 
         // 对于符合上述条件的goal post，从下端点开始进行下探
         // 直到没有高响应的点
-        int cnt_invalid_points = 0;
-        int cnt_total_ext_points = 0;
+        // goal_post_points.clear();
+        // int cnt_invalid_points = 0;
+        // int cnt_total_ext_points = 0;
 
         // invalid point出现五个或者总计延长点超过15个
         // 则终止延长
-        while (cnt_invalid_points <= parameters.goal.extInvalidPoints && cnt_total_ext_points <= parameters.goal.extTotalPoints) {
-            // 取tmpLine向下的延长线上的一点
-            cv::Point2d down_extension_point = tmp_line.ExtensionPointDown(2);
-
-            // 检查延长点与机器人距离，并获取jumpDouble
-            double jump_double = parameters.goal.jumpMax;
-            if (!CheckDownPointDistance(down_extension_point, jump_double, projection, field_hull)) {
-                continue;
-            }
-            // 检查高响应
-            double left_avg = 0;
-            double right_avg = 0;
-            int vote_for_double_left = 0;
-            int vote_for_double_right = 0;
-            if (!VoteGoalPostPoint(tmp_line, down_extension_point, jump_double, SHOWGUI, gui_img, raw_hsv, canny_img, left_avg, right_avg, vote_for_double_left, vote_for_double_right)) {
-                continue;
-            }
-            bool left_OK = (vote_for_double_left / 1.) * 100. > parameters.goal.doubleVote / 2;
-            bool right_OK = (vote_for_double_right / 1.) * 100. > parameters.goal.doubleVote / 2;
-
-            // 若左右侧出现足够多的高响应点，则该延长点valid
-            if (left_OK || right_OK) {
-                tmp_line.SetDownPoint(down_extension_point);
-                // cout << "Expand to (" << down_extension_point.x << ","
-                //      << down_extension_point.y << ")" << endl;
-            } else {
-                // cout << "Invalid (" << down_extension_point.x << ","
-                //      << down_extension_point.y << ")" << endl;
-                cnt_invalid_points++;
-            }
-            cnt_total_ext_points++;
-        }
+        // while (cnt_invalid_points <= parameters.goal.extInvalidPoints && cnt_total_ext_points <= parameters.goal.extTotalPoints) {
+        //     // 取tmpLine向下的延长线上的一点
+        //     cv::Point2d down_extension_point = tmp_line.ExtensionPointDown(2);
+        //
+        //     // 检查延长点与机器人距离，并获取jumpDouble
+        //     double jump_double = parameters.goal.jumpMax;
+        //     if (!CheckDownPointDistance(down_extension_point, jump_double, projection, field_hull)) {
+        //         continue;
+        //     }
+        //     // 检查高响应
+        //     double left_avg = 0;
+        //     double right_avg = 0;
+        //     int vote_for_double_left = 0;
+        //     int vote_for_double_right = 0;
+        //     if (!VoteGoalPostPoint(
+        //           tmp_line, down_extension_point, jump_double, SHOWGUI, gui_img, raw_hsv, canny_img, left_avg, right_avg, vote_for_double_left, vote_for_double_right, goal_post_points)) {
+        //         continue;
+        //     }
+        //     bool left_OK = (vote_for_double_left / 1.) * 100. > parameters.goal.doubleVote / 2;
+        //     bool right_OK = (vote_for_double_right / 1.) * 100. > parameters.goal.doubleVote / 2;
+        //
+        //     // 若左右侧出现足够多的高响应点，则该延长点valid
+        //     if (left_OK || right_OK) {
+        //         tmp_line.SetDownPoint(down_extension_point);
+        //         // cout << "Expand to (" << down_extension_point.x << ","
+        //         //      << down_extension_point.y << ")" << endl;
+        //     } else {
+        //         // cout << "Invalid (" << down_extension_point.x << ","
+        //         //      << down_extension_point.y << ")" << endl;
+        //         cnt_invalid_points++;
+        //     }
+        //     cnt_total_ext_points++;
+        // }
 
         // 获取当前的下端点以及其对应的机器人坐标系中的点
         down = tmp_line.GetDownPoint();
@@ -332,10 +324,11 @@ GoalDetector::VoteGoalPostPoint(LineSegment& tmp_line,
                                 double& left_avg,
                                 double& right_avg,
                                 int& vote_for_double_left,
-                                int& vote_for_double_right)
+                                int& vote_for_double_right,
+                                std::vector<cv::Point>& goal_post_points)
 {
     // 该点时候是合格的goalPostPoint的flag
-    // bool validGoalPostPoint = false;
+    bool valid_goal_post_point = false;
     // 从某个等分点上取垂线段
     LineSegment to_check = tmp_line.PerpendicularLineSegment(jump_double, point);
 
@@ -372,7 +365,7 @@ GoalDetector::VoteGoalPostPoint(LineSegment& tmp_line,
             left_avg += k;
             // 投票也有我一份
             vote_for_double_left++;
-            // validGoalPostPoint = true;
+            valid_goal_post_point = true;
             break;
         }
 
@@ -397,7 +390,7 @@ GoalDetector::VoteGoalPostPoint(LineSegment& tmp_line,
             }
             right_avg += k;
             vote_for_double_right++;
-            // validGoalPostPoint = true;
+            valid_goal_post_point = true;
             break;
         }
 
@@ -408,10 +401,10 @@ GoalDetector::VoteGoalPostPoint(LineSegment& tmp_line,
         }
     }
 
-    // 如果left或者right满足条件，则将此点加入goalPostPoints中待用
-    // if (validGoalPostPoint) {
-    //   goalPostPoints.push_back(midds[j]);
-    // }
+    // 如果left或者right满足条件，则将此点加入goal_post_points中待用
+    if (valid_goal_post_point) {
+        goal_post_points.push_back(point);
+    }
 
     return true;
 }

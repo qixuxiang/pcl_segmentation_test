@@ -5,7 +5,7 @@ dbehaviour:
     LOST_BALL_DELAY:                 1000000  # 1 sec
     MAX_VIEW_DIST:                   500
     UNKNOWN:                         9999
-    MAX_PLAT_YAW:                    120
+    MAX_PLAT_YAW:                    90
     MAX_PLAT_PITCH:                  70
     MIN_PLAT_PITCH:                  0
     # game controller state
