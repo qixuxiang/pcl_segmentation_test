@@ -46,7 +46,7 @@ dvision:
     showResult:                 false
     showAllLines:               false
     showResLine:                true
-    showVote:                   true
+    showVote:                   false
     # HSV range for white color
     h0:                         37
     h1:                         110
@@ -57,7 +57,7 @@ dvision:
     active:                     true
     # hough line detection
     MinLineLength:              20
-    MaxLineGap:                 10
+    MaxLineGap:                 15
     # field threshold for up and down point of goal post
     MaxOutField:                0
     MinNearFieldUpPoint:        -20 # min distance between up point of goal post and field
@@ -79,7 +79,7 @@ dvision:
     # goal post goes down
     extInvalidPoints:           1 # invalid point number to stop dip
     extTotalPoints:             5 # total points number to stop dip
-    cutOffInvalidPoints:        10
+    cutOffInvalidPoints:        5
   line_detector:
     enable:                     true
     showUnmerged:               false
@@ -139,11 +139,11 @@ dvision:
     # counter to optimize location
     optimizeCounter:            30
     # use kalman filter for localization
-    useKalman:                  false
+    useKalman:                  true
     # use dead reck with delta motion data as edges
     useDeadReck:                false
     # use average of goal points to estimate y or not
-    useGoalPointLandMark:       false
+    useGoalPointLandMark:       true
     forwardRobotTrackerXY:      false
     forwardRobotTrackerZ:       false
     # max distance between goal line and both goal posts
