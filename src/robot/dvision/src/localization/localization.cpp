@@ -365,7 +365,7 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
                 estimated_x -= A2_;
             }
             double low_PC = GetUpdateCoef(UPDATESTRONG, goal_line);
-            AddObservation(cv::Point2d(0, estimated_y), 0, MAX_FASHER * low_PC, line_type);
+            AddObservation(cv::Point2d(estimated_x, estimated_y), MAX_FASHER * low_PC, MAX_FASHER * low_PC, line_type);
         }
     }
 
