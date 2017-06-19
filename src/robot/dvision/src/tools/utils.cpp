@@ -528,18 +528,34 @@ SortFuncDescending(const std::vector<cv::Point>& i, const std::vector<cv::Point>
     return cv::contourArea(i, false) > cv::contourArea(j, false);
 }
 
-bool
-getOnGlobalCoordinate(const cv::Point3d& robot_pos, const std::vector<LineSegment>& clustered_lines, std::vector<LineSegment>& res_lines)
+std::vector<LineSegment>
+getOnGlobalCoordinate(const cv::Point3d& robot_pos, const std::vector<LineSegment>& in_lines)
 {
-    for (size_t i = 0; i < clustered_lines.size(); i++) {
-        res_lines[i] = LineSegment(
-          RotateAroundPoint(clustered_lines[i].P1, -Radian2Degree(robot_pos.z)), RotateAroundPoint(clustered_lines[i].P2, -Radian2Degree(robot_pos.z)), clustered_lines[i].GetProbability());
-        res_lines[i].P1.x += robot_pos.x;
-        res_lines[i].P1.y += robot_pos.y;
-        res_lines[i].P2.x += robot_pos.x;
-        res_lines[i].P2.y += robot_pos.y;
+    std::vector<LineSegment> out_lines(in_lines.size());
+    for (size_t i = 0; i < in_lines.size(); i++) {
+        out_lines[i] = LineSegment(getOnGlobalCoordinate(robot_pos, in_lines[i].P1), getOnGlobalCoordinate(robot_pos, in_lines[i].P2), in_lines[i].GetProbability());
     }
-    return true;
+    return out_lines;
+}
+
+cv::Point2f
+getOnGlobalCoordinate(const cv::Point3d& robot_pos, const cv::Point2f& in_point)
+{
+    cv::Point2f out_point;
+    out_point = RotateAroundPoint(in_point, -Radian2Degree(robot_pos.z));
+    out_point.x += robot_pos.x;
+    out_point.y += robot_pos.y;
+    return out_point;
+}
+
+cv::Point2d
+getOnGlobalCoordinate(const cv::Point3d& robot_pos, const cv::Point2d& in_point)
+{
+    cv::Point2d out_point;
+    out_point = RotateAroundPoint(in_point, -Radian2Degree(robot_pos.z));
+    out_point.x += robot_pos.x;
+    out_point.y += robot_pos.y;
+    return out_point;
 }
 
 } // namespace dvision

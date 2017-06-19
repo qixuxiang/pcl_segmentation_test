@@ -422,8 +422,8 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
             location_.x = tmpV(0);
             location_.y = tmpV(1);
 
-            // ROS_WARN("Localization: (%f, %f)", location_.x, location_.y);
-            ROS_WARN("Localization: (%f, %f)", location().x, location().y);
+            ROS_WARN("Localization: (%f, %f)", location_.x, location_.y);
+            ROS_WARN("Localization_Kalman: (%f, %f)", location().x, location().y);
             return true;
         }
     }

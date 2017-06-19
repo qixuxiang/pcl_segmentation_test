@@ -204,12 +204,11 @@ DVision::prepareVisionInfo(VisionInfo& m_data)
         }
     }
     // circle
-    cv::Point2d result_circle_rotated = m_projection.RotateTowardHeading(m_circle.result_circle());
-    m_data.circle_field.x = result_circle_rotated.x;
-    m_data.circle_field.y = result_circle_rotated.y;
+    cv::Point2d circle_global = getOnGlobalCoordinate(m_loc.location(), m_circle.result_circle());
+    m_data.circle_field.x = circle_global.x;
+    m_data.circle_field.y = circle_global.y;
 
-    std::vector<LineSegment> lines_global(m_line.clustered_lines().size());
-    getOnGlobalCoordinate(m_loc.location(), m_line.clustered_lines(), lines_global);
+    std::vector<LineSegment> lines_global = getOnGlobalCoordinate(m_loc.location(), m_line.clustered_lines());
     m_data.lines.resize(lines_global.size());
     for (uint32_t i = 0; i < lines_global.size(); ++i) {
         auto& p1 = lines_global[i].P1;
@@ -220,15 +219,11 @@ DVision::prepareVisionInfo(VisionInfo& m_data)
         m_data.lines[i].endpoint2.x = p2.x;
         m_data.lines[i].endpoint2.y = p2.y;
     }
-    //    m_line.clustered_lines()
+
     // ball
-    // if (m_data.loc_ok) {
-    //     // TODO(corenel) Rotate angle is correct?
-    //     cv::Point2f ball_global;
-    //     ball_global = m_projection.RotateTowardHeading(cv::Point2f(m_data.ball_field.x, m_data.ball_field.y));
-    //     m_data.ball_global.x = ball_global.x;
-    //     m_data.ball_global.y = ball_global.y;
-    // }
+    // cv::Point2f ball_global = getOnGlobalCoordinate(m_loc.location(), cv::Point2f(m_data.ball_field.x, m_data.ball_field.y));
+    // m_data.ball_global.x = ball_global.x;
+    // m_data.ball_global.y = ball_global.y;
 }
 
 void

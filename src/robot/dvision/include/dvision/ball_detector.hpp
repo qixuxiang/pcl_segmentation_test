@@ -27,7 +27,7 @@ class BallDetector : public IDetector
     ~BallDetector();
     bool Init();
 
-    bool GetBall(cv::Mat& frame, VisionInfo& m_data, Projection& m_projection);
+    bool GetBall(const cv::Mat& frame, VisionInfo& m_data, Projection& m_projection);
     bool CvtRelativePosition(std::vector<darknet::RelateiveBBox>& ball_position, std::vector<darknet::bbox>& ball_position_cvt);
 
   private:

@@ -97,7 +97,7 @@ dvision:
     v1:                         255
     active:                     false
     # hough line
-    MinLineLength:              60 # min length for hough line
+    MinLineLength:              40 # min length for hough line
     rhoHough:                   1 # distance resolution of the accumulator in pixels
     thetaHough:                 45 # angle resolution of the accumulator in radians
     thresholdHough:             15 # accumulator threshold parameter
@@ -137,13 +137,13 @@ dvision:
     # for out-of-field detection
     VerLineMinDistanceToUpdate: 70
     # counter to optimize location
-    optimizeCounter:            30
+    optimizeCounter:            10
     # use kalman filter for localization
     useKalman:                  true
     # use dead reck with delta motion data as edges
-    useDeadReck:                false
+    useDeadReck:                true
     # use average of goal points to estimate y or not
-    useGoalPointLandMark:       true
+    useGoalPointLandMark:       false
     forwardRobotTrackerXY:      false
     forwardRobotTrackerZ:       false
     # max distance between goal line and both goal posts
