@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(dvision)
 
-add_definitions(-std=c++11 -Wall) # -g -Wextra -Wno-unused-result) #-Wfloat-equal -Weffc++ -pedantic
+add_definitions(-std=c++11 -Wall -O2) # -g -Wextra -Wno-unused-result) #-Wfloat-equal -Weffc++ -pedantic
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake_modules/")
 
@@ -36,7 +36,7 @@ generate_messages(
 )
 
 catkin_package(
-    INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIR}
+    INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIR} ${catkin_INCLUDE_DIRS}
     LIBRARIES dvisionlib ${OpenCV_LIBS}
   #  CATKIN_DEPENDS dprocess
   #  DEPENDS system_lib

@@ -13,6 +13,8 @@ public:
     void init() override;
     void drawMyself(QPainter*) override;
     void setPos(QPointF pos);
+    int robotId() const;
+    void setRobotId(int robotId);
 
 private:
     int m_id;

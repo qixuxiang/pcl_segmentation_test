@@ -5,6 +5,7 @@
 namespace dmonitor {
 class BaseObject : public QQuickPaintedItem {
     Q_OBJECT
+    Q_PROPERTY(int robotId READ robotId WRITE setRobotId)
     Q_PROPERTY(Field* field READ field WRITE setField)
     Q_PROPERTY(bool isMonitor READ isMonitor WRITE setIsMonitor)
     Q_PROPERTY(bool enabled READ enabled WRITE setEnable)
@@ -21,6 +22,8 @@ public:
 
     bool enabled() const;
 
+    int robotId() const;
+    void setRobotId(int id);
 public slots:
     void setField(Field* field);
     void setIsMonitor(bool isMonitor);
@@ -34,6 +37,7 @@ public slots:
     virtual void drawMyself(QPainter* painter) = 0;
 
 protected:
+    int m_robotId;
     Field* m_field = nullptr;
     bool m_isMonitor;
     QPointF m_realPos;

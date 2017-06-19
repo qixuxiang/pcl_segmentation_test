@@ -9,7 +9,6 @@ namespace dmonitor {
 
 class Robot : public BaseObject {
     Q_OBJECT
-    Q_PROPERTY(int robotId READ robotId WRITE setRobotId)
     Q_PROPERTY(QString address READ address WRITE setAddress)
     Q_PROPERTY(Ball* ball READ ball WRITE setBall)
 
@@ -25,13 +24,11 @@ public:
     Q_INVOKABLE void init() override;
 
     // qml read
-    int robotId() const;
     QString address() const;
     Ball* ball() const;
 
     void drawCircle(QPainter *painter);
 public slots:
-    void setRobotId(int robotId);
     void setAddress(QString address);
     void onRecv(dvision::VisionInfo& msg);
     void setBall(Ball* ball);
@@ -43,7 +40,6 @@ private:
 
     QTime m_lastRecvTime;
     Ball* m_ball = nullptr;
-    int m_robotId;
     QString m_address;
 
     QPointF m_realPos;

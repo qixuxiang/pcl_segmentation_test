@@ -8,6 +8,7 @@
 #include <functional>
 #include <vector>
 #include "dconfig/dconstant.hpp"
+#include "dvision/frame.hpp"
 
 namespace dmonitor {
 
@@ -23,14 +24,17 @@ Robot::~Robot()
 
 void Robot::init()
 {
+    ros::Time::init();
+    dvision::Frame::initEncoder();
     m_transmitter = new dtransmit::DTransmit(m_address.toStdString());
     //m_transmitter = new dtransmit::DTransmit("127.0.0.1");
 
     int port = dconstant::network::robotBroadcastAddressBase + m_robotId;
     qDebug() << "Listening at" << port;
     m_transmitter->addRosRecv<dvision::VisionInfo>(port, std::bind(&Robot::onRecv, this, std::placeholders::_1));
-    m_transmitter->startService();
 
+
+    m_transmitter->startService();
 }
 
 void Robot::simModeUpdate()
@@ -170,10 +174,6 @@ void Robot::onRecv(dvision::VisionInfo &msg)
 
 ///////////////////////////////////////////////////////////// setter & getter
 
-int Robot::robotId() const
-{
-    return m_robotId;
-}
 
 QString Robot::address() const
 {
@@ -186,13 +186,6 @@ Ball* Robot::ball() const
 }
 
 
-void Robot::setRobotId(int id)
-{
-    if (m_robotId == id)
-        return;
-
-    m_robotId = id;
-}
 
 void Robot::setAddress(QString address)
 {

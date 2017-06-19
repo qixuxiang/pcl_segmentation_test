@@ -19,6 +19,7 @@ DVision::DVision(ros::NodeHandle* n)
     m_line.Init();
     m_loc.Init();
     m_ball_tracker.Init(parameters.camera.extrinsic_para, parameters.camera.fx, parameters.camera.fy, parameters.camera.undistCx, parameters.camera.undistCy);
+    Frame::initEncoder();
 
     m_concurrent.push([] {
         //     ROS_INFO("concurrent");
@@ -148,6 +149,7 @@ DVision::tick()
      ****************/
 
     showDebugImg();
+
     m_concurrent.spinOnce();
     m_concurrent.join();
 }
@@ -236,6 +238,10 @@ DVision::showDebugImg()
         cv::namedWindow("gui", CV_WINDOW_NORMAL);
         cv::imshow("gui", m_gui_img);
         cv::waitKey(1);
+
+        int len;
+        auto buf = Frame::encode(m_gui_img, len);
+        m_transmitter->sendRaw(dconstant::network::robotGuiBase + parameters.robotId, buf.get(), len);
     }
 }
 

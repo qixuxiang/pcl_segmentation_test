@@ -10,6 +10,7 @@ find_package(catkin REQUIRED
   dvision
   dtransmit
   dconfig
+  ros_h264_streamer
 )
 
 catkin_package(
@@ -39,10 +40,12 @@ add_executable(dmonitor
     src/field.cpp
     src/ball.cpp
     src/baseObject.cpp
+    src/guiImage.cpp
     include/dmonitor/robot.hpp
     include/dmonitor/field.hpp
     include/dmonitor/ball.hpp
     include/dmonitor/baseObject.hpp
+    include/dmonitor/guiImage.hpp
     src/qml.qrc
     src/qml/main.qml
     src/qml/Robot.qml

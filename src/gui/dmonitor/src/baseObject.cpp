@@ -79,4 +79,16 @@ void BaseObject::setEnable(bool enabled)
     m_enabled = enabled;
 }
 
+int BaseObject::robotId() const
+{
+    return m_robotId;
+}
+
+void BaseObject::setRobotId(int id)
+{
+    if (m_robotId == id)
+        return;
+
+    m_robotId = id;
+}
 } // namespace dmonitor

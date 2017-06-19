@@ -1,4 +1,5 @@
 #include "dvision/camera.hpp"
+#include "dconfig/dconstant.hpp"
 #include "dtransmit/dtransmit.hpp"
 #include "dvision/distortionModel.hpp"
 
@@ -19,6 +20,6 @@ int main(int argc, char **argv) {
         auto frame = c.capture();
         int len;
         auto buf = frame.encode(len);
-        sender.sendRaw(2333, buf.get(), len);
+        sender.sendRaw(dconstant::network::robotGuiBase + 1, buf.get(), len);
     }
 }

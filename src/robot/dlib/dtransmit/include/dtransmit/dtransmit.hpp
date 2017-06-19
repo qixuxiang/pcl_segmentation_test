@@ -14,6 +14,7 @@
 #include <ros/ros.h>
 
 // http://wiki.ros.org/roscpp/Overview/MessagesSerializationAndAdaptingTypes
+#define UDPBUFFERSIZE 15000
 
 namespace dtransmit {
 class DTransmit {
@@ -44,7 +45,7 @@ private:
     struct Foo {
         boost::asio::ip::udp::socket* socket;
         std::function<void(const boost::system::error_code& , std::size_t)> readHandler;
-        uint8_t recvBuffer[65535];
+        uint8_t recvBuffer[UDPBUFFERSIZE];
         Foo() {
         }
 

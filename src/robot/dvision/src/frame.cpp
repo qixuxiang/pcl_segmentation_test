@@ -61,8 +61,7 @@ Frame::encode(cv::Mat& src, int& length) {
     ros::Time t2 = ros::Time::now();
 
     ros::Duration d = t2 -  t1;
-    ROS_INFO("Image encoding: size: %d, time: %lf", res.frame_size, d.toSec());
-
+    //ROS_INFO("Image encoding: size: %d, time: %lf", res.frame_size, d.toSec());
     std::unique_ptr<uint8_t> buf(new uint8_t[res.frame_size + 4]);
     memcpy(buf.get(), &res.frame_size, sizeof(uint32_t));
     memcpy(&buf.get()[4], res.frame_data, sizeof(uint8_t) * res.frame_size);

@@ -28,6 +28,7 @@ ApplicationWindow {
         property var updateRate: 30
         property var robots: []
         property var balls: []
+        property alias field: field
 
         Timer {
             interval: 1000 / parent.updateRate
@@ -68,7 +69,7 @@ ApplicationWindow {
     Rectangle {
         id: controlArea
         y: 10
-        width: 300
+        width: 700
         height: drawArea.height
         anchors.left: drawArea.right
         anchors.topMargin: 10
@@ -77,15 +78,41 @@ ApplicationWindow {
 
         TabView {
             id: modelTab
-            x: 10
+            x: 0
             y: 0
             width: parent.width - 20
             height: parent.height - 10
             property bool isMonitor: currentIndex === 0 ? true : false
 
+
             Tab {
                 id: monitor
                 title: "Monitor"
+
+                Rectangle {
+                    anchors.fill: parent
+
+                    GuiImage {
+                        field: drawArea.field
+                        x: 0
+                        y: 0
+                        width: 640
+                        height: 480
+                        robotId: 1
+
+                        Timer { interval: 1000 / 30
+                            running: true
+                            repeat: true
+                            onTriggered: {
+                                parent.update()
+                            }
+                        }
+
+                        Component.onCompleted: init();
+                    }
+
+                }
+
             }
 
             Tab {

@@ -1,5 +1,6 @@
 #include "dvision/camera.hpp"
 #include "dtransmit/dtransmit.hpp"
+#include "dconfig/dconstant.hpp"
 
 using namespace dvision;
 using namespace cv;
@@ -11,7 +12,7 @@ int main(int argc, char **argv) {
     dtransmit::DTransmit recv("192.168.255.255");
 
     Frame::initEncoder();
-    recv.addRawRecv(2333, [&](void* buffer, std::size_t size) {
+    recv.addRawRecv(dconstant::network::robotGuiBase + 1, [&](void* buffer, std::size_t size) {
         Frame f;
         try {
             f.decode(buffer);
