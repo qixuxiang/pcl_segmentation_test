@@ -57,4 +57,6 @@ def get_req():
 def init_req():
     """Init BehaviourRequest."""
     global _b_req
+    global _world
     _b_req.reinit()
+    _b_req.behaviour.lower_board_connected = _world.lower_board_connected

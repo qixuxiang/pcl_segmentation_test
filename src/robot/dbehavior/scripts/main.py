@@ -77,6 +77,8 @@ def mainloop():
     rate = rospy.Rate(1)
     while not rospy.is_shutdown():
         global skill_instance
+        # update
+        gglobal.update_bb(bb)
         # init behaviour request
         gglobal.init_req()
         # init skill instance

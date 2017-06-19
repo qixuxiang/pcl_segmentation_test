@@ -81,7 +81,11 @@ class World(object):
         _blackboard = self.bb
         # motion
         self.uptime = _blackboard.motion.uptime
-        self.lower_board_connected = _blackboard.motion.lower_board_connected
+        diff = rospy.get_rostime() - _blackboard.motion.timestamp
+        self.lower_board_connected = diff.to_sec() < 5
+        if not self.lower_board_connected:
+            rospy.logerr("lower board is not connected!!!")
+        # self.lower_board_connected = _blackboard.motion.lower_board_connected
         self.stable = _blackboard.motion.stable
         self.plat = _blackboard.motion.curPlat
         self.vy = _blackboard.motion.vy

@@ -2,5 +2,6 @@ bool kick
 bool save_image
 bool reset_localization
 bool enable_localization
+bool lower_board_connected
 geometry_msgs/Vector3 reset_point
 geometry_msgs/Vector3 destination
