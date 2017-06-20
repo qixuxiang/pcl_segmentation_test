@@ -12,6 +12,9 @@ DVision::DVision(ros::NodeHandle* n)
 {
     parameters.init(n);
     m_projection.init(n);
+    CameraSettings s(n);
+    m_camera = new Camera(s);
+
     // m_ball.Init();
     m_circle.Init();
     m_field.Init();
@@ -52,7 +55,7 @@ DVision::tick()
         return;
     }
 
-    auto frame = m_camera.capture();
+    auto frame = m_camera->capture();
     m_data = VisionInfo();
 
     m_projection.updateExtrinsic(m_pitch, m_yaw);
@@ -167,7 +170,7 @@ DVision::behaviourCallback(const dbehavior::BehaviourInfo::ConstPtr& behaviour_m
 {
     m_behaviour_info = *behaviour_msg;
     if (m_behaviour_info.save_image) {
-        auto frame = m_camera.capture();
+        auto frame = m_camera->capture();
         std::string path_str;
         path_str = "p_" + std::to_string(m_pitch) + "_y_" + std::to_string(m_yaw) + " ";
         ROS_INFO("save_image! %s", path_str);
@@ -272,16 +275,15 @@ DVision::prepareVisionInfo(VisionInfo& m_data)
 void
 DVision::showDebugImg()
 {
-    if (parameters.monitor.update_loc_img) {
-        cv::namedWindow("loc", CV_WINDOW_NORMAL);
-        cv::imshow("loc", m_loc_img);
-    }
+//    if (parameters.monitor.update_loc_img) {
+//        cv::namedWindow("loc", CV_WINDOW_NORMAL);
+//        cv::imshow("loc", m_loc_img);
+//    }
 
     if (parameters.monitor.update_gui_img) {
-        cv::namedWindow("gui", CV_WINDOW_NORMAL);
-        cv::imshow("gui", m_gui_img);
-        cv::waitKey(1);
-
+//        cv::namedWindow("gui", CV_WINDOW_NORMAL);
+//        cv::imshow("gui", m_gui_img);
+//        cv::waitKey(1);
         int len;
         auto buf = Frame::encode(m_gui_img, len);
         m_transmitter->sendRaw(dconstant::network::robotGuiBase + parameters.robotId, buf.get(), len);

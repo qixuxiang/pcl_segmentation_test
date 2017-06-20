@@ -14,7 +14,7 @@
 #include <ros/ros.h>
 
 // http://wiki.ros.org/roscpp/Overview/MessagesSerializationAndAdaptingTypes
-#define UDPBUFFERSIZE 15000
+#define UDPBUFFERSIZE 65535
 
 namespace dtransmit {
 class DTransmit {

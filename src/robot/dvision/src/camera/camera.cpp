@@ -19,10 +19,10 @@ Camera::Camera(std::string device)
 }
 
 Camera::Camera(CameraSettings c)
-  : m_device(c.device)
+  : m_setting(c), m_device(c.device)
 {
     init();
-    setCameraControl();
+    resetControl();
 }
 
 Camera::~Camera()
@@ -41,6 +41,7 @@ Camera::init()
         initMmap();
         startIO();
         doIO();
+        //setCameraControl();
     } catch (std::exception& e) {
         ROS_ERROR("Init camera error: %s", e.what());
         sleep(1);
@@ -232,6 +233,8 @@ Camera::setCameraControl()
     setControl(V4L2CID::gain, m_setting.gain);
     setControl(V4L2CID::hue, m_setting.hue);
     setControl(V4L2CID::gamma, m_setting.gamma);
+
+    ROS_INFO("gama!>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> %d", m_setting.gamma);
 }
 
 v4l2_queryctrl

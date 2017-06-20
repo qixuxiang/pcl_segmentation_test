@@ -37,7 +37,7 @@ class DVision : public dprocess::DProcess<DVision>
     ros::Subscriber m_sub_behaviour_info;
     ros::Subscriber m_sub_reload_config;
     ros::Publisher m_pub;
-    Camera m_camera;
+    Camera* m_camera;
     Projection m_projection;
     dprocess::DConcurrent m_concurrent;
     dtransmit::DTransmit* m_transmitter;

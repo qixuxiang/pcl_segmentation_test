@@ -17,7 +17,7 @@ Frame::initEncoder() {
     cv::Mat m(480, 640, CV_8UC3, cv::Scalar(0, 0, 0));
     cv_bridge::CvImage cvmsg(header, "bgr8", m);
     sensor_msgs::ImagePtr msg = cvmsg.toImageMsg();
-    m_encoder = new ros_h264_streamer::H264Encoder(msg->width, msg->height, 30, 30, 1, msg->encoding);
+    m_encoder = new ros_h264_streamer::H264Encoder(msg->width, msg->height, 20, 30, 1, msg->encoding);
     m_decoder = new ros_h264_streamer::H264Decoder(msg->width, msg->height);
 }
 
