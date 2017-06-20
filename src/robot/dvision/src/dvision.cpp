@@ -187,41 +187,48 @@ DVision::prepareVisionInfo(VisionInfo& m_data)
     m_data.robot_pos.y = m_loc.location().y;
     m_data.robot_pos.z = m_loc.location().z;
     // goal
-    std::vector<cv::Point2f> goal_global = getOnGlobalCoordinate(m_loc.location(), m_goal.goal_position());
-    if (goal_global.size() >= 1) {
-        m_data.see_goal = true;
-        m_data.left_goal.x = goal_global[0].x;
-        m_data.left_goal.y = goal_global[0].y;
-        if (goal_global.size() == 2) {
-            m_data.see_both_goal = true;
-            m_data.right_goal.x = goal_global[1].x;
-            m_data.right_goal.y = goal_global[1].y;
-        } else if (goal_global.size() == 3) {
-            m_data.see_unknown_goal = true;
-            m_data.unknown_goal.x = goal_global[2].x;
-            m_data.unknown_goal.y = goal_global[2].y;
+    if (m_data.see_goal) {
+        std::vector<cv::Point2f> goal_global = getOnGlobalCoordinate(m_loc.location(), m_goal.goal_position());
+        if (goal_global.size() >= 1) {
+            m_data.left_goal.x = goal_global[0].x;
+            m_data.left_goal.y = goal_global[0].y;
+            if (goal_global.size() == 2) {
+                m_data.see_both_goal = true;
+                m_data.right_goal.x = goal_global[1].x;
+                m_data.right_goal.y = goal_global[1].y;
+            } else if (goal_global.size() == 3) {
+                m_data.see_unknown_goal = true;
+                m_data.unknown_goal.x = goal_global[2].x;
+                m_data.unknown_goal.y = goal_global[2].y;
+            }
         }
     }
     // circle
-    cv::Point2d circle_global = getOnGlobalCoordinate(m_loc.location(), m_circle.result_circle());
-    m_data.circle_field.x = circle_global.x;
-    m_data.circle_field.y = circle_global.y;
+    if (m_data.see_circle) {
+        cv::Point2d circle_global = getOnGlobalCoordinate(m_loc.location(), m_circle.result_circle());
+        m_data.circle_field.x = circle_global.x;
+        m_data.circle_field.y = circle_global.y;
+    }
     // lines
-    std::vector<LineSegment> lines_global = getOnGlobalCoordinate(m_loc.location(), m_line.clustered_lines());
-    m_data.lines.resize(lines_global.size());
-    for (uint32_t i = 0; i < lines_global.size(); ++i) {
-        auto& p1 = lines_global[i].P1;
-        m_data.lines[i].endpoint1.x = p1.x;
-        m_data.lines[i].endpoint1.y = p1.y;
+    if (m_data.see_line) {
+        std::vector<LineSegment> lines_global = getOnGlobalCoordinate(m_loc.location(), m_line.clustered_lines());
+        m_data.lines.resize(lines_global.size());
+        for (uint32_t i = 0; i < lines_global.size(); ++i) {
+            auto& p1 = lines_global[i].P1;
+            m_data.lines[i].endpoint1.x = p1.x;
+            m_data.lines[i].endpoint1.y = p1.y;
 
-        auto& p2 = lines_global[i].P2;
-        m_data.lines[i].endpoint2.x = p2.x;
-        m_data.lines[i].endpoint2.y = p2.y;
+            auto& p2 = lines_global[i].P2;
+            m_data.lines[i].endpoint2.x = p2.x;
+            m_data.lines[i].endpoint2.y = p2.y;
+        }
     }
     // ball
-    // cv::Point2f ball_global = getOnGlobalCoordinate(m_loc.location(), cv::Point2f(m_data.ball_field.x, m_data.ball_field.y));
-    // m_data.ball_global.x = ball_global.x;
-    // m_data.ball_global.y = ball_global.y;
+    // if (m_data.see_ball) {
+    //     cv::Point2f ball_global = getOnGlobalCoordinate(m_loc.location(), cv::Point2f(m_data.ball_field.x, m_data.ball_field.y));
+    //     m_data.ball_global.x = ball_global.x;
+    //     m_data.ball_global.y = ball_global.y;
+    // }
 }
 
 void

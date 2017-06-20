@@ -599,6 +599,24 @@ Localization::location()
     return res;
 }
 
+// setter
+void
+Localization::location(const cv::Point2d& loc)
+{
+    ROS_INFO("Set location to (%f, %f)", loc.x, loc.y);
+    location_.x = loc.x;
+    location_.y = loc.y;
+    location_kalman_.x = loc.x;
+    location_kalman_.y = loc.y;
+
+    {
+        boundry_n(location_.x, -A2_ - I_, A2_ + I_);
+        boundry_n(location_.y, -B2_ - I_, B2_ + I_);
+        boundry_n(location_kalman_.x, -A2_ - I_, A2_ + I_);
+        boundry_n(location_kalman_.y, -B2_ - I_, B2_ + I_);
+    }
+}
+
 cv::Point2d
 Localization::odom_last_get()
 {

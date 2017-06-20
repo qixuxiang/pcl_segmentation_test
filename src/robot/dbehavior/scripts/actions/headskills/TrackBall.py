@@ -8,8 +8,8 @@ class TrackBall(Action):
 
     def tick(self):
         """Tick."""
-        if self.bb.vision.see_circle:  # or self.world.mem_ball_valid:
-            self.gaze_at_fuck()
+        if self.bb.vision.see_ball:  # or self.world.mem_ball_valid:
+            self.gaze_ball()
             return self.success()
         else:
             self.lookat(0, 15)

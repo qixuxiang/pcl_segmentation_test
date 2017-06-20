@@ -113,6 +113,9 @@ class Localization
     cv::Point3d location();
     cv::Point2d odom_last_get();
 
+    // setter
+    void location(const cv::Point2d& loc);
+
   private:
     double A_;
     double B_;
