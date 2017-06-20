@@ -31,6 +31,7 @@ public:
     void drawCircle(QPainter *painter);
     bool online() const;
 
+    void drawView(QPainter *painter);
 public slots:
     void setAddress(QString address);
     void onRecv(dvision::VisionInfo& msg);

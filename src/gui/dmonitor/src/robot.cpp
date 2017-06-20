@@ -121,9 +121,10 @@ void Robot::drawMyself(QPainter* painter) {
     painter->scale(scale, scale);
     if(m_isMonitor) {
         auto imgPos = m_field->getOnImageCoordiante(m_realPos);
-        painter->translate(-imgPos.x() + m_triangleBBoxWidth / scale / 2, -imgPos.y() + m_triangleBBoxHeight / scale / 2);
+        painter->translate(-imgPos.x(), -imgPos.y());
         drawLines(painter);
         drawCircle(painter);
+        drawView(painter);
     } else {
         painter->translate(m_triangleBBoxWidth / scale / 2, m_triangleBBoxHeight / scale / 2);
     }
@@ -150,6 +151,31 @@ void Robot::drawCircle(QPainter* painter) {
     painter->setPen(QPen(Qt::yellow, 2));
     painter->setBrush(QBrush());
     painter->drawEllipse(foo);
+}
+
+void Robot::drawView(QPainter* painter) {
+    if(m_monVisionInfo.viewRange.size() != 4)
+        return;
+
+    QPointF a(m_monVisionInfo.viewRange[0].x, m_monVisionInfo.viewRange[0].y);
+    QPointF b(m_monVisionInfo.viewRange[1].x, m_monVisionInfo.viewRange[1].y);
+    QPointF c(m_monVisionInfo.viewRange[2].x, m_monVisionInfo.viewRange[2].y);
+    QPointF d(m_monVisionInfo.viewRange[3].x, m_monVisionInfo.viewRange[3].y);
+
+    auto aa = m_field->getOnImageCoordiante(a);
+    auto bb = m_field->getOnImageCoordiante(b);
+    auto cc = m_field->getOnImageCoordiante(c);
+    auto dd = m_field->getOnImageCoordiante(d);
+
+    std::vector<QPointF> points {
+        aa, bb, cc, dd
+    };
+
+    QPen pen(m_color, 0);
+    painter->setPen(pen);
+    painter->setBrush(QBrush());
+    painter->drawPolygon(points.data(), points.size());
+
 }
 
 bool Robot::online() const

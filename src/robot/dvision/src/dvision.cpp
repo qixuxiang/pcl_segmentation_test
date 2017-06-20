@@ -208,6 +208,14 @@ DVision::prepareVisionInfo(VisionInfo& m_data)
     cv::Point2d circle_global = getOnGlobalCoordinate(m_loc.location(), m_circle.result_circle());
     m_data.circle_field.x = circle_global.x;
     m_data.circle_field.y = circle_global.y;
+    // ball
+    // cv::Point2f ball_global = getOnGlobalCoordinate(m_loc.location(), cv::Point2f(m_data.ball_field.x, m_data.ball_field.y));
+    // m_data.ball_global.x = ball_global.x;
+    // m_data.ball_global.y = ball_global.y;
+
+
+    //////////////////////////////////////////// debug /////////////////////////////////////////
+    // TODO(MWX): switch on/off
     // lines
     std::vector<LineSegment> lines_global = getOnGlobalCoordinate(m_loc.location(), m_line.clustered_lines());
     m_data.lines.resize(lines_global.size());
@@ -220,10 +228,45 @@ DVision::prepareVisionInfo(VisionInfo& m_data)
         m_data.lines[i].endpoint2.x = p2.x;
         m_data.lines[i].endpoint2.y = p2.y;
     }
-    // ball
-    // cv::Point2f ball_global = getOnGlobalCoordinate(m_loc.location(), cv::Point2f(m_data.ball_field.x, m_data.ball_field.y));
-    // m_data.ball_global.x = ball_global.x;
-    // m_data.ball_global.y = ball_global.y;
+
+    // viewRange, four
+    cv::Point2f upperLeft;
+    cv::Point2f upperRight;
+    cv::Point2f lowerLeft;
+    cv::Point2f lowerRight;
+
+    m_projection.getOnRealCoordinate(cv::Point(0, 0), upperLeft);
+    m_projection.getOnRealCoordinate(cv::Point(parameters.camera.width - 1, 0), upperRight);
+    m_projection.getOnRealCoordinate(cv::Point(0, parameters.camera.height - 1), lowerLeft);
+    m_projection.getOnRealCoordinate(cv::Point(parameters.camera.width - 1, parameters.camera.height - 1), lowerRight);
+
+    LineSegment l1(upperLeft, lowerLeft);
+    LineSegment l2(upperRight, lowerRight);
+    cv::Point2d cross;
+    bool intersect = l1.Intersect(l2, cross);
+    if(intersect) {
+        upperLeft *= -10;
+        upperRight *= -10;
+    }
+
+    upperLeft = getOnGlobalCoordinate(m_loc.location(), upperLeft);
+    upperRight = getOnGlobalCoordinate(m_loc.location(), upperRight);
+    lowerLeft = getOnGlobalCoordinate(m_loc.location(), lowerLeft);
+    lowerRight = getOnGlobalCoordinate(m_loc.location(), lowerRight);
+
+    m_data.viewRange.resize(4);
+    m_data.viewRange[0].x = upperLeft.x;
+    m_data.viewRange[0].y = upperLeft.y;
+
+    m_data.viewRange[1].x = upperRight.x;
+    m_data.viewRange[1].y = upperRight.y;
+
+    m_data.viewRange[2].x = lowerRight.x;
+    m_data.viewRange[2].y = lowerRight.y;
+
+    m_data.viewRange[3].x = lowerLeft.x;
+    m_data.viewRange[3].y = lowerLeft.y;
+
 }
 
 void

@@ -57,8 +57,8 @@ class DVision : public dprocess::DProcess<DVision>
     BalllTracker m_ball_tracker;
     int m_center_pitch;
     int m_center_yaw;
-    int m_pitch;
-    int m_yaw;
+    int m_pitch = 0;
+    int m_yaw = 0;
 
     VisionInfo m_data;
     dmotion::MotionInfo m_motion_info;

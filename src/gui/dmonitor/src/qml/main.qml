@@ -166,7 +166,6 @@ ApplicationWindow {
             Component.onCompleted: {
                 init();
             }
-
         }
     }
 
