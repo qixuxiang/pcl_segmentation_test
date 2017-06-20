@@ -18,6 +18,7 @@
 #include <Eigen/StdVector>
 #include <algorithm>
 #include <cmath>
+#include <dmotion/MotionInfo.h>
 #include <g2o/core/block_solver.h>
 #include <g2o/core/factory.h>
 #include <g2o/core/hyper_graph.h>
@@ -25,7 +26,6 @@
 #include <g2o/core/robust_kernel_impl.h>
 #include <g2o/core/solver.h>
 #include <g2o/core/sparse_optimizer.h>
-// #include <g2o/solvers/cholmod/linear_solver_cholmod.h>
 #include <g2o/solvers/csparse/linear_solver_csparse.h>
 #include <g2o/solvers/dense/linear_solver_dense.h>
 #include <g2o/solvers/structure_only/structure_only_solver.h>
@@ -111,7 +111,7 @@ class Localization
 
     // getter
     cv::Point3d location();
-    cv::Point2d odom_last_get();
+    cv::Point2d last_delta_data();
 
     // setter
     void location(const cv::Point2d& loc);
@@ -136,22 +136,23 @@ class Localization
     cv::Point2d location_;
     cv::Point2d location_kalman_;
     KalmanFilterC kalmanI_;
+
     Projection* camera_projections_;
-    float last_odom_x_, last_odom_y_;
-    cv::Point3d global_pos_;
-    cv::Point3d last_odom_;
-    uint32_t last_odom_id_;
+
+    ros::Time last_motion_info_time_;
+    cv::Point3d last_delta_data_;
+
     g2o::BlockSolverX::LinearSolverType* linear_solver_;
     g2o::BlockSolverX* block_solver_;
     g2o::OptimizationAlgorithmLevenberg* opt_algo_;
     int current_vertex_id_;
     int previous_vertex_id_;
     int landmark_count_;
-    cv::Point2d odom_last_get_;
     bool at_least_one_observation_;
     long unsigned int node_counter_;
 
     double GetUpdateCoef(const double& coef, const cv::Point2f& point);
     double GetUpdateCoef(const double& coef, LineSegment line);
+    void CalcDeadReckoning(const dmotion::MotionInfo& motion_info);
 };
 } // namespace dvision
