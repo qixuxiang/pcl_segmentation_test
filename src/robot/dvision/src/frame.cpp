@@ -31,12 +31,12 @@ Frame::encode(int& length) {
     cv_bridge::CvImage cvmsg(header, "bgr8", getBGR());
     sensor_msgs::ImagePtr msg = cvmsg.toImageMsg();
 
-    ros::Time t1 = ros::Time::now();
+//    ros::Time t1 = ros::Time::now();
     auto res = m_encoder->encode(msg);
-    ros::Time t2 = ros::Time::now();
+//    ros::Time t2 = ros::Time::now();
 
-    ros::Duration d = t2 -  t1;
-    ROS_INFO("Image encoding: size: %d, time: %lf", res.frame_size, d.toSec());
+//    ros::Duration d = t2 -  t1;
+//    ROS_INFO("Image encoding: size: %d, time: %lf", res.frame_size, d.toSec());
 
     std::unique_ptr<uint8_t> buf(new uint8_t[res.frame_size + 4]);
     memcpy(buf.get(), &res.frame_size, sizeof(uint32_t));
@@ -80,10 +80,10 @@ Frame::decode(void* buffer) {
     memcpy(&size, buffer, sizeof(uint32_t));
     sensor_msgs::ImagePtr out(new sensor_msgs::Image);
 
-    ros::Time t1 = ros::Time::now();
+//    ros::Time t1 = ros::Time::now();
     int len = m_decoder->decode(size, &static_cast<uint8_t*>(buffer)[4], out);
-    ros::Time t2 = ros::Time::now();
-    ROS_INFO("Image decoding: size: %d, time: %lf", size, (t2 - t1).toSec());
+//    ros::Time t2 = ros::Time::now();
+//    ROS_INFO("Image decoding: size: %d, time: %lf", size, (t2 - t1).toSec());
 
     cv_bridge::CvImagePtr cvout = cv_bridge::toCvCopy(out);
     m_bgr = cvout->image;

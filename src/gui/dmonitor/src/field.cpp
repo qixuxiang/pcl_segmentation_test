@@ -26,7 +26,7 @@ void Field::drawField(QPainter *painter)
     // antialiasing
     painter->setRenderHint(QPainter::Antialiasing);
     // draw background
-    painter->fillRect(1, 1, width() - 2, height() - 1, m_grassGreen);
+    painter->fillRect(0, 0, width(), height(), m_grassGreen);
 
 
     // draw border

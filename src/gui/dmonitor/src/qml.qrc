@@ -4,5 +4,6 @@
         <file>qml/main.qml</file>
         <file>qml/Robot.qml</file>
         <file>qml/Ball.qml</file>
+        <file>qml/Box.qml</file>
     </qresource>
 </RCC>

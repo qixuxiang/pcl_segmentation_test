@@ -50,6 +50,8 @@ add_executable(dmonitor
     src/qml/main.qml
     src/qml/Robot.qml
     src/qml/Ball.qml
+    src/qml/Box.qml
+    src/qml/Selection.qml
     src/js/componentCreation.js
     )
 

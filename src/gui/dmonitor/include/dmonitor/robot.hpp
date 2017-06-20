@@ -11,6 +11,7 @@ class Robot : public BaseObject {
     Q_OBJECT
     Q_PROPERTY(QString address READ address WRITE setAddress)
     Q_PROPERTY(Ball* ball READ ball WRITE setBall)
+    Q_PROPERTY(bool online READ online WRITE setOnline NOTIFY onlineChanged)
 
 public:
     Robot(QQuickItem* parent = 0);
@@ -28,10 +29,16 @@ public:
     Ball* ball() const;
 
     void drawCircle(QPainter *painter);
+    bool online() const;
+
 public slots:
     void setAddress(QString address);
     void onRecv(dvision::VisionInfo& msg);
     void setBall(Ball* ball);
+    void setOnline(bool online);
+
+signals:
+    void onlineChanged(bool online);
 
 private:
     dtransmit::DTransmit* m_transmitter;
@@ -49,6 +56,8 @@ private:
     int m_triangleBBoxHeight = 40;
     QColor m_color = QColor(255, 167, 0);
     const int MAX_UNSEEN_SEC = 15;
+
+    bool m_online = false;
 };
 
 } // namespace dmonitor

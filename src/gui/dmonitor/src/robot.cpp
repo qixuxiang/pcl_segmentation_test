@@ -32,8 +32,6 @@ void Robot::init()
     int port = dconstant::network::robotBroadcastAddressBase + m_robotId;
     qDebug() << "Listening at" << port;
     m_transmitter->addRosRecv<dvision::VisionInfo>(port, std::bind(&Robot::onRecv, this, std::placeholders::_1));
-
-
     m_transmitter->startService();
 }
 
@@ -74,10 +72,14 @@ void Robot::monitorModeUpdate()
     QTime now = QTime::currentTime();
     int last = m_lastRecvTime.secsTo(now);
     if(last > MAX_UNSEEN_SEC) {
+        m_online = false;
         setVisible(false);
         m_ball->setVisible(false);
+        emit onlineChanged(m_online);
     } else {
         setVisible(true);
+        m_online = true;
+        emit onlineChanged(m_online);
 
         if(m_simVisionInfo.see_ball)
             m_ball->setVisible(true);
@@ -145,9 +147,14 @@ void Robot::drawCircle(QPainter* painter) {
 
     double circleDiamater = dconstant::geometry::centerCircleDiameter / m_field->getScale();
     QRectF foo(circleCenter.x() - circleDiamater / 2,circleCenter.y() - circleDiamater / 2, circleDiamater, circleDiamater);
+    painter->setPen(QPen(Qt::yellow, 2));
     painter->setBrush(QBrush());
     painter->drawEllipse(foo);
+}
 
+bool Robot::online() const
+{
+    return m_online;
 }
 
 
@@ -159,8 +166,8 @@ void Robot::onRecv(dvision::VisionInfo &msg)
         m_heading = msg.robot_pos.z * 180.0 / M_PI;
         auto robotPos = QPointF(msg.robot_pos.x, msg.robot_pos.y);
 
-        if(robotPos.x() != 0.0 && robotPos.y() != 0.0) {
-            qDebug() << robotPos << m_heading;
+//        if(robotPos.x() != 0.0 && robotPos.y() != 0.0) {
+        if(true) {
             m_realPos = robotPos;
             m_lastRecvTime = QTime::currentTime();
         }
@@ -200,6 +207,15 @@ void Robot::setBall(Ball* ball)
         return;
 
     m_ball = ball;
+}
+
+void Robot::setOnline(bool online)
+{
+    if (m_online == online)
+        return;
+
+    m_online = online;
+    emit onlineChanged(online);
 }
 
 } // namespace dmonitor
