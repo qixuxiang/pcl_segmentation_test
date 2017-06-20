@@ -21,3 +21,4 @@ build*
 # vim stuff
 *.swp
 *.autosave
+*.pyc

@@ -1,14 +1,24 @@
 #include "dmotion/GaitStateManager.hpp"
 #include "dmotion/GaitStateLib/AllGaitState.hpp"
 #include "dmotion/GaitStateSupportLib/HumanRobot.hpp"
+#include "dtransmit/dtransmit.hpp"
+#include "dconfig/dconstant.hpp"
 #include "dmotion/MotionData.hpp"
 
-using namespace std;
 using dmotion::ActionCmd;
+
+dtransmit::DTransmit* transmit;
 
 GaitStateManager::GaitStateManager(ros::NodeHandle* nh)
   : m_nh(nh)
 {
+    if(!nh->getParam("/ZJUDancer/Simulation", m_simulation)) {
+        ROS_ERROR("Get simulation param error");
+    }
+    if(!nh->getParam("/ZJUDancer/RobotId", m_robotId)) {
+        ROS_ERROR("Get robotId param error");
+    }
+
     init();
     init_allstates();
     gaitState = crouch;
@@ -19,7 +29,17 @@ GaitStateManager::GaitStateManager(ros::NodeHandle* nh)
     m_sub_reload_config = m_nh->subscribe("/humanoid/ReloadMotionConfig", 1, &GaitStateManager::reload_gaitdata, this);
     m_pub = m_nh->advertise<dmotion::MotionInfo>("/humanoid/MotionInfo", 1);
 
+    // register service
+    m_deltaServer = nh->advertiseService<dmotion::GetDelta::Request, dmotion::GetDelta::Response>("getDelta", boost::bind(&GaitStateManager::getDelta, this, _1, _2));
+}
 
+bool GaitStateManager::getDelta(dmotion::GetDelta::Request &req, dmotion::GetDelta::Response &res) {
+    auto delta = rstatus->checkDeltaDist();
+    res.delta.x = delta.m_x;
+    res.delta.y = delta.m_y;
+    res.delta.z = delta.m_angle;
+    m_delta = res.delta;
+    return true;
 }
 
 GaitStateManager::~GaitStateManager() = default;
@@ -27,7 +47,7 @@ GaitStateManager::~GaitStateManager() = default;
 void
 GaitStateManager::tick()
 {
-    ROS_INFO("GaitStateManager tick ..");
+    //ROS_INFO("GaitStateManager tick ..");
     prior_gaitState = gaitState;
 
     if (prior_gaitState != goal_gaitState) {
@@ -40,15 +60,12 @@ GaitStateManager::tick()
 
     gaitState = goal_gaitState;
 
-    // if (RobotPara::getup_bool) { // Why we need this ???
-    if (true) {
-        if (rstatus->m_bStable == frontdown) {
-            gaitState = setupfrontdown;
-            gaitState->entry();
-        } else if (rstatus->m_bStable == rightdown || rstatus->m_bStable == leftdown || rstatus->m_bStable == backdown) {
-            gaitState = setupbackdown;
-            gaitState->entry();
-        }
+    if (rstatus->m_bStable == frontdown) {
+        gaitState = setupfrontdown;
+        gaitState->entry();
+    } else if (rstatus->m_bStable == rightdown || rstatus->m_bStable == leftdown || rstatus->m_bStable == backdown) {
+        gaitState = setupbackdown;
+        gaitState->entry();
     }
 
     gaitState->execute();
@@ -63,9 +80,6 @@ GaitStateManager::tick()
     m_motion_info.timestamp = ros::Time::now();
     ros::Duration uptime = m_motion_info.timestamp - m_start_time;
     m_motion_info.uptime = uptime.toSec();
-
-    // robot->m_leftkick_flag = readFrom(behaviour, kick);
-    // robot->m_rightkick_flag = readFrom(behaviour, kick);
 }
 
 void
@@ -74,7 +88,11 @@ GaitStateManager::init()
     ROS_INFO("GaitState Manager INIT");
 
     rstatus = new RobotStatus(m_nh);
-    port = new transitHub(m_nh, rstatus);
+    if(!m_simulation) {
+        port = new transitHub(m_nh, rstatus);
+    } else {
+        transmit = new dtransmit::DTransmit("127.0.0.1");
+    }
     robot = new HumanRobot(m_nh, port, rstatus, this);
 }
 
@@ -188,48 +206,27 @@ GaitStateManager::platCtrl(double& targetYaw, double& targetPitch)
     }
 
     // get delta data
-    deltadataDebug tmpDelta = rstatus->checkDeltaDist();
-    tempD.m_x += tmpDelta.m_x;
-    tempD.m_y += tmpDelta.m_y;
-    tempD.m_angle += tmpDelta.m_angle;
-
     m_motion_info.action.cmd_head.y = targetPitch;
     m_motion_info.action.cmd_head.z = targetYaw;
-    // FIXME(corenel) using std::underlying_type_t instead
+    m_motion_info.deltaData = m_delta;
+
     m_motion_info.stable = static_cast<int>(rstatus->m_bStable);
     m_motion_info.vy = robot->m_robotCtrl.getWalkVelY();
     m_motion_info.curPlat.x = estimated_plat.m_x;
     m_motion_info.curPlat.y = estimated_plat.m_y;
 
-    m_motion_info.deltaData.x = tempD.m_x;
-    m_motion_info.deltaData.y = tempD.m_y;
-    m_motion_info.deltaData.z = tempD.m_angle;
+    m_motion_info.robotCtrl.x = robot->m_robotCtrl.robot_x;
+    m_motion_info.robotCtrl.y = robot->m_robotCtrl.robot_x;
+    m_motion_info.robotCtrl.z = robot->m_robotCtrl.robot_t;
 
-    m_motion_info.deltaData.x = robot->m_robotCtrl.robot_x;
-    m_motion_info.deltaData.y = robot->m_robotCtrl.robot_x;
-    m_motion_info.deltaData.z = robot->m_robotCtrl.robot_t;
     m_pub.publish(m_motion_info);
+
+    if(m_simulation) {
+        transmit->sendRos<dmotion::MotionInfo>(dconstant::network::robotMotionBase + m_robotId, m_motion_info);
+    }
 // TODO(MWX): angle feedback
 // todo, magic number , maybe different with different type of dynamixel servo
 // TODO(mwx): add this if required by behaviour
-#if 0
-    Vector2 plat(targetYaw, targetPitch);
-    mynode.publish("plat", plat);
-    // writeTo(motion, curPlat, estimated_plat);
-    // rstatus->curYaw = targetYaw;
-    // writeTo(motion, gyro, rstatus->getGdata());
-    // mynode.publish("gyro", rstatus->getGdata());
-    // deltadataDebug tmpDelta = rstatus->checkDeltaDist();
-    // // deltadataDebug tmpD = readFrom(motion, deltaData);
-    // tmpD.m_x += tmpDelta.m_x;
-    // tmpD.m_y += tmpDelta.m_y;
-    // tmpD.m_angle += tmpDelta.m_angle;
-    // writeTo(motion, deltaData, tmpD);
-    // writeTo(motion, stable, rstatus->m_bStable);
-    // writeTo(motion, eular, rstatus->getEularAngle());
-    // writeTo(motion, robotCtrl, robot->m_robotCtrl);
-    // writeTo(motion, vy, robot->m_robotCtrl.getWalkVelY());
-#endif
 }
 
 void
@@ -242,7 +239,6 @@ GaitStateManager::checkNewCommand(const dmotion::ActionCmd& request)
             goal_gaitState->m_gait_sx = request.cmd_vel.linear.x;
             goal_gaitState->m_gait_sy = request.cmd_vel.linear.y;
             goal_gaitState->m_gait_st = request.cmd_vel.angular.z;
-            ROS_DEBUG("WENXI (%lf, %lf, %dlf)", goal_gaitState->m_gait_sx, goal_gaitState->m_gait_sy, goal_gaitState->m_gait_st);
             break;
         case ActionCmd::CROUCH:
             goal_gaitState = crouch;

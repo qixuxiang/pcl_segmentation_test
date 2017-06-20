@@ -5,6 +5,7 @@
 #include "dbehavior/BehaviourInfo.h"
 #include "dmotion/ActionCmd.h"
 #include "dmotion/MotionInfo.h"
+#include "dmotion/GetDelta.h"
 #include "dprocess/dconcurrent.hpp"
 #include "dprocess/dprocess.hpp"
 #include "dtransmit/dtransmit.hpp"
@@ -33,6 +34,7 @@ class DVision : public dprocess::DProcess<DVision>
 
   private:
     ros::NodeHandle* m_nh;
+    ros::ServiceClient m_deltaClient;
     ros::Subscriber m_sub_motion_info;
     ros::Subscriber m_sub_behaviour_info;
     ros::Subscriber m_sub_reload_config;

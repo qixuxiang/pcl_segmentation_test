@@ -22,8 +22,11 @@ DVision::DVision(ros::NodeHandle* n)
     m_line.Init();
     m_loc.Init();
     m_ball_tracker.Init(parameters.camera.extrinsic_para, parameters.camera.fx, parameters.camera.fy, parameters.camera.undistCx, parameters.camera.undistCy);
+
+    // FIXME(MWX): switch
     Frame::initEncoder();
 
+    // FIXME(MWX): parallel!
     m_concurrent.push([] {
         //     ROS_INFO("concurrent");
     });
@@ -31,6 +34,8 @@ DVision::DVision(ros::NodeHandle* n)
     m_sub_behaviour_info = m_nh->subscribe("/humanoid/BehaviourInfo", 1, &DVision::behaviourCallback, this);
     m_sub_reload_config = m_nh->subscribe("/humanoid/ReloadVisionConfig", 1, &DVision::reloadConfigCallback, this);
     m_pub = m_nh->advertise<VisionInfo>("/humanoid/VisionInfo", 1);
+
+    m_deltaClient = m_nh->serviceClient<dmotion::GetDelta>("getDelta");
 
     m_transmitter = new dtransmit::DTransmit(parameters.udpBroadcastAddress);
     if (parameters.simulation) {
@@ -50,6 +55,14 @@ DVision::tick()
     /**********
      * Update *
      **********/
+
+    // update delta
+    dmotion::GetDelta srv;
+    if(m_deltaClient.call(srv)) {
+        auto d = srv.response.delta;
+        // TODO(yuthon): Here we got delta data.
+    }
+
     if (parameters.simulation) {
         m_pub.publish(m_data);
         return;
@@ -61,7 +74,7 @@ DVision::tick()
     m_projection.updateExtrinsic(m_pitch, m_yaw);
 
     if (!m_loc.Update(m_projection)) {
-        ROS_ERROR("Cannot update localization!");
+        //ROS_ERROR("Cannot update localization!");
     }
 
     // get image in BGR and HSV color space
@@ -75,7 +88,7 @@ DVision::tick()
     m_data.see_field = m_field.Process(m_hsv_img, m_gui_img, m_projection);
 
     if (parameters.field.enable && !m_data.see_field) {
-        ROS_ERROR("Detecting field failed.");
+        //ROS_ERROR("Detecting field failed.");
     }
 
     /*****************
@@ -85,7 +98,7 @@ DVision::tick()
     m_data.see_line = m_line.Process(m_canny_img, m_hsv_img, m_gui_img, m_field.field_convex_hull(), m_field.field_binary_raw(), m_projection);
 
     if (!m_data.see_line) {
-        ROS_ERROR("Detecting lines failed.");
+        //ROS_ERROR("Detecting lines failed.");
     }
 
     /*******************

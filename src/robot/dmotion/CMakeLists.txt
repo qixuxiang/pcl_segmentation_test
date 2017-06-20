@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(dmotion)
-add_definitions(-std=c++11 -Wall -Wextra -Wno-unused-result) #-Weffc++ -pedantic
-
-# TODO(MWX): debug / release options
+add_definitions(-std=c++11 -Wall -O2)
 
 find_package(catkin REQUIRED
     COMPONENTS roscpp
                geometry_msgs
                message_generation
+               dtransmit
+               dconfig
                dprocess)
 
 find_package(Boost REQUIRED COMPONENTS system)
@@ -17,6 +17,11 @@ add_message_files(
   FILES
   ActionCmd.msg
   MotionInfo.msg
+)
+
+add_service_files(
+  FILES
+  GetDelta.srv
 )
 
 generate_messages(

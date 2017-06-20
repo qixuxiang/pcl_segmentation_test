@@ -121,11 +121,12 @@ ApplicationWindow {
 
         function updateView() {
             robots.forEach(function(rbt, index, array) {
-                rbt.setIsMonitor(modeSelection.isMonitor)
+                rbt.setIsMonitor(modeSelection.isMonitor);
                 rbt.update();
             })
 
             balls.forEach(function(ball, index, array){
+                ball.setIsMonitor(modeSelection.isMonitor);
                 ball.update();
             })
         }

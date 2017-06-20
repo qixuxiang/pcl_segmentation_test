@@ -3,6 +3,7 @@
 #include "dmotion/ActionCmd.h"
 #include "dmotion/GaitStateSupportLib/HumanRobotInterface.hpp"
 #include "dmotion/MotionInfo.h"
+#include "dmotion/GetDelta.h"
 #include "std_msgs/String.h"
 #include "transitHub.hpp"
 #include <ros/ros.h>
@@ -32,8 +33,11 @@ class GaitStateManager
     GaitStateBase* prior_gaitState;
     dmotion::MotionInfo m_motion_info;
 
+    bool getDelta(dmotion::GetDelta::Request& req, dmotion::GetDelta::Response& res);
+
   private:
     ros::NodeHandle* m_nh;
+    ros::ServiceServer m_deltaServer;
     /* init all gait states */
     void init_allstates();
     void init();
@@ -58,8 +62,10 @@ class GaitStateManager
 
     /* for head plat compensation */
     VecPos estimated_plat;
-    deltadataDebug tempD;
+    geometry_msgs::Vector3 m_delta;
 
+    bool m_simulation;
+    int m_robotId;
     ros::Publisher m_pub;
     ros::Subscriber m_sub_reload_config;
 };

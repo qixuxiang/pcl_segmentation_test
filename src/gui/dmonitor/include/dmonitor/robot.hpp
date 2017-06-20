@@ -5,6 +5,8 @@
 #include "dvision/VisionInfo.h"
 #include "dmotion/MotionInfo.h"
 #include <QTime>
+#include <opencv2/opencv.hpp>
+using namespace cv;
 
 namespace dmonitor {
 
@@ -12,6 +14,7 @@ class Robot : public BaseObject {
     Q_OBJECT
     Q_PROPERTY(QString address READ address WRITE setAddress)
     Q_PROPERTY(Ball* ball READ ball WRITE setBall)
+    Q_PROPERTY(Ball* simBall READ simBall WRITE setSimBall)
     Q_PROPERTY(bool online READ online WRITE setOnline NOTIFY onlineChanged)
 
 public:
@@ -36,11 +39,17 @@ public:
     Q_INVOKABLE void reset();
     void onRecvMotion(dmotion::MotionInfo &msg);
     bool isOnline();
+    Point3d realPos();
+    void setPos(Point3d p);
+    Ball* simBall() const;
+
 public slots:
     void setAddress(QString address);
     void onRecv(dvision::VisionInfo& msg);
     void setBall(Ball* ball);
     void setOnline(bool online);
+
+    void setSimBall(Ball* simBall);
 
 signals:
     void onlineChanged(bool online);
@@ -53,6 +62,7 @@ private:
 
     QTime m_lastRecvTime;
     Ball* m_ball = nullptr;
+    Ball* m_simBall = nullptr;
     QString m_address;
 
     QPointF m_realPos;

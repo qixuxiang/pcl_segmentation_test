@@ -7,6 +7,7 @@ Ball {
         id: mouseArea
         anchors.fill: parent
         drag.target: ball
+        onClicked: console.log("draaw")
     }
 }
 

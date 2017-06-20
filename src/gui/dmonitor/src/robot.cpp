@@ -10,6 +10,10 @@
 #include "dconfig/dconstant.hpp"
 #include "dvision/frame.hpp"
 #include "dmotion/MotionInfo.h"
+#include "dvision/utils.hpp"
+
+using namespace dvision;
+using namespace cv;
 
 namespace dmonitor {
 
@@ -31,6 +35,17 @@ void Robot::init()
     m_transmitter->startService();
 }
 
+Point3d Robot::realPos() {
+    double scale = m_field->getScale();
+    auto p = m_field->getOnRealCoordinate(QPointF(x() + m_triangleBBoxWidth / scale / 2, y() + m_triangleBBoxHeight / scale / 2));
+    return Point3d(p.x(), p.y(), m_heading / 180 * M_PI);
+}
+
+Ball *Robot::simBall() const
+{
+    return m_simBall;
+}
+
 void Robot::simModeUpdate()
 {
     if(isOnline()) {
@@ -38,37 +53,34 @@ void Robot::simModeUpdate()
         setHeight(m_triangleBBoxHeight);
         setVisible(true);
         m_ball->setVisible(false);
+        m_simBall->setVisible(true);
 
         double scale = m_field->getScale();
         double dx = m_motionInfo.deltaData.x;
         double dy = m_motionInfo.deltaData.y;
         double dt = m_motionInfo.deltaData.z;
-        qDebug() << dx << dy << dt;
 
-
-        auto imgPos = QPointF(x() + m_triangleBBoxWidth / scale / 2, y() + m_triangleBBoxHeight / scale / 2);
-        auto realPos = m_field->getOnRealCoordinate(imgPos);
-
-        realPos += QPointF(dx, dy);
+        auto newReal = dvision::getOnGlobalCoordinate(realPos(), Point2d(dx, dy));
+        auto realPos = m_field->getOnImageCoordiante(QPointF(newReal.x, newReal.y));
         m_heading += dt;
 
-        imgPos = m_field->getOnImageCoordiante(realPos);
-        setX(imgPos.x() - m_triangleBBoxWidth / scale / 2);
-        setY(imgPos.y() - m_triangleBBoxHeight / scale / 2);
-
+        setX(realPos.x() - m_triangleBBoxWidth / scale / 2);
+        setY(realPos.y() - m_triangleBBoxHeight / scale / 2);
 
         // update vision info according to xy
         m_simVisionInfo.robot_pos.x = realPos.x();
         m_simVisionInfo.robot_pos.y = realPos.y();
 
         // !? see ball
-        auto realBall = m_field->getOnRealCoordinate(QPointF(m_ball->x() + m_ball->width() / 2, m_ball->y() + m_ball->height() /2));
+        auto realBall = m_field->getOnRealCoordinate(QPointF(m_simBall->x() + m_simBall->width() / 2, m_simBall->y() + m_simBall->height() /2));
         m_simVisionInfo.ball_global.x = realBall.x();
         m_simVisionInfo.ball_global.y = realBall.y();
+        m_simVisionInfo.see_ball = true;
 
         m_transmitter->sendRos(dconstant::network::monitorBroadcastAddressBase + m_robotId, m_simVisionInfo);
     } else {
         setVisible(false);
+        m_simBall->setVisible(false);
     }
 }
 
@@ -257,6 +269,11 @@ void Robot::setOnline(bool online)
 
     m_online = online;
     emit onlineChanged(online);
+}
+
+void Robot::setSimBall(Ball *simBall)
+{
+    m_simBall = simBall;
 }
 bool Robot::online() const {
     return m_online;

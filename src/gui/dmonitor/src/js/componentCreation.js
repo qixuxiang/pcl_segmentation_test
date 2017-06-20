@@ -52,7 +52,7 @@ function finishRobotCreation() {
 
 function finishBallCreation() {
    if(Ball.status === Component.Ready) {
-       for(var i = 1; i <= robotnum; ++i) {
+       for(var i = 1; i <= robotnum + 1; ++i) {
            var bl = Ball.createObject(drawArea, {//"robotId": i,
                                                    "width": 10,
                                                    "height": 10,
@@ -64,6 +64,7 @@ function finishBallCreation() {
        for(i = 0; i < robots.length; ++i) {
            balls[i].init();
            robots[i].ball = balls[i];
+           robots[i].simBall = balls[robotnum];
        }
    } else if (Robot.status === Component.Error) {
        console.log('Error loading Robot: ', Robot.errorString())
