@@ -42,6 +42,10 @@ ApplicationWindow {
             width: 1040 / 1.5;
             height: 740 / 1.5;
             anchors.left: parent.left
+            MouseArea {
+                anchors.fill: parent
+                onClicked: console.log('click field')
+            }
         }
 
         Box {

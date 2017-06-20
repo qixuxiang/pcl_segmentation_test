@@ -64,14 +64,10 @@ void BaseObject::onxyChanged()
 
 void BaseObject::monitorModeUpdate()
 {
-    auto imgPos = m_field->getOnImageCoordiante(m_realPos);
-    setX(imgPos.x() - width() / 2);
-    setY(imgPos.y() - height() / 2);
 }
 
 void BaseObject::simModeUpdate()
 {
-    // set position back
 }
 
 void BaseObject::setEnable(bool enabled)

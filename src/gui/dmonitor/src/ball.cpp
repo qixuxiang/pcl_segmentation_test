@@ -16,9 +16,7 @@ void Ball::setPos(QPointF pos)
 
 void Ball::drawMyself(QPainter* painter)
 {
-
     if(isMonitor()) {
-        qDebug() << "update" << endl;
         auto imgPos = m_field->getOnImageCoordiante(m_realPos);
         setX(imgPos.x() - m_diameter / m_field->getScale() / 2);
         setY(imgPos.y() - m_diameter / m_field->getScale() / 2);

@@ -40,8 +40,13 @@ DVision::DVision(ros::NodeHandle* n)
     m_transmitter = new dtransmit::DTransmit(parameters.udpBroadcastAddress);
     if (parameters.simulation) {
         ROS_INFO("Simulation mode!");
-        m_transmitter->addRosRecv<VisionInfo>(dconstant::network::monitorBroadcastAddressBase + parameters.robotId, [&](VisionInfo& msg) { m_data = msg; });
+        m_transmitter->addRosRecv<VisionInfo>(dconstant::network::monitorBroadcastAddressBase + parameters.robotId, [&](VisionInfo& msg) {
+            //ROS_INFO_STREAM(msg.ball_global);
+            m_data = msg;
+        });
     }
+
+    m_transmitter->startService();
 }
 
 DVision::~DVision()

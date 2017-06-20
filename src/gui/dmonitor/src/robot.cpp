@@ -48,12 +48,13 @@ Ball *Robot::simBall() const
 
 void Robot::simModeUpdate()
 {
+    m_simBall->setVisible(true);
+    m_ball->setVisible(false);
     if(isOnline()) {
         setWidth(m_triangleBBoxWidth);
         setHeight(m_triangleBBoxHeight);
         setVisible(true);
-        m_ball->setVisible(false);
-        m_simBall->setVisible(true);
+
 
         double scale = m_field->getScale();
         double dx = m_motionInfo.deltaData.x;
@@ -72,20 +73,21 @@ void Robot::simModeUpdate()
         m_simVisionInfo.robot_pos.y = realPos.y();
 
         // !? see ball
+
+        // todo ........................................................................... this is fucking ..
         auto realBall = m_field->getOnRealCoordinate(QPointF(m_simBall->x() + m_simBall->width() / 2, m_simBall->y() + m_simBall->height() /2));
         m_simVisionInfo.ball_global.x = realBall.x();
         m_simVisionInfo.ball_global.y = realBall.y();
         m_simVisionInfo.see_ball = true;
-
         m_transmitter->sendRos(dconstant::network::monitorBroadcastAddressBase + m_robotId, m_simVisionInfo);
     } else {
         setVisible(false);
-        m_simBall->setVisible(false);
     }
 }
 
 void Robot::monitorModeUpdate()
 {
+    m_simBall->setVisible(false);
     if(isOnline()) {
         setX(0);
         setY(0);

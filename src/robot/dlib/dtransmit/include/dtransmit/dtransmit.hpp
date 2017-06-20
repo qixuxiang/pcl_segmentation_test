@@ -94,6 +94,7 @@ void DTransmit::startRecv(PORT port, ReadHandler handler) {
 
 template <typename ROSMSG>
 void DTransmit::addRosRecv(PORT port, std::function<void(ROSMSG &)> callback) {
+    ROS_INFO("Add Ros Recv on port: %d", port);
     using namespace boost::asio;
     if(m_recvFoo.count(port)) {
         ROS_ERROR("Error in addRosRecv: port %d exist!", port);
