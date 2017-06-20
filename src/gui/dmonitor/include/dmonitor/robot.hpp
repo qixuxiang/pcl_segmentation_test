@@ -3,6 +3,7 @@
 #include "dmonitor/ball.hpp"
 #include "dtransmit/dtransmit.hpp"
 #include "dvision/VisionInfo.h"
+#include "dmotion/MotionInfo.h"
 #include <QTime>
 
 namespace dmonitor {
@@ -32,6 +33,9 @@ public:
     bool online() const;
 
     void drawView(QPainter *painter);
+    Q_INVOKABLE void reset();
+    void onRecvMotion(dmotion::MotionInfo &msg);
+    bool isOnline();
 public slots:
     void setAddress(QString address);
     void onRecv(dvision::VisionInfo& msg);
@@ -45,6 +49,7 @@ private:
     dtransmit::DTransmit* m_transmitter;
     dvision::VisionInfo m_simVisionInfo;
     dvision::VisionInfo m_monVisionInfo;
+    dmotion::MotionInfo m_motionInfo;
 
     QTime m_lastRecvTime;
     Ball* m_ball = nullptr;

@@ -10,6 +10,7 @@ find_package(catkin REQUIRED
   dvision
   dtransmit
   dconfig
+  dmotion
   ros_h264_streamer
 )
 

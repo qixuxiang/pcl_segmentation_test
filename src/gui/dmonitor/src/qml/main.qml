@@ -10,7 +10,6 @@ ApplicationWindow {
     height: drawArea.height + infoArea.height +  10 * 3
     title: qsTr("DMonitor")
     color: "#1B2B34"
-    //onWidthChanged: drawArea.width = width - (controlArea.width + controlArea.anchors.leftMargin + 10 * 2)
 
     property string udpAddress: '127.0.0.1'
     property string borderColor: "red"
@@ -21,22 +20,17 @@ ApplicationWindow {
         y: 10
         height: field.height
         width: height * 1.618
-//        onWidthChanged: {
-//            field.width = width
-//            field.update()
-//        }
         color: "#1B2B34"
 
         signal selectRobot(int id)
 
-        property var updateRate: 30
         property var robots: []
         property var balls: []
         property alias field: field
         property bool isMonitor: false
 
         Timer {
-            interval: 1000 / parent.updateRate
+            interval: 1000 / 30
             running: true
             repeat: true
             onTriggered: drawArea.updateView()
@@ -67,8 +61,14 @@ ApplicationWindow {
                property bool isMonitor: true
                text: isMonitor ? "Monitor" : "Simulate"
                onClicked: {
-                   isMonitor = !isMonitor;
-                   drawArea.isMonitor = isMonitor
+                    isMonitor = !isMonitor;
+                    drawArea.isMonitor = isMonitor
+
+                    if(!isMonitor) {
+                        for(var i = 0; i < drawArea.robots.length; ++i) {
+                           drawArea.robots[i].reset()
+                        }
+                    }
                }
             }
 
@@ -160,7 +160,11 @@ ApplicationWindow {
                 interval: 1000 / 30
                 running: true
                 repeat: true
-                onTriggered: parent.update()
+                onTriggered:  {
+                    if(!drawArea.isMonitor) {
+                        parent.update()
+                    }
+                }
             }
 
             Component.onCompleted: {
