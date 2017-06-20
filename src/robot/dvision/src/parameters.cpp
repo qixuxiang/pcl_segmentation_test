@@ -199,6 +199,10 @@ Parameters::update()
     // Get monitor parameters
     GPARAM("/dvision/monitor/update_gui_img", parameters.monitor.update_gui_img);
     GPARAM("/dvision/monitor/update_loc_img", parameters.monitor.update_loc_img);
+    GPARAM("/dvision/monitor/update_canny_img", parameters.monitor.update_canny_img);
+    GPARAM("/dvision/monitor/update_field_binary", parameters.monitor.update_field_binary);
+    GPARAM("/dvision/monitor/update_goal_binary", parameters.monitor.update_goal_binary);
+    GPARAM("/dvision/monitor/update_line_binary", parameters.monitor.update_line_binary);
 }
 
 #undef GPARAM

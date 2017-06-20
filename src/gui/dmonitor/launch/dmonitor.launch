@@ -1,7 +1,7 @@
 <launch>
-    <node pkg="dvisualize"
-          name="dvisualize"
-          type="dvisualize"
+    <node pkg="dmonitor"
+          name="dmonitor"
+          type="dmonitor"
           output="screen"
           respawn="false"
           required="true"

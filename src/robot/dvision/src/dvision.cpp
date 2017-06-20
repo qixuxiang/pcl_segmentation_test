@@ -240,11 +240,36 @@ DVision::showDebugImg()
         cv::imshow("loc", m_loc_img);
     }
 
+    if (parameters.monitor.update_canny_img) {
+        cv::namedWindow("canny", CV_WINDOW_NORMAL);
+        cv::imshow("canny", m_canny_img);
+    }
+
+    if (parameters.monitor.update_field_binary) {
+        m_field_binary = cv::Mat::zeros(m_hsv_img.size(), CV_8UC1);
+        cv::inRange(m_hsv_img, cv::Scalar(parameters.field.h0, parameters.field.s0, parameters.field.v0), cv::Scalar(parameters.field.h1, parameters.field.s1, parameters.field.v1), m_field_binary);
+        cv::namedWindow("field_binary", CV_WINDOW_NORMAL);
+        cv::imshow("field_binary", m_field_binary);
+    }
+
+    if (parameters.monitor.update_goal_binary) {
+        m_goal_binary = cv::Mat::zeros(m_hsv_img.size(), CV_8UC1);
+        cv::inRange(m_hsv_img, cv::Scalar(parameters.goal.h0, parameters.goal.s0, parameters.goal.v0), cv::Scalar(parameters.goal.h1, parameters.goal.s1, parameters.goal.v1), m_goal_binary);
+        cv::namedWindow("goal_binary", CV_WINDOW_NORMAL);
+        cv::imshow("goal_binary", m_goal_binary);
+    }
+
+    if (parameters.monitor.update_line_binary) {
+        m_line_binary = cv::Mat::zeros(m_hsv_img.size(), CV_8UC1);
+        cv::inRange(m_hsv_img, cv::Scalar(parameters.line.h0, parameters.line.s0, parameters.line.v0), cv::Scalar(parameters.line.h1, parameters.line.s1, parameters.line.v1), m_line_binary);
+        cv::namedWindow("line_binary", CV_WINDOW_NORMAL);
+        cv::imshow("line_binary", m_line_binary);
+    }
+
     if (parameters.monitor.update_gui_img) {
         cv::namedWindow("gui", CV_WINDOW_NORMAL);
         cv::imshow("gui", m_gui_img);
         cv::waitKey(1);
     }
 }
-
 } // namespace dvision

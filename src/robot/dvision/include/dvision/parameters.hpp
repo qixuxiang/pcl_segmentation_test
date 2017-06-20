@@ -202,6 +202,10 @@ struct MonitorParameters
 {
     bool update_gui_img;
     bool update_loc_img;
+    bool update_canny_img;
+    bool update_field_binary;
+    bool update_goal_binary;
+    bool update_line_binary;
 };
 
 struct HSVRange
