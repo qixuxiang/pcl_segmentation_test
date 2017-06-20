@@ -38,6 +38,7 @@ struct CameraParameters
 struct BallDetectorParameters
 {
     bool enable;
+    bool showResult;
     std::string label_file;
     std::string net_cfg;
     std::string weight_file;

@@ -92,15 +92,6 @@ DVision::tick()
         m_data.see_circle = m_circle.Process(m_line.clustered_lines());
     }
 
-    if (m_data.see_circle) {
-        if (m_ball_tracker.Process(m_circle.result_circle().x, m_circle.result_circle().y, static_cast<double>(m_pitch), static_cast<double>(m_yaw))) {
-            m_data.cmd_head_ball_track.x = 0;
-            m_data.cmd_head_ball_track.y = m_ball_tracker.m_out_pitch / M_PI * 180;
-            m_data.cmd_head_ball_track.z = m_ball_tracker.m_out_yaw / M_PI * 180;
-            // cout << "c_pitch: " << m_data.cmd_head_ball_track.y << endl;
-            // cout << "c_yaw: " << m_data.cmd_head_ball_track.z << endl;
-        }
-    }
     /*****************
      * Goal Detector *
      *****************/
@@ -130,7 +121,7 @@ DVision::tick()
      * Ball Detector *
      *****************/
 
-    // m_ball.GetBall(frame.getBGR_raw(), m_data, m_projection);
+    // m_data.see_ball = m_ball.GetBall(frame.getBGR_raw(), m_gui_img, m_projection);
 
     /***********
      * Publish *
@@ -168,7 +159,7 @@ DVision::behaviourCallback(const dbehavior::BehaviourInfo::ConstPtr& behaviour_m
         auto frame = m_camera.capture();
         std::string path_str;
         path_str = "p_" + std::to_string(m_pitch) + "_y_" + std::to_string(m_yaw) + " ";
-        ROS_INFO("save_image! %s", path_str);
+        ROS_INFO("save_image! %s", path_str.c_str());
         frame.save(path_str);
     }
 }
@@ -225,9 +216,19 @@ DVision::prepareVisionInfo(VisionInfo& m_data)
     }
     // ball
     // if (m_data.see_ball) {
+    //     m_data.ball_image.x = m_ball.ball_image().x;
+    //     m_data.ball_image.y = m_ball.ball_image().y;
+    //     m_data.ball_field.x = m_ball.ball_field().x;
+    //     m_data.ball_field.y = m_ball.ball_field().y;
     //     cv::Point2f ball_global = getOnGlobalCoordinate(m_loc.location(), cv::Point2f(m_data.ball_field.x, m_data.ball_field.y));
     //     m_data.ball_global.x = ball_global.x;
     //     m_data.ball_global.y = ball_global.y;
+    //     // track ball
+    //     if (m_ball_tracker.Process(m_ball.ball_field().x, m_ball.ball_field().y, static_cast<double>(m_pitch), static_cast<double>(m_yaw))) {
+    //         m_data.cmd_head_ball_track.x = 0;
+    //         m_data.cmd_head_ball_track.y = Radian2Degree(m_ball_tracker.out_pitch());
+    //         m_data.cmd_head_ball_track.z = Radian2Degree(m_ball_tracker.out_yaw());
+    //     }
     // }
 }
 

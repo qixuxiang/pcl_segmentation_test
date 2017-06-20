@@ -1,6 +1,7 @@
 dvision:
   ball_detector:
     enable:                     true
+    showResult:                 true
     label_file:                 '/home/ubuntu/.darknet/data/rob.names'
     net_cfg:                    '/home/ubuntu/.darknet/cfg/tiny-yolo-v1-rob.cfg'
     weight_file:                '/home/ubuntu/.darknet/model/tiny-yolo.weights'
@@ -13,7 +14,7 @@ dvision:
     maxDistBetween2LS:          20 # max distance between two circle lines
     radiusMaxCoef:              1.5 # max coef for valid radius
     radiusMinCoef:              0.7 # min coef for valid radius
-    confiusedDist:              20 # distance for confused center point
+    confiusedDist:              30 # distance for confused center point
     minLineSegmentCount:        3 # how many circle points at least
   field_detector:
     enable:                     true
@@ -97,7 +98,7 @@ dvision:
     v1:                         255
     active:                     false
     # hough line
-    MinLineLength:              40 # min length for hough line
+    MinLineLength:              30 # min length for hough line
     rhoHough:                   1 # distance resolution of the accumulator in pixels
     thetaHough:                 45 # angle resolution of the accumulator in radians
     thresholdHough:             15 # accumulator threshold parameter
@@ -110,9 +111,9 @@ dvision:
     jumpMin:                    3
     widthCheck:                 0.07
     aprxDist:                   true
-    doubleVote:                 60
+    doubleVote:                 70
     greenVote:                  70
-    colorVote:                  60
+    colorVote:                  80
     doubleVUse:                 true
     greenVUse:                  true
     colorVUse:                  true

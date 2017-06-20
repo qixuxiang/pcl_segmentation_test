@@ -61,10 +61,10 @@ BallDetector::~BallDetector()
 }
 
 bool
-BallDetector::GetBall(const cv::Mat& frame, VisionInfo& m_data, Projection& m_projection)
+BallDetector::GetBall(const cv::Mat& frame, cv::Mat& gui_img, Projection& m_projection)
 {
     // ROS_DEBUG("BallDetector Tick");
-
+    bool see_ball;
     darknet::Image raw_img(frame);
     darknet::params p = net_->get_params();
     ROS_DEBUG("darknet resize image to %d x %d x %d", p.h, p.w, p.c);
@@ -78,19 +78,22 @@ BallDetector::GetBall(const cv::Mat& frame, VisionInfo& m_data, Projection& m_pr
         for (auto bbox : ball_position) {
             ROS_DEBUG("find %5d - %5f - (%d, %d) && (%d, %d)", bbox.m_label, bbox.m_prob, bbox.m_left, bbox.m_top, bbox.m_right, bbox.m_bottom);
             if (bbox.m_label == 0 && bbox.m_prob > max_prob) {
-                m_data.see_ball = true;
-                m_data.ball_image.x = (bbox.m_left + bbox.m_right) / 2.0;
-                m_data.ball_image.y = (bbox.m_top + bbox.m_bottom) / 2.0;
+                see_ball = true;
+                ball_image_.x = (bbox.m_left + bbox.m_right) / 2.0;
+                ball_image_.y = (bbox.m_top + bbox.m_bottom) / 2.0;
+                ball_image_top_ = cv::Point(bbox.m_left, bbox.m_top);
+                ball_image_bottom_ = cv::Point(bbox.m_right, bbox.m_bottom);
                 max_prob = bbox.m_prob;
             }
         }
-        cv::Point2f ball_field;
-        if (m_projection.getOnRealCoordinate(cv::Point(m_data.ball_image.x, m_data.ball_image.y), ball_field)) {
-            m_data.ball_field.x = ball_field.x;
-            m_data.ball_field.y = ball_field.y;
-        }
+        m_projection.getOnRealCoordinate(ball_image_, ball_field_);
     }
-    return m_data.see_ball;
+
+    if (parameters.monitor.update_gui_img && parameters.ball.showResult) {
+        cv::rectangle(gui_img, ball_image_top_, ball_image_bottom_, cv::Scalar(0, 255, 0), 2);
+    }
+
+    return see_ball;
 }
 
 bool

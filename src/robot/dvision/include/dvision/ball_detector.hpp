@@ -27,11 +27,23 @@ class BallDetector : public IDetector
     ~BallDetector();
     bool Init();
 
-    bool GetBall(const cv::Mat& frame, VisionInfo& m_data, Projection& m_projection);
+    bool GetBall(const cv::Mat& frame, cv::Mat& gui_img, Projection& m_projection);
     bool CvtRelativePosition(std::vector<darknet::RelateiveBBox>& ball_position, std::vector<darknet::bbox>& ball_position_cvt);
+    inline cv::Point ball_image()
+    {
+        return ball_image_;
+    }
+    inline cv::Point2f ball_field()
+    {
+        return ball_field_;
+    }
 
   private:
     darknet::Network* net_;
     std::vector<std::string> label_list_;
+    cv::Point ball_image_;
+    cv::Point ball_image_top_;
+    cv::Point ball_image_bottom_;
+    cv::Point2f ball_field_;
 };
 } // namespace dvision

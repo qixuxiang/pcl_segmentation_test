@@ -4,31 +4,35 @@
 
 #pragma once
 
-#include <Eigen/Dense>
 #include "dvision/math.hpp"
 #include "dvision/parameters.hpp"
+#include <Eigen/Dense>
 
 using namespace std;
 using Eigen::MatrixXd;
 namespace dvision {
-class BalllTracker {
-public:
-    bool Init(std::vector<double> extrinsic_para,
-      double fx, double fy, double cx, double cy,
-      double undist_pos_x = parameters.camera.undistCx / 2,
-      double undist_pos_y = parameters.camera.undistCy / 2);
+class BalllTracker
+{
+  public:
+    bool
+    Init(std::vector<double> extrinsic_para, double fx, double fy, double cx, double cy, double undist_pos_x = parameters.camera.undistCx / 2, double undist_pos_y = parameters.camera.undistCy / 2);
     //球在场地上的位置
     //当前的pitch,yaw的值
-    bool Process(double in_ball_field_x, double in_ball_field_y,
-                       double in_pitch, double in_yaw);
+    bool Process(double in_ball_field_x, double in_ball_field_y, double in_pitch, double in_yaw);
 
     double Cal_theta_Asin_Bcos_C(double _a, double _b, double _c, double theta_raw);
+    inline double out_pitch()
+    {
+        return m_out_pitch;
+    }
+    inline double out_yaw()
+    {
+        return m_out_yaw;
+    }
 
+  private:
     double m_out_pitch;
     double m_out_yaw;
-
-
-private:
     MatrixXd m_cameraMatrix;
     MatrixXd m_w2p;
     MatrixXd m_p2c;
