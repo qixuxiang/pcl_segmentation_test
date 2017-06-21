@@ -1,5 +1,6 @@
 var Robot;
 var Ball;
+var ViewRange;
 var robots = [];
 var robotnum = 6;
 var balls = [];
@@ -7,6 +8,8 @@ var balls = [];
 function createRobots() {
     // create robot
     Robot = Qt.createComponent("../qml/Robot.qml");
+    ViewRange = Qt.createComponent("../qml/ViewRange.qml");
+
 
     if(Robot.status === Component.Ready)
         finishRobotCreation();
@@ -33,10 +36,16 @@ function createBalls() {
 function finishRobotCreation() {
    if(Robot.status === Component.Ready) {
        for(var i = 1; i <= robotnum; ++i) {
+           var viewRange = ViewRange.createObject(drawArea, {
+                                                   "width": 10,
+                                                   "height": 10,
+                                                    "field": field
+                                                  });
            var rbt = Robot.createObject(drawArea, {"robotId": i,
                                                    "width": 10,
                                                    "height": 10,
                                                    "address": udpAddress,
+                                                   "viewRange": viewRange,
                                                    "field": field})
            robots.push(rbt);
        }

@@ -87,4 +87,8 @@ void BaseObject::setRobotId(int id)
 
     m_robotId = id;
 }
+
+void BaseObject::setPos(QPointF p) {
+    m_realPos = p;
+}
 } // namespace dmonitor

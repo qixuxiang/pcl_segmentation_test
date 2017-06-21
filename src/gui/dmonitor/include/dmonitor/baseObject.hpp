@@ -24,6 +24,7 @@ public:
 
     int robotId() const;
     void setRobotId(int id);
+    void setPos(QPointF);
 public slots:
     void setField(Field* field);
     void setIsMonitor(bool isMonitor);

@@ -70,5 +70,6 @@ class DVision : public dprocess::DProcess<DVision>
     void reloadConfigCallback(const std_msgs::String::ConstPtr&);
     void prepareVisionInfo(VisionInfo& m_data);
     void showDebugImg();
+    void updateViewRange();
 };
 } // namespace dvision

@@ -12,13 +12,11 @@ public:
     Ball(QQuickItem* parent = 0);
     void init() override;
     void drawMyself(QPainter*) override;
-    void setPos(QPointF pos);
     int robotId() const;
     void setRobotId(int robotId);
 
 private:
     int m_id;
-    QPointF m_realPos;
 
     int m_diameter = dconstant::ballSize::diameter;
     QColor m_color = QColor(255, 64, 64);

@@ -41,7 +41,6 @@ DVision::DVision(ros::NodeHandle* n)
     if (parameters.simulation) {
         ROS_INFO("Simulation mode!");
         m_transmitter->addRosRecv<VisionInfo>(dconstant::network::monitorBroadcastAddressBase + parameters.robotId, [&](VisionInfo& msg) {
-            //ROS_INFO_STREAM(msg.ball_global);
             m_data = msg;
         });
     }
@@ -68,108 +67,95 @@ DVision::tick()
         // TODO(yuthon): Here we got delta data.
     }
 
-    if (parameters.simulation) {
-        m_pub.publish(m_data);
-        return;
-    }
-
-    auto frame = m_camera->capture();
-    m_data = VisionInfo();
-
     m_projection.updateExtrinsic(m_pitch, m_yaw);
 
-    if (!m_loc.Update(m_projection)) {
-        //ROS_ERROR("Cannot update localization!");
-    }
+    if (!parameters.simulation) {
+        auto frame = m_camera->capture();
+        m_data = VisionInfo();
 
-    // get image in BGR and HSV color space
-    m_gui_img = frame.getBGR_raw();
-    m_hsv_img = frame.getHSV();
-
-    /******************
-     * Field Detector *
-     ******************/
-
-    m_data.see_field = m_field.Process(m_hsv_img, m_gui_img, m_projection);
-
-    if (parameters.field.enable && !m_data.see_field) {
-        //ROS_ERROR("Detecting field failed.");
-    }
-
-    /*****************
-     * Line Detector *
-     *****************/
-
-    m_data.see_line = m_line.Process(m_canny_img, m_hsv_img, m_gui_img, m_field.field_convex_hull(), m_field.field_binary_raw(), m_projection);
-
-    if (!m_data.see_line) {
-        //ROS_ERROR("Detecting lines failed.");
-    }
-
-    /*******************
-     * Circle detector *
-     *******************/
-
-    if (m_data.see_field && m_data.see_line) {
-        m_data.see_circle = m_circle.Process(m_line.clustered_lines());
-    }
-
-    if (m_data.see_circle) {
-        if (m_ball_tracker.Process(m_circle.result_circle().x, m_circle.result_circle().y, static_cast<double>(m_pitch), static_cast<double>(m_yaw))) {
-            m_data.cmd_head_ball_track.x = 0;
-            m_data.cmd_head_ball_track.y = m_ball_tracker.m_out_pitch / M_PI * 180;
-            m_data.cmd_head_ball_track.z = m_ball_tracker.m_out_yaw / M_PI * 180;
-            // cout << "c_pitch: " << m_data.cmd_head_ball_track.y << endl;
-            // cout << "c_yaw: " << m_data.cmd_head_ball_track.z << endl;
+        if (!m_loc.Update(m_projection)) {
+            //ROS_ERROR("Cannot update localization!");
         }
+
+        // get image in BGR and HSV color space
+        m_gui_img = frame.getBGR_raw();
+        m_hsv_img = frame.getHSV();
+
+        /******************
+         * Field Detector *
+         ******************/
+
+        m_data.see_field = m_field.Process(m_hsv_img, m_gui_img, m_projection);
+
+        if (parameters.field.enable && !m_data.see_field) {
+            //ROS_ERROR("Detecting field failed.");
+        }
+
+        /*****************
+         * Line Detector *
+         *****************/
+
+        m_data.see_line = m_line.Process(m_canny_img, m_hsv_img, m_gui_img, m_field.field_convex_hull(), m_field.field_binary_raw(), m_projection);
+
+        if (!m_data.see_line) {
+            //ROS_ERROR("Detecting lines failed.");
+        }
+
+        /*******************
+         * Circle detector *
+         *******************/
+
+        if (m_data.see_field && m_data.see_line) {
+            m_data.see_circle = m_circle.Process(m_line.clustered_lines());
+        }
+
+        if (m_data.see_circle) {
+            if (m_ball_tracker.Process(m_circle.result_circle().x, m_circle.result_circle().y, static_cast<double>(m_pitch), static_cast<double>(m_yaw))) {
+                m_data.cmd_head_ball_track.x = 0;
+                m_data.cmd_head_ball_track.y = m_ball_tracker.m_out_pitch / M_PI * 180;
+                m_data.cmd_head_ball_track.z = m_ball_tracker.m_out_yaw / M_PI * 180;
+                // cout << "c_pitch: " << m_data.cmd_head_ball_track.y << endl;
+                // cout << "c_yaw: " << m_data.cmd_head_ball_track.z << endl;
+            }
+        }
+        /*****************
+         * Goal Detector *
+         *****************/
+
+        if (m_data.see_field) {
+            m_data.see_goal = m_goal.Process(m_canny_img, m_hsv_img, m_gui_img, m_field.hull_field(), m_projection);
+        }
+
+        /****************
+         * Localization *
+         ****************/
+        m_loc_img = cv::Mat(500, 500, CV_8UC3, cv::Scalar(0, 0, 0));
+
+        if (m_data.see_field && m_data.see_line) {
+            m_data.loc_ok = m_loc.Calculate(m_line.clustered_lines(),
+                                            m_data.see_circle,
+                                            m_field.field_hull_real_center(),
+                                            m_field.field_hull_real(),
+                                            m_field.field_hull_real_rotated(),
+                                            m_circle.result_circle(),
+                                            m_goal.goal_position(),
+                                            m_loc_img,
+                                            m_projection);
+        }
+
+        /*****************
+         * Ball Detector *
+         *****************/
+
+        // m_ball.GetBall(frame.getBGR_raw(), m_data, m_projection);
+        prepareVisionInfo(m_data);
+        showDebugImg();
+    } else {
+        updateViewRange();
     }
-    /*****************
-     * Goal Detector *
-     *****************/
 
-    if (m_data.see_field) {
-        m_data.see_goal = m_goal.Process(m_canny_img, m_hsv_img, m_gui_img, m_field.hull_field(), m_projection);
-    }
-
-    /****************
-     * Localization *
-     ****************/
-    m_loc_img = cv::Mat(500, 500, CV_8UC3, cv::Scalar(0, 0, 0));
-
-    if (m_data.see_field && m_data.see_line) {
-        m_data.loc_ok = m_loc.Calculate(m_line.clustered_lines(),
-                                        m_data.see_circle,
-                                        m_field.field_hull_real_center(),
-                                        m_field.field_hull_real(),
-                                        m_field.field_hull_real_rotated(),
-                                        m_circle.result_circle(),
-                                        m_goal.goal_position(),
-                                        m_loc_img,
-                                        m_projection);
-    }
-
-    /*****************
-     * Ball Detector *
-     *****************/
-
-    // m_ball.GetBall(frame.getBGR_raw(), m_data, m_projection);
-
-    /***********
-     * Publish *
-     ***********/
-
-    prepareVisionInfo(m_data);
     m_pub.publish(m_data);
-
     m_transmitter->sendRos(dconstant::network::robotBroadcastAddressBase + parameters.robotId, m_data);
-
-    // TODO(MWX): simulating mode
-
-    /****************
-     * Post process *
-     ****************/
-
-    showDebugImg();
 
     m_concurrent.spinOnce();
     m_concurrent.join();
@@ -234,10 +220,6 @@ DVision::prepareVisionInfo(VisionInfo& m_data)
     // m_data.ball_global.x = ball_global.x;
     // m_data.ball_global.y = ball_global.y;
 
-
-    //////////////////////////////////////////// debug /////////////////////////////////////////
-    // TODO(MWX): switch on/off
-    // lines
     std::vector<LineSegment> lines_global = getOnGlobalCoordinate(m_loc.location(), m_line.clustered_lines());
     m_data.lines.resize(lines_global.size());
     for (uint32_t i = 0; i < lines_global.size(); ++i) {
@@ -250,6 +232,11 @@ DVision::prepareVisionInfo(VisionInfo& m_data)
         m_data.lines[i].endpoint2.y = p2.y;
     }
 
+}
+
+void DVision::updateViewRange() {
+    //////////////////////////////////////////// debug /////////////////////////////////////////
+    // TODO(MWX): switch on/off
     // viewRange, four
     cv::Point2f upperLeft;
     cv::Point2f upperRight;
@@ -266,14 +253,15 @@ DVision::prepareVisionInfo(VisionInfo& m_data)
     cv::Point2d cross;
     bool intersect = l1.Intersect(l2, cross);
     if(intersect) {
-        upperLeft *= -10;
-        upperRight *= -10;
+        upperLeft *= -100;
+        upperRight *= -100;
     }
 
-    upperLeft = getOnGlobalCoordinate(m_loc.location(), upperLeft);
-    upperRight = getOnGlobalCoordinate(m_loc.location(), upperRight);
-    lowerLeft = getOnGlobalCoordinate(m_loc.location(), lowerLeft);
-    lowerRight = getOnGlobalCoordinate(m_loc.location(), lowerRight);
+
+    upperLeft = getOnGlobalCoordinate(m_data.robot_pos, upperLeft);
+    upperRight = getOnGlobalCoordinate(m_data.robot_pos, upperRight);
+    lowerLeft = getOnGlobalCoordinate(m_data.robot_pos, lowerLeft);
+    lowerRight = getOnGlobalCoordinate(m_data.robot_pos, lowerRight);
 
     m_data.viewRange.resize(4);
     m_data.viewRange[0].x = upperLeft.x;
@@ -287,7 +275,6 @@ DVision::prepareVisionInfo(VisionInfo& m_data)
 
     m_data.viewRange[3].x = lowerLeft.x;
     m_data.viewRange[3].y = lowerLeft.y;
-
 }
 
 void

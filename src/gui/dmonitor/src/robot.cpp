@@ -11,6 +11,7 @@
 #include "dvision/frame.hpp"
 #include "dmotion/MotionInfo.h"
 #include "dvision/utils.hpp"
+#include "dmonitor/utils.hpp"
 
 using namespace dvision;
 using namespace cv;
@@ -41,11 +42,6 @@ Point3d Robot::realPos() {
     return Point3d(p.x(), p.y(), m_heading / 180 * M_PI);
 }
 
-Ball *Robot::simBall() const
-{
-    return m_simBall;
-}
-
 void Robot::simModeUpdate()
 {
     m_simBall->setVisible(true);
@@ -62,22 +58,27 @@ void Robot::simModeUpdate()
         double dt = m_motionInfo.deltaData.z;
 
         auto newReal = dvision::getOnGlobalCoordinate(realPos(), Point2d(dx, dy));
-        auto realPos = m_field->getOnImageCoordiante(QPointF(newReal.x, newReal.y));
+        auto realPos = m_field->getOnImageCoordiante(newReal);
         m_heading += dt;
 
         setX(realPos.x() - m_triangleBBoxWidth / scale / 2);
         setY(realPos.y() - m_triangleBBoxHeight / scale / 2);
 
         // update vision info according to xy
-        m_simVisionInfo.robot_pos.x = realPos.x();
-        m_simVisionInfo.robot_pos.y = realPos.y();
+        m_simVisionInfo.robot_pos.x = newReal.x;
+        m_simVisionInfo.robot_pos.y = newReal.y;
 
         // !? see ball
 
         // todo ........................................................................... this is fucking ..
-        auto realBall = m_field->getOnRealCoordinate(QPointF(m_simBall->x() + m_simBall->width() / 2, m_simBall->y() + m_simBall->height() /2));
+        auto realBall = m_field->getOnRealCoordinate(m_simBall->x() + m_simBall->width() / 2, m_simBall->y() + m_simBall->height() / 2);
         m_simVisionInfo.ball_global.x = realBall.x();
         m_simVisionInfo.ball_global.y = realBall.y();
+
+        auto ballField = dvision::getOnRobotCoordinate(this->realPos(), Point2d(realBall.x(), realBall.y()));
+        m_simVisionInfo.ball_field.x = ballField.x;
+        m_simVisionInfo.ball_field.y = ballField.y;
+
         m_simVisionInfo.see_ball = true;
         m_transmitter->sendRos(dconstant::network::monitorBroadcastAddressBase + m_robotId, m_simVisionInfo);
     } else {
@@ -100,7 +101,6 @@ void Robot::monitorModeUpdate()
         setVisible(false);
         m_ball->setVisible(false);
     }
-
 }
 
 void Robot::drawMyself(QPainter* painter) {
@@ -138,7 +138,6 @@ void Robot::drawMyself(QPainter* painter) {
         painter->translate(-imgPos.x(), -imgPos.y());
         drawLines(painter);
         drawCircle(painter);
-        drawView(painter);
     } else {
         painter->translate(m_triangleBBoxWidth / scale / 2, m_triangleBBoxHeight / scale / 2);
     }
@@ -167,50 +166,134 @@ void Robot::drawCircle(QPainter* painter) {
     painter->drawEllipse(foo);
 }
 
-void Robot::drawView(QPainter* painter) {
-    if(m_monVisionInfo.viewRange.size() != 4)
-        return;
-
-    QPointF a(m_monVisionInfo.viewRange[0].x, m_monVisionInfo.viewRange[0].y);
-    QPointF b(m_monVisionInfo.viewRange[1].x, m_monVisionInfo.viewRange[1].y);
-    QPointF c(m_monVisionInfo.viewRange[2].x, m_monVisionInfo.viewRange[2].y);
-    QPointF d(m_monVisionInfo.viewRange[3].x, m_monVisionInfo.viewRange[3].y);
-
-    auto aa = m_field->getOnImageCoordiante(a);
-    auto bb = m_field->getOnImageCoordiante(b);
-    auto cc = m_field->getOnImageCoordiante(c);
-    auto dd = m_field->getOnImageCoordiante(d);
-
-    std::vector<QPointF> points {
-        aa, bb, cc, dd
-    };
-
-    QPen pen(m_color, 0);
-    painter->setPen(pen);
-    painter->setBrush(QBrush());
-    painter->drawPolygon(points.data(), points.size());
-
-}
-
-
 void Robot::onRecv(dvision::VisionInfo &msg)
 {
-    if(!m_isMonitor) return;
-
     m_monVisionInfo = msg;
     m_heading = msg.robot_pos.z * 180.0 / M_PI;
     m_realPos = QPointF(msg.robot_pos.x, msg.robot_pos.y);
     m_lastRecvTime = QTime::currentTime();
+    m_viewRange->setVisionInfo(msg);
     if(m_ball)
         m_ball->setPos(QPointF(msg.ball_global.x, msg.ball_global.y));
 }
 
 
 void Robot::onRecvMotion(dmotion::MotionInfo& msg) {
-   if(m_isMonitor) return;
     m_motionInfo = msg;
     m_lastRecvTime = QTime::currentTime();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -277,6 +360,15 @@ void Robot::setSimBall(Ball *simBall)
 {
     m_simBall = simBall;
 }
+
+void Robot::setViewRange(ViewRange *viewRange)
+{
+    if (m_viewRange == viewRange)
+        return;
+
+    m_viewRange = viewRange;
+    emit viewRangeChanged(viewRange);
+}
 bool Robot::online() const {
     return m_online;
 }
@@ -285,5 +377,15 @@ bool Robot::online() const {
 Robot::~Robot() {
     delete m_transmitter;
 }
+Ball *Robot::simBall() const
+{
+    return m_simBall;
+}
+
+ViewRange *Robot::viewRange() const
+{
+    return m_viewRange;
+}
+
 } // namespace dmonitor
 

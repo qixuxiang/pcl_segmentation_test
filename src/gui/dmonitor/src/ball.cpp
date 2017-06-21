@@ -9,11 +9,6 @@ void Ball::init()
 {
 }
 
-void Ball::setPos(QPointF pos)
-{
-    m_realPos = pos;
-}
-
 void Ball::drawMyself(QPainter* painter)
 {
     if(isMonitor()) {

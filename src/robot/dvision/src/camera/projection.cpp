@@ -181,6 +181,7 @@ Projection::CalcHeadingOffset(std::vector<LineSegment>& clustered_lines, bool ci
             m_heading_offset = M_PI / 180 * heading_offset_avg;
         }
     }
+    return true;
 }
 
 } // namespace dvision

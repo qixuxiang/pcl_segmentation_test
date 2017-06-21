@@ -11,6 +11,7 @@
 
 #pragma once
 #include "dvision/line_segment.hpp"
+#include <geometry_msgs/Vector3.h>
 #include <algorithm>
 #include <opencv2/opencv.hpp>
 #include <ros/ros.h>
@@ -171,6 +172,12 @@ getOnGlobalCoordinate(const cv::Point3d& robot_pos, const std::vector<cv::Point2
 cv::Point2f
 getOnGlobalCoordinate(const cv::Point3d& robot_pos, const cv::Point2f& in_point);
 
+cv::Point2f
+getOnGlobalCoordinate(const geometry_msgs::Vector3& robot_pos, const cv::Point2f& in_point);
+
 cv::Point2d
 getOnGlobalCoordinate(const cv::Point3d& robot_pos, const cv::Point2d& in_point);
+
+cv::Point2d
+getOnRobotCoordinate(const cv::Point3d& robot_pos, const cv::Point2d& in_point);
 } // namespace dvision

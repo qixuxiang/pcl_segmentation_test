@@ -127,6 +127,7 @@ ApplicationWindow {
             robots.forEach(function(rbt, index, array) {
                 rbt.setIsMonitor(modeSelection.isMonitor);
                 rbt.update();
+                rbt.viewRange.update();
             })
 
             balls.forEach(function(ball, index, array){
