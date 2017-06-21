@@ -65,6 +65,13 @@ HumanRobot::readOptions()
             throw runtime_error("mx? rx? or other fu** dynamixel motor? ");
         }
     }
+    if(!m_nh->getParam("/ZJUDancer/MotionSimdelay", m_simDelay)) {
+        ROS_FATAL("HumanRobot get param error");
+    }
+
+    if(!m_nh->getParam("/ZJUDancer/Simulation", m_simulation)) {
+        ROS_FATAL("HumanRobot get param error");
+    }
     ROS_INFO("Human Robot readOptions success");
 }
 
@@ -497,12 +504,10 @@ HumanRobot::q2data(int data[], const double lq[], const double rq[])
 void
 HumanRobot::doTxTask(int* motionData)
 {
-    // TODO: remove robot status
     initdata_ = m_status->getMotorinit();
     if (motionData != NULL) {
         for (int i = 0; i < MOTORNUM; i++) {
             int sendData = motionData[i] + initdata_.initial[i];
-            //      LOG(TRANSITHUB_DEBUG, sendData <<" "<<initdata_.initial[i]);
             if (sendData > m_motor_ub[i]) {
                 motionData[i] = m_motor_ub[i] - initdata_.initial[i];
             }
@@ -513,12 +518,16 @@ HumanRobot::doTxTask(int* motionData)
         }
     }
 
-    //直接控制头部的舵机
     int cameraData[2];
     m_manager->platCtrl(curYaw, curPitch);
     cameraData[0] = static_cast<int>((curPitch + RobotPara::diffV) * m_motor_k[18] * M_PI / 180 * m_motor_zf[18]);
     cameraData[1] = static_cast<int>((curYaw + RobotPara::diffH) * m_motor_k[19] * M_PI / 180 * m_motor_zf[19]);
-    m_port->doLoopTx(motionData, cameraData);
+
+    if(m_simulation) {
+        usleep(m_simDelay);
+    } else {
+        m_port->doLoopTx(motionData, cameraData);
+    }
 }
 
 /************************************************
@@ -872,16 +881,13 @@ HumanRobot::Leg_up(double rsx, double rsy, double rst)
 
         dx = rsx * 1.0 * RobotPara::stepK / RobotPara::stepnum;
         dx *= dx > 0 ? forward_k : back_k;
-
         dy = rsy / RobotPara::stepnum;
         dy *= dy > 0 ? left_k : right_k;
-
         dt = -rst / RobotPara::stepnum * angle_k;
 
+        // FIXME(MWX): Use gyro data
         m_status->updateDeltaDist(VecPos(dx, dy), dt);
-
         getAngle_serial(targetCtrl, dataArray, 1);
-
         doTxTask(dataArray);
     }
     if (m_robotCtrl.supportStatus == LEFT_BASED) {

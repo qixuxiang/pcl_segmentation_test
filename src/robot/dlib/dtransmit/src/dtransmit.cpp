@@ -8,6 +8,7 @@ namespace dtransmit {
 DTransmit::DTransmit(string address)
     : m_broadcastAddress(address), m_service()
 {
+    std::cout << "New DTransmit on " << address << std::endl;
 }
 
 DTransmit::~DTransmit() {

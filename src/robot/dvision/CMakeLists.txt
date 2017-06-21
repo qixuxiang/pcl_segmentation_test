@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(dvision)
 
-add_definitions(-std=c++11 -Wall -O2) # -g -Wextra -Wno-unused-result) #-Wfloat-equal -Weffc++ -pedantic
+add_definitions(-std=c++11 -Wall -g) # -g -Wextra -Wno-unused-result) #-Wfloat-equal -Weffc++ -pedantic
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake_modules/")
 
@@ -100,14 +100,14 @@ add_dependencies(dvision_node ${PROJECT_NAME}_generate_messages_cpp)
 add_executable(calib src/camera/calibration.cpp)
 target_link_libraries(calib ${OpenCV_LIBS})
 
-add_executable(cvcalib src/camera/offical-calibration.cpp)
-target_link_libraries(cvcalib ${OpenCV_LIBS})
+#add_executable(cvcalib src/camera/offical-calibration.cpp)
+#target_link_libraries(cvcalib ${OpenCV_LIBS})
 
 add_executable(capture src/tools/capture.cpp)
 target_link_libraries(capture dvisionlib)
 
-add_executable(videowriter test/test_videowriter.cpp)
-target_link_libraries(videowriter dvisionlib ${Opencv_LIBS})
+#add_executable(videowriter test/test_videowriter.cpp)
+#target_link_libraries(videowriter dvisionlib ${Opencv_LIBS})
 
 add_executable(test_frame test/test_frame.cpp)
 target_link_libraries(test_frame dvisionlib ${OpenCV_LIBS})

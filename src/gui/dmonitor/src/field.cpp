@@ -26,7 +26,7 @@ void Field::drawField(QPainter *painter)
     // antialiasing
     painter->setRenderHint(QPainter::Antialiasing);
     // draw background
-    painter->fillRect(1, 1, width() - 2, height() - 1, m_grassGreen);
+    painter->fillRect(0, 0, width(), height(), m_grassGreen);
 
 
     // draw border
@@ -50,7 +50,6 @@ void Field::drawField(QPainter *painter)
     QRectF leftGoalArea(leftGoalAreaUpLeft, leftGoalAreaDownRight);
     painter->drawRect(leftGoalArea);
     painter->drawRect(flipFromOrigin(leftGoalArea));
-
 
     // draw center line
     QPointF centerLineUp = getOnImageCoordiante(QPointF(0, m_fieldWidth / 2 - 1));
@@ -96,11 +95,21 @@ QPointF Field::getOnImageCoordiante(QPointF real)
     return res;
 }
 
+QPointF Field::getOnImageCoordiante(cv::Point2f real)
+{
+    return getOnImageCoordiante(getQPoint(real));
+}
+
 QPointF Field::getOnRealCoordinate(QPointF img) {
     QPointF res;
     res.setX((img.x() - width() / 2) * m_scale);
     res.setY((-img.y() + height() /2) * m_scale);
     return res;
+}
+
+QPointF Field::getOnRealCoordinate(Point2f img)
+{
+    return getOnRealCoordinate(getQPoint(img));
 }
 
 QPointF Field::flipFromOrigin(QPointF p)
@@ -120,6 +129,21 @@ QRectF Field::flipFromOrigin(QRectF rect)
    auto y = flipFromOrigin(bottomRight);
 
    return QRectF(y, x);
+}
+
+QPointF Field::getOnImageCoordiante(double x, double y)
+{
+    return getOnImageCoordiante(QPointF(x, y));
+}
+
+QPointF Field::getOnRealCoordinate(double x, double y)
+{
+    return getOnRealCoordinate(QPointF(x, y));
+}
+
+QPointF Field::flipFromOrigin(double x, double y)
+{
+    return flipFromOrigin(QPointF(x, y));
 }
 
 double Field::getScale()

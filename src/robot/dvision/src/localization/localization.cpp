@@ -162,7 +162,7 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
 
     double UPDATENORMAL = parameters.loc.UPDATENORMAL * parameters.loc.TOTALGAIN;
     double UPDATESTRONG = parameters.loc.UPDATESTRONG * parameters.loc.TOTALGAIN;
-    double UPDATEWEAK = parameters.loc.UPDATEWEAK * parameters.loc.TOTALGAIN;
+    //double UPDATEWEAK = parameters.loc.UPDATEWEAK * parameters.loc.TOTALGAIN;
 
     LineSegment HorLine(cv::Point(0, -10), cv::Point(0, 10));
     LineSegment VerLine(cv::Point(10, 0), cv::Point(-10, 0));
@@ -374,7 +374,7 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
         double offssy = 250;
         double ratioo = 0.2;
         // White lines
-        for (int j = 0; j < all_lines.size(); ++j) {
+        for (uint32_t j = 0; j < all_lines.size(); ++j) {
             cv::Scalar lc;
             LineType lt = all_lines[j].type_;
             if (lt == HorUndef) {

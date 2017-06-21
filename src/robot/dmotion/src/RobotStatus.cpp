@@ -237,6 +237,7 @@ RobotStatus::setCompassData(CompassData temp)
     m_compassdata = temp;
 }
 
+// clean delta data & get last delta data
 deltadataDebug
 RobotStatus::checkDeltaDist()
 {
@@ -245,18 +246,6 @@ RobotStatus::checkDeltaDist()
     m_deltaDist.m_angle = 0;
     m_deltaDist.m_x = 0;
     m_deltaDist.m_y = 0;
-
-    //  if (deltaDist.m_x > 0) {
-    //    deltaDist.m_x *= forward_k;
-    //  } else {
-    //    deltaDist.m_x *= back_k;
-    //  }
-    //
-    //  if (deltaDist.m_y > 0) {
-    //    deltaDist.m_y *= left_k;
-    //  } else {
-    //    deltaDist.m_y *= right_k;
-    //  }
 
     return deltaDist;
 }

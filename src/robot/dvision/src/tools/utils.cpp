@@ -9,6 +9,8 @@
  * @Copyright: ZJUDancer
  */
 
+// TODO(MWX, yuthon): use cv::Point2d or cv::Point2f only
+
 #include "dvision/utils.hpp"
 
 namespace dvision {
@@ -558,6 +560,16 @@ getOnGlobalCoordinate(const cv::Point3d& robot_pos, const cv::Point2f& in_point)
     return out_point;
 }
 
+cv::Point2f
+getOnGlobalCoordinate(const geometry_msgs::Vector3& robot_pos, const cv::Point2f& in_point)
+{
+    cv::Point2f out_point;
+    out_point = RotateAroundPoint(in_point, -Radian2Degree(robot_pos.z));
+    out_point.x += robot_pos.x;
+    out_point.y += robot_pos.y;
+    return out_point;
+}
+
 cv::Point2d
 getOnGlobalCoordinate(const cv::Point3d& robot_pos, const cv::Point2d& in_point)
 {
@@ -565,6 +577,15 @@ getOnGlobalCoordinate(const cv::Point3d& robot_pos, const cv::Point2d& in_point)
     out_point = RotateAroundPoint(in_point, -Radian2Degree(robot_pos.z));
     out_point.x += robot_pos.x;
     out_point.y += robot_pos.y;
+    return out_point;
+}
+
+cv::Point2d
+getOnRobotCoordinate(const cv::Point3d& robot_pos, const cv::Point2d& in_point) {
+    cv::Point2d out_point = in_point;
+    out_point.x -= robot_pos.x;
+    out_point.y -= robot_pos.y;
+    out_point = RotateAroundPoint(out_point, Radian2Degree(robot_pos.z));
     return out_point;
 }
 

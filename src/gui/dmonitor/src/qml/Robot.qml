@@ -7,5 +7,6 @@ Robot {
         id: mouseArea
         anchors.fill: parent
         drag.target: robot
+        onClicked: console.log("clicked on robot")
     }
 }

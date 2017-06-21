@@ -10,6 +10,7 @@ find_package(catkin REQUIRED
   dvision
   dtransmit
   dconfig
+  dmotion
   ros_h264_streamer
 )
 
@@ -41,15 +42,21 @@ add_executable(dmonitor
     src/ball.cpp
     src/baseObject.cpp
     src/guiImage.cpp
+    src/viewRange.cpp
     include/dmonitor/robot.hpp
     include/dmonitor/field.hpp
     include/dmonitor/ball.hpp
     include/dmonitor/baseObject.hpp
     include/dmonitor/guiImage.hpp
+    include/dmonitor/utils.hpp
+    include/dmonitor/viewRange.hpp
     src/qml.qrc
     src/qml/main.qml
     src/qml/Robot.qml
     src/qml/Ball.qml
+    src/qml/Box.qml
+    src/qml/ViewRange.qml
+    src/qml/Selection.qml
     src/js/componentCreation.js
     )
 

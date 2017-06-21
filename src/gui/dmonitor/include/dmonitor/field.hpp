@@ -1,6 +1,8 @@
 #pragma once
 #include <QQuickPaintedItem>
 #include "dconfig/dconstant.hpp"
+#include <opencv2/opencv.hpp>
+#include "dmonitor/utils.hpp"
 
 // TODO(MWX): field config
 
@@ -18,9 +20,15 @@ public:
 
     // convert point's coordinate from real(center of the field) to image (up left corner) for drawing
     QPointF getOnImageCoordiante(QPointF real);
+    QPointF getOnImageCoordiante(cv::Point2f real);
     QPointF getOnRealCoordinate(QPointF img);
+    QPointF getOnRealCoordinate(cv::Point2f img);
     QPointF flipFromOrigin(QPointF p);
     QRectF flipFromOrigin(QRectF rect);
+
+    QPointF getOnImageCoordiante(double x, double y);
+    QPointF getOnRealCoordinate(double x, double y);
+    QPointF flipFromOrigin(double x, double y);
     double getScale();
 
     void drawCross(QPainter *painter, QPointF real);

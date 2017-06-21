@@ -16,3 +16,4 @@ geometry_msgs/Vector3 unknown_goal
 geometry_msgs/Vector3 robot_pos
 geometry_msgs/Vector3 cmd_head_ball_track
 dvision/Line[] lines
+geometry_msgs/Vector3[] viewRange

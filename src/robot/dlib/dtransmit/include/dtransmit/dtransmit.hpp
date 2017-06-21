@@ -14,7 +14,7 @@
 #include <ros/ros.h>
 
 // http://wiki.ros.org/roscpp/Overview/MessagesSerializationAndAdaptingTypes
-#define UDPBUFFERSIZE 15000
+#define UDPBUFFERSIZE 65535
 
 namespace dtransmit {
 class DTransmit {
@@ -94,6 +94,7 @@ void DTransmit::startRecv(PORT port, ReadHandler handler) {
 
 template <typename ROSMSG>
 void DTransmit::addRosRecv(PORT port, std::function<void(ROSMSG &)> callback) {
+    ROS_INFO("Add Ros Recv on port: %d", port);
     using namespace boost::asio;
     if(m_recvFoo.count(port)) {
         ROS_ERROR("Error in addRosRecv: port %d exist!", port);
@@ -105,12 +106,16 @@ void DTransmit::addRosRecv(PORT port, std::function<void(ROSMSG &)> callback) {
         if(error) {
             ROS_ERROR("Error in RosRecv: %s", error.message().c_str());
         } else {
-            ROSMSG msg;
+            try {
+                ROSMSG msg;
 
-            ros::serialization::IStream stream((uint8_t*)m_recvFoo[port].recvBuffer, bytesRecved);
-            ros::serialization::Serializer<ROSMSG>::read(stream, msg);
-            // client callback
-            callback(msg);
+                ros::serialization::IStream stream((uint8_t*)m_recvFoo[port].recvBuffer, bytesRecved);
+                ros::serialization::Serializer<ROSMSG>::read(stream, msg);
+                // client callback
+                callback(msg);
+            } catch (std::exception& e) {
+                ROS_ERROR("%s", e.what());
+            }
         }
 
         startRecv(port, m_recvFoo[port].readHandler);
@@ -121,16 +126,21 @@ void DTransmit::addRosRecv(PORT port, std::function<void(ROSMSG &)> callback) {
 
 template <typename ROSMSG>
 void DTransmit::sendRos(PORT port, ROSMSG &rosmsg) {
-    // serialize rosmsg
-    uint32_t serial_size = ros::serialization::serializationLength(rosmsg);
-    //std::unique_ptr<uint8_t> buffer(new uint8_t[serial_size]);
-    auto buffer = new uint8_t[serial_size];
+    try {
+        // serialize rosmsg
+        uint32_t serial_size = ros::serialization::serializationLength(rosmsg);
+        //std::unique_ptr<uint8_t> buffer(new uint8_t[serial_size]);
+        auto buffer = new uint8_t[serial_size];
 
-    ros::serialization::OStream stream(buffer, serial_size);
-    ros::serialization::serialize(stream, rosmsg);
+        ros::serialization::OStream stream(buffer, serial_size);
+        ros::serialization::serialize(stream, rosmsg);
 
-    sendRaw(port, buffer, serial_size);
-    delete[] buffer;
+        sendRaw(port, buffer, serial_size);
+        //!? leak memory on exception
+        delete[] buffer;
+    } catch(std::exception& e) {
+        ROS_ERROR("%s", e.what());
+    }
 }
 
 } // namespace dtransmit

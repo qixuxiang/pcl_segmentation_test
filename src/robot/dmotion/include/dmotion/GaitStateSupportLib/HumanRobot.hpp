@@ -77,9 +77,11 @@ class HumanRobot : public I_HumanRobot
 
     initdataDebug initdata_;
 
-    double forward_k;
-    double back_k;
-    double left_k;
-    double right_k;
-    double angle_k;
+    double forward_k = 1.0;
+    double back_k = 1.0;
+    double left_k = 1.0;
+    double right_k = 1.0;
+    double angle_k = 1.0;
+    bool m_simulation;
+    int m_simDelay;
 };

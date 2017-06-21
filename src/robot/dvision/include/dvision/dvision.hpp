@@ -5,6 +5,7 @@
 #include "dbehavior/BehaviourInfo.h"
 #include "dmotion/ActionCmd.h"
 #include "dmotion/MotionInfo.h"
+#include "dmotion/GetDelta.h"
 #include "dprocess/dconcurrent.hpp"
 #include "dprocess/dprocess.hpp"
 #include "dtransmit/dtransmit.hpp"
@@ -33,11 +34,12 @@ class DVision : public dprocess::DProcess<DVision>
 
   private:
     ros::NodeHandle* m_nh;
+    ros::ServiceClient m_deltaClient;
     ros::Subscriber m_sub_motion_info;
     ros::Subscriber m_sub_behaviour_info;
     ros::Subscriber m_sub_reload_config;
     ros::Publisher m_pub;
-    Camera m_camera;
+    Camera* m_camera;
     Projection m_projection;
     dprocess::DConcurrent m_concurrent;
     dtransmit::DTransmit* m_transmitter;
@@ -57,8 +59,8 @@ class DVision : public dprocess::DProcess<DVision>
     BalllTracker m_ball_tracker;
     int m_center_pitch;
     int m_center_yaw;
-    int m_pitch;
-    int m_yaw;
+    int m_pitch = 0;
+    int m_yaw = 0;
 
     VisionInfo m_data;
     dmotion::MotionInfo m_motion_info;
@@ -68,5 +70,6 @@ class DVision : public dprocess::DProcess<DVision>
     void reloadConfigCallback(const std_msgs::String::ConstPtr&);
     void prepareVisionInfo(VisionInfo& m_data);
     void showDebugImg();
+    void updateViewRange();
 };
 } // namespace dvision
