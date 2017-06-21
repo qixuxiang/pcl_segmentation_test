@@ -54,7 +54,9 @@ class DVision : public dprocess::DProcess<DVision>
     Localization m_loc;
 
     // image
-    cv::Mat m_hsv_img, m_canny_img, m_gui_img, m_loc_img;
+    cv::Mat m_hsv_img;
+    cv::Mat m_gui_img, m_loc_img, m_canny_img;
+    cv::Mat m_field_binary, m_goal_binary, m_line_binary;
     // added by yyj
     BalllTracker m_ball_tracker;
     int m_center_pitch;

@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(dmonitor)
-#LIST(APPEND CMAKE_MODULE_PATH ${dvision_SOURCE_DIR}/cmake_modules)
 
+#SET(ZJUDANCER_GUI $ENV{ZJUDANCER_GUI})
+#message("${ZJUDANCER_GUI}")
+#if (ZJUDANCER_GUI EQUAL 0)
 add_definitions(-std=c++11 -Wall -g  -Wextra -Wfloat-equal -Wno-unused-result) #-Weffc++ -pedantic
 
 find_package(catkin REQUIRED
@@ -67,3 +69,5 @@ target_link_libraries(dmonitor
     Qt5::Quick
     Qt5::Core
     Qt5::Widgets)
+
+#endif()

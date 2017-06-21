@@ -30,16 +30,12 @@ Localization::Localization()
   : location_(-142, 0)
   , location_kalman_(location_)
   , kalmanI_(location_kalman_)
+  , last_motion_info_time_(0)
+  , last_delta_data_(0, 0, 0)
   , camera_projections_(NULL)
-  , last_odom_x_(0)
-  , last_odom_y_(0)
-  , global_pos_(0, 0, 0)
-  , last_odom_(0, 0, 0)
-  , last_odom_id_(0)
   , current_vertex_id_(0)
   , previous_vertex_id_(0)
   , landmark_count_(0)
-  , odom_last_get_(0, 0)
   , at_least_one_observation_(false)
   , node_counter_(0)
 {
@@ -517,7 +513,7 @@ Localization::UpdateVertexIdx()
         g2o::EdgeSE2* e = new g2o::EdgeSE2;
         e->vertices()[0] = optimizer.vertex(previous_vertex_id_);
         e->vertices()[1] = optimizer.vertex(current_vertex_id_);
-        cv::Point2d dead_reck = odom_last_get();
+        cv::Point2d dead_reck = last_delta_data();
         e->setMeasurement(g2o::SE2(dead_reck.x, dead_reck.y, 0));
         Eigen::Matrix3d information;
         information.fill(0.);
@@ -599,13 +595,31 @@ Localization::location()
     return res;
 }
 
+// setter
+void
+Localization::location(const cv::Point2d& loc)
+{
+    ROS_INFO("Set location to (%f, %f)", loc.x, loc.y);
+    location_.x = loc.x;
+    location_.y = loc.y;
+    location_kalman_.x = loc.x;
+    location_kalman_.y = loc.y;
+
+    {
+        boundry_n(location_.x, -A2_ - I_, A2_ + I_);
+        boundry_n(location_.y, -B2_ - I_, B2_ + I_);
+        boundry_n(location_kalman_.x, -A2_ - I_, A2_ + I_);
+        boundry_n(location_kalman_.y, -B2_ - I_, B2_ + I_);
+    }
+}
+
 cv::Point2d
-Localization::odom_last_get()
+Localization::last_delta_data()
 {
     // Not the first iteration
     if (previous_vertex_id_ > 0) {
-        cv::Point2d res = odom_last_get_;
-        odom_last_get_.x = odom_last_get_.y = 0;
+        cv::Point2d res(last_delta_data_.x, last_delta_data_.y);
+        last_delta_data_ = cv::Point3d(0, 0, 0);
         return res;
     } else {
         return cv::Point2d(0, 0);
@@ -637,6 +651,18 @@ Localization::GetUpdateCoef(const double& coef, LineSegment line)
     // ROS_WARN("line prob: %f", line.GetProbability());
     // ROS_WARN("updated coef: %f", coef_updated);
     return coef_updated;
+}
+
+void
+Localization::CalcDeadReckoning(const dmotion::MotionInfo& motion_info)
+{
+    cv::Point3d curr_delta_data(motion_info.deltaData.x, motion_info.deltaData.y, motion_info.deltaData.z);
+    if (last_motion_info_time_ < motion_info.timestamp) {
+        location_.x += motion_info.deltaData.x;
+        location_.y += motion_info.deltaData.y;
+    }
+    last_delta_data_ = curr_delta_data;
+    last_motion_info_time_ = motion_info.timestamp;
 }
 
 } // namespace dvision

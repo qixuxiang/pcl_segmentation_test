@@ -33,14 +33,13 @@ class GetImage(Action):
                 self.iter = iter(path)
 
             # FIXME(corenel) use lower_board_connected
-            # if self.world.lower_board_connected:
-            # if self.world.uptime > 2:
-            self.capture()
-            rospy.loginfo("{} Cheese! ({}, {})".format(self.cycle,
-                                                       self.point[0],
-                                                       self.point[1]))
-            # else:
-            #     rospy.logerr("Lower board not connected, skip capture")
+            if self.world.lower_board_connected:  # self.world.uptime > 2:
+                self.capture()
+                rospy.loginfo("{} Cheese! ({}, {})".format(self.cycle,
+                                                           self.point[0],
+                                                           self.point[1]))
+            else:
+                rospy.logerr("Lower board not connected, skip capture")
 
 
 diff_yaw = [i for i in range(-MAX_PLAT_YAW, MAX_PLAT_YAW, 15)]

@@ -75,42 +75,42 @@ DistortionModel::init()
             int undistY = res[index].y + offsetY;
             m_undistortionVector[index] = Point(undistX, undistY);
 
-            int undistIndex = undistY * parameters.camera.undistWidth + undistX;
-            m_distortionVector[undistIndex] = Point(x, y);
+            // int undistIndex = undistY * parameters.camera.undistWidth + undistX;
+            // m_distortionVector[undistIndex] = Point(x, y);
         }
     }
 
     // init distortion vector, from undist point to dist point
-    for (int y = 0; y < parameters.camera.undistHeight; ++y) {
-        for (int x = 0; x < parameters.camera.undistWidth; ++x) {
-            int index = y * parameters.camera.undistWidth + x;
-
-            if (m_distortionVector[index].x == INVALID && m_distortionVector[index].y == INVALID) {
-                int find_region = 2; // pixel
-                int cnt = 0;
-                int sumx = 0;
-                int sumy = 0;
-                for (int dx = find_region; dx >= -find_region; --dx) {
-                    for (int dy = -find_region; dy <= find_region; ++dy) {
-                        int nx = x + dx;
-                        int ny = y + dy;
-                        if (0 <= nx && nx < parameters.camera.undistWidth && 0 <= ny && ny < parameters.camera.undistHeight) {
-                            int idx = ny * parameters.camera.undistWidth + nx;
-                            if (m_distortionVector[idx].x != INVALID && m_distortionVector[idx].y != -INVALID) {
-                                ++cnt;
-                                sumx += m_distortionVector[idx].x;
-                                sumy += m_distortionVector[idx].y;
-                            }
-                        }
-                    }
-                }
-                if (cnt != 0) {
-                    m_distortionVector[index].x = sumx / cnt;
-                    m_distortionVector[index].y = sumy / cnt;
-                }
-            }
-        }
-    }
+    // for (int y = 0; y < parameters.camera.undistHeight; ++y) {
+    //     for (int x = 0; x < parameters.camera.undistWidth; ++x) {
+    //         int index = y * parameters.camera.undistWidth + x;
+    //
+    //         if (m_distortionVector[index].x == INVALID && m_distortionVector[index].y == INVALID) {
+    //             int find_region = 2; // pixel
+    //             int cnt = 0;
+    //             int sumx = 0;
+    //             int sumy = 0;
+    //             for (int dx = find_region; dx >= -find_region; --dx) {
+    //                 for (int dy = -find_region; dy <= find_region; ++dy) {
+    //                     int nx = x + dx;
+    //                     int ny = y + dy;
+    //                     if (0 <= nx && nx < parameters.camera.undistWidth && 0 <= ny && ny < parameters.camera.undistHeight) {
+    //                         int idx = ny * parameters.camera.undistWidth + nx;
+    //                         if (m_distortionVector[idx].x != INVALID && m_distortionVector[idx].y != -INVALID) {
+    //                             ++cnt;
+    //                             sumx += m_distortionVector[idx].x;
+    //                             sumy += m_distortionVector[idx].y;
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //             if (cnt != 0) {
+    //                 m_distortionVector[index].x = sumx / cnt;
+    //                 m_distortionVector[index].y = sumy / cnt;
+    //             }
+    //         }
+    //     }
+    // }
 
     initUndistortRectifyMap(parameters.camera.cameraMatrix, parameters.camera.distCoeff, Mat(), parameters.camera.undistCameraMatrix, parameters.camera.undistImageSize, CV_16SC2, m_map1, m_map2);
 

@@ -43,15 +43,16 @@ class BehaviourRequest(object):
         self.actions = ActionCmd()
         crouch(self.actions)
         head(self.actions, 0, 0)
-        # behaviour request
+        # behaviour info
         self.behaviour = BehaviourInfo()
-        self.behaviour.enable_localization = False
-        self.behaviour.destination = Vector3(UNKNOWN, UNKNOWN, 0)
         self.behaviour.kick = False
         self.behaviour.save_image = False
         self.behaviour.reset_localization = False
         self.behaviour.reset_point = Vector3(UNKNOWN, UNKNOWN, 0)
-        # team
+        self.behaviour.enable_localization = False
+        self.behaviour.destination = Vector3(UNKNOWN, UNKNOWN, 0)
+        self.behaviour.lower_board_connected = False
+        # team info
         self.team = TeamInfo()
         self.team.goalie_attacking = False
         self.team.time_to_reach_ball = 9999.0
