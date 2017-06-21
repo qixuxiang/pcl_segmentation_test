@@ -8,5 +8,11 @@
     <rosparam command="load" file="$(find dconfig)/dmotion/kick.yml"/>
     <rosparam command="load" file="$(find dconfig)/dmotion/setup.yml"/>
     <rosparam command="load" file="$(find dconfig)/zjudancer.yml"/>
+
+	<rosparam command="load" file="$(find dconfig)/dvision/misc.yml"/>
+	<rosparam command="load" file="$(find dconfig)/dbehaviour/constant.yml"/>
+	<rosparam command="load" file="$(find dconfig)/dbehaviour/robot_config.yml"/>
+	<rosparam command="load" file="$(find dconfig)/dbehaviour/behaviour.yml"/>
+
     <param name="/ZJUDancer/RobotId" value="$(env ZJUDANCER_ROBOTID)"/>
 </launch>

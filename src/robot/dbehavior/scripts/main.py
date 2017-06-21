@@ -1,18 +1,7 @@
 #!/usr/bin/env python
-"""Main script for dbehaviour."""
-# @Author: Yusu Pan <yuthon>
-# @Date:   2017-06-11T13:10:23+08:00
-# @Email:  xxdsox@gmail.com
-# @Project: humanoid
-# @Filename: main.py
-# @Last modified by:   yuthon
-# @Last modified time: 2017-06-11T13:12:29+08:00
-# @Copyright: ZJUDancer
-
 import os
 import rospy
 import pkgutil
-import misc.init_path
 import misc.status.gglobal as gglobal
 from misc.blackboard import BlackBoard
 from misc.bt import Node, Root
@@ -22,7 +11,6 @@ skill_instance = None
 
 
 def find_skill(skill):
-    """Find skill."""
     skill_dir = os.path.join(os.getcwd(), "actions")
     behaviour_packages = ["roles", "game", "skills", "headskills"]
     # Load the module and the class we're going to use.
@@ -48,7 +36,6 @@ def find_skill(skill):
 
 
 def init_skill():
-    """Init skill."""
     global skill_instance
     if skill_instance:
         return
@@ -63,32 +50,21 @@ def init_skill():
 
 
 def mainloop():
-    """Main loop for dbehaviour."""
-    # init node
     rospy.init_node("dbehavior_node", anonymous=True, log_level=rospy.INFO)
     rospy.loginfo("dbehavior node started")
 
-    # init blackboard
     bb = BlackBoard()
     gglobal.update_bb(bb)
 
-    # start loop
-    # rospy.spin()
-    rate = rospy.Rate(1)
+    rate = rospy.Rate(100)
     while not rospy.is_shutdown():
         global skill_instance
-        # update
         gglobal.update_bb(bb)
-        # init behaviour request
         gglobal.init_req()
-        # init skill instance
         init_skill()
-        # tick skill
         skill_instance.tick()
-        # publish behaviour request
         req = gglobal.get_req()
         req.publish()
-        # sleep
         rate.sleep()
 
 
