@@ -1,6 +1,6 @@
 from dmotion.msg import MotionInfo
 from dvision.msg import VisionInfo
-from dmotion.msg import ActionCmd
+from dmotion.msg import ActionCommand
 from dbehavior.msg import BehaviorInfo
 from Parameters import Parameters
 import rospy
@@ -12,13 +12,13 @@ class Blackboard(object):
         self.visionInfo = VisionInfo
 
         # pub
-        self.actionCmd = ActionCmd()
+        self.actionCmd = ActionCommand()
         self.behaviorInfo = BehaviorInfo()
 
         # update info
-        rospy.Subscriber('/humanoid/MotionInfo', MotionInfo, self.motionInfo)
+        rospy.Subscriber('/humanoid/MotionInfo', MotionInfo, self.updateMotionInfo)
         rospy.Subscriber('/humanoid/VisionInfo', VisionInfo, self.updateVisionInfo)
-        self.cmdPub = rospy.Publisher('/humanoid/ActionCommand', ActionCmd, queue_size=1)
+        self.cmdPub = rospy.Publisher('/humanoid/ActionCommand', ActionCommand, queue_size=1)
         self.behaviorInfoPub = rospy.Publisher('/humanoid/BehaviorInfo', BehaviorInfo, queue_size=1)
         self.parameters = Parameters()
 

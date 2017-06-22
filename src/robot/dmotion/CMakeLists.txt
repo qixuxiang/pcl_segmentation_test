@@ -15,7 +15,9 @@ find_package(OpenCV 3 REQUIRED)
 
 add_message_files(
   FILES
-  ActionCmd.msg
+  HeadCommand.msg
+  BodyCommand.msg
+  ActionCommand.msg
   MotionInfo.msg
 )
 

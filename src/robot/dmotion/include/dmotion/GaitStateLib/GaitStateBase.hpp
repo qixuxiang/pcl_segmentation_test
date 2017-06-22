@@ -1,10 +1,10 @@
 #pragma once
-#include "dmotion/ActionCmd.h"
+#include "dmotion/ActionCommand.h"
 #include "dmotion/GaitStateSupportLib/HumanRobotInterface.hpp"
 #include "dmotion/GaitStateType.hpp"
 #include <ros/ros.h>
 #include <string>
-// using dmotion::ActionCmd::gait_type;
+// using dmotion::ActionCommand::gait_type;
 
 class GaitStateBase
 {
@@ -25,8 +25,6 @@ class GaitStateBase
     double m_gait_sy;
     double m_gait_st;
     double m_gait_angle;
-    //  bool   m_right_kick;
-    dmotion::ActionCmd::_kick_side_type m_kick_side;
 
     int stepNum;
     int m_robot_number;
@@ -48,7 +46,6 @@ class GaitStateBase
       , m_gait_sy(0)
       , m_gait_st(0)
       , m_gait_angle(0)
-      , m_kick_side(dmotion::ActionCmd::LEFT_KICK)
       , type(type)
       , robot(robot)
     {

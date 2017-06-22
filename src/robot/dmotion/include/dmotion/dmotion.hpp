@@ -1,5 +1,5 @@
 #pragma once
-#include "dmotion/ActionCmd.h"
+#include "dmotion/ActionCommand.h"
 #include "dmotion/GaitStateManager.hpp"
 #include <dprocess/dprocess.hpp>
 using dprocess::DProcess;
@@ -15,8 +15,8 @@ class DMotion : public DProcess<DMotion>
     void prepareShutdown() override;
     ros::NodeHandle* m_nh;
     GaitStateManager m_manager;
-    ActionCmd m_cmd;
+    ActionCommand m_cmd;
     ros::Subscriber m_sub;
-    void callback(const ActionCmd::ConstPtr& msg);
+    void callback(const ActionCommand::ConstPtr& msg);
 };
 }

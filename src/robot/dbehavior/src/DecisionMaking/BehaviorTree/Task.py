@@ -1,5 +1,6 @@
 from inspect import isclass
 from Blackboard import getbb
+from utils.actioncommand import *
 
 class Task(object):
     """
@@ -19,7 +20,7 @@ class Task(object):
     def init(self):
         """
         This funciton is by default called after Task object initialised.
-        You should not define __init__ function is subcalss, if you want 
+        You should not define __init__ function is subcalss, if you want
         to add custom variables, override this funciton.
         """
         raise NotImplementedError
@@ -56,13 +57,28 @@ class Task(object):
     def tick(self):
         raise NotImplementedError
 
-
 class Action(Task):
     """
-    Behavior tree leaf, who can change actionCmd
+    Behavior tree leaf, who can change ActionCommand
     """
     def __init__(self):
         super(Action, self).__init__()
 
     def init(self):
         pass
+
+    def addChild(self, task):
+        raise Exception('Actions are leaf node, must not have child')
+
+    def walk(self, x, y, t):
+        self.bb.actionCmd.bodyCmd = walk(x, y, t)
+
+    def kickLeft(self):
+        self.bb.actionCmd.bodyCmd = kickRight()
+
+    def kickRight(self):
+        self.bb.actionCmd.bodyCmd = kickLeft()
+
+    def goto(self, dest):
+        x, y, t = getWalk(dest, self.bb.visionInfo.robotPos)
+

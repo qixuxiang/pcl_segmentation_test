@@ -3,7 +3,7 @@
 
 #pragma once
 #include "dbehavior/BehaviourInfo.h"
-#include "dmotion/ActionCmd.h"
+#include "dmotion/ActionCommand.h"
 #include "dmotion/MotionInfo.h"
 #include "dmotion/GetDelta.h"
 #include "dprocess/dconcurrent.hpp"

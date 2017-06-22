@@ -15,6 +15,9 @@ class GaitStateKick : public GaitStateBase
     void leftKickEntry();
     void rightKickEntry();
 
+    void setLeftKick();
+    void setRightKick();
+
   private:
     GaitStateManager* manager;
     int lengthR_;
@@ -23,4 +26,5 @@ class GaitStateKick : public GaitStateBase
     bool crouchBool_;
     double* dataR_[16];
     double* dataL_[16];
+    bool m_leftKick = false;
 };

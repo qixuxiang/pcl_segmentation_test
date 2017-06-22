@@ -12,8 +12,6 @@ DVision::DVision(ros::NodeHandle* n)
 {
     parameters.init(n);
     m_projection.init(n);
-    CameraSettings s(n);
-    m_camera = new Camera(s);
 
     // m_ball.Init();
     m_circle.Init();
@@ -34,7 +32,6 @@ DVision::DVision(ros::NodeHandle* n)
     m_sub_behaviour_info = m_nh->subscribe("/humanoid/BehaviourInfo", 1, &DVision::behaviourCallback, this);
     m_sub_reload_config = m_nh->subscribe("/humanoid/ReloadVisionConfig", 1, &DVision::reloadConfigCallback, this);
     m_pub = m_nh->advertise<VisionInfo>("/humanoid/VisionInfo", 1);
-
     m_deltaClient = m_nh->serviceClient<dmotion::GetDelta>("getDelta");
 
     m_transmitter = new dtransmit::DTransmit(parameters.udpBroadcastAddress);
@@ -42,7 +39,12 @@ DVision::DVision(ros::NodeHandle* n)
         ROS_INFO("Simulation mode!");
         m_transmitter->addRosRecv<VisionInfo>(dconstant::network::monitorBroadcastAddressBase + parameters.robotId, [&](VisionInfo& msg) {
             m_data = msg;
+            //ROS_INFO_STREAM(m_data.robot_pos);
         });
+    } else {
+        CameraSettings s(n);
+        m_camera = new Camera(s);
+        ROS_INFO("Not simulation mode!");
     }
 
     m_transmitter->startService();
@@ -55,17 +57,19 @@ DVision::~DVision()
 void
 DVision::tick()
 {
+    auto begin = ros::Time::now();
     ROS_DEBUG("dvision tick");
+
     /**********
      * Update *
      **********/
 
     // update delta
-    dmotion::GetDelta srv;
-    if(m_deltaClient.call(srv)) {
-        auto d = srv.response.delta;
-        // TODO(yuthon): Here we got delta data.
-    }
+//    dmotion::GetDelta srv;
+//    if(m_deltaClient.call(srv)) {
+//        auto d = srv.response.delta;
+//        // TODO(yuthon): Here we got delta data.
+//    }
 
     m_projection.updateExtrinsic(m_pitch, m_yaw);
 
@@ -159,14 +163,17 @@ DVision::tick()
 
     m_concurrent.spinOnce();
     m_concurrent.join();
+    auto end = ros::Time::now();
+    auto d = (end - begin).toSec();
+    ROS_DEBUG("dvision tick used %lf", d);
 }
 
 void
 DVision::motionCallback(const dmotion::MotionInfo::ConstPtr& motion_msg)
 {
     m_motion_info = *motion_msg;
-    m_pitch = static_cast<int>(m_motion_info.action.cmd_head.y);
-    m_yaw = static_cast<int>(m_motion_info.action.cmd_head.z);
+    m_pitch = static_cast<int>(m_motion_info.action.headCmd.pitch);
+    m_yaw = static_cast<int>(m_motion_info.action.headCmd.yaw);
 }
 
 void

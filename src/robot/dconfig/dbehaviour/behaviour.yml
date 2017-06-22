@@ -3,6 +3,7 @@ dbehavior:
     number:        1
     team:          24
   skill:           TrackBall
+  enableLog:       true
   game_controller:
     connect:       false # Whether listen to GC
     ourcolor:      red # Team color

@@ -22,7 +22,7 @@ DMotion::tick()
 }
 
 void
-DMotion::callback(const ActionCmd::ConstPtr& msg)
+DMotion::callback(const ActionCommand::ConstPtr& msg)
 {
     m_cmd = *msg;
 }
@@ -31,8 +31,8 @@ void
 DMotion::prepareShutdown()
 {
     m_sub.shutdown();
-    m_cmd.gait_type = ActionCmd::STANDUP;
-    m_cmd.cmd_head.y = m_cmd.cmd_head.z = 0;
+    m_cmd.bodyCmd.gait_type = BodyCommand::STANDUP;
+    m_cmd.headCmd.pitch = m_cmd.headCmd.yaw = 0;
     for (int i = 0; i < 2; ++i) {
         printf("DMotion shutting down >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
         tick();

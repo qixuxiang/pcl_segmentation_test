@@ -1,4 +1,5 @@
 <launch>
+  <arg name="skill"/>
   <node
     pkg="dbehavior"
     name="dbehavior_node"
@@ -8,8 +9,6 @@
     cwd="node"
     args=""
     />
-  <rosparam command="load" file="$(find dconfig)/dvision/misc.yml"/>
-  <rosparam command="load" file="$(find dconfig)/dbehaviour/constant.yml"/>
-  <rosparam command="load" file="$(find dconfig)/dbehaviour/robot_config.yml"/>
-  <rosparam command="load" file="$(find dconfig)/dbehaviour/behaviour.yml"/>
+  <include file="$(find dconfig)/dconfig.launch"/>
+  <param name="/dbehavior/skill" value="$(arg skill)"/>
 </launch>
