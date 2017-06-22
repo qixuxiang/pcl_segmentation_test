@@ -101,25 +101,25 @@ GetDistance(const cv::Point2d& p, const cv::Point2d& p2)
 int
 Top(const cv::Rect& rec)
 {
-    return rec.x;
+    return rec.y;
 }
 
 int
 Bottom(const cv::Rect& rec)
 {
-    return rec.y;
+    return rec.y + rec.height;
 }
 
 int
 Left(const cv::Rect& rec)
 {
-    return rec.x + rec.width;
+    return rec.x;
 }
 
 int
 Right(const cv::Rect& rec)
 {
-    return rec.y + rec.height;
+    return rec.x + rec.width;
 }
 
 cv::Scalar
@@ -581,7 +581,8 @@ getOnGlobalCoordinate(const cv::Point3d& robot_pos, const cv::Point2d& in_point)
 }
 
 cv::Point2d
-getOnRobotCoordinate(const cv::Point3d& robot_pos, const cv::Point2d& in_point) {
+getOnRobotCoordinate(const cv::Point3d& robot_pos, const cv::Point2d& in_point)
+{
     cv::Point2d out_point = in_point;
     out_point.x -= robot_pos.x;
     out_point.y -= robot_pos.y;

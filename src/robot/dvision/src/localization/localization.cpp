@@ -158,7 +158,7 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
 
     double UPDATENORMAL = parameters.loc.UPDATENORMAL * parameters.loc.TOTALGAIN;
     double UPDATESTRONG = parameters.loc.UPDATESTRONG * parameters.loc.TOTALGAIN;
-    //double UPDATEWEAK = parameters.loc.UPDATEWEAK * parameters.loc.TOTALGAIN;
+    // double UPDATEWEAK = parameters.loc.UPDATEWEAK * parameters.loc.TOTALGAIN;
 
     LineSegment HorLine(cv::Point(0, -10), cv::Point(0, 10));
     LineSegment VerLine(cv::Point(10, 0), cv::Point(-10, 0));
@@ -522,7 +522,7 @@ Localization::UpdateVertexIdx()
         information(2, 2) = 1;
         e->setInformation(information);
         optimizer.addEdge(e);
-        // ROS_INFO("add Edges: %d -> dead_reck (%f, %f), info(%d, %d)", current_vertex_id_, dead_reck.x, dead_reck.y, 200, 200);
+        ROS_INFO("add Edges: %d -> dead_reck (%f, %f), info(%d, %d)", current_vertex_id_, dead_reck.x, dead_reck.y, 200, 200);
     }
 }
 
@@ -565,7 +565,7 @@ Localization::AddObservation(cv::Point2d observation, const double& x_fasher, co
         optimizer.addEdge(e);
     }
     at_least_one_observation_ = true;
-    // ROS_INFO("add Edges: %d -> %d (%f, %f), info(%lf, %lf)", current_vertex_id_, type, observation.x, observation.y, x_fasher, y_fasher);
+    ROS_INFO("add Edges: %d -> %d (%f, %f), info(%lf, %lf)", current_vertex_id_, type, observation.x, observation.y, x_fasher, y_fasher);
     return true;
 }
 

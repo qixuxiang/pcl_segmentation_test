@@ -3,5 +3,4 @@
        value="$(find dlaunch)/drosconsole.conf"/>
   <include file="$(find dconfig)/dconfig.launch" />
   <include file="$(find dbehavior)/launch/dbehavior.launch" />
-  <include file="$(find dmotion)/launch/dmotion.launch" />
 </launch>
