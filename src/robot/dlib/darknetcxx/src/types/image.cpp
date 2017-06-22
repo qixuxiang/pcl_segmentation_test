@@ -330,16 +330,20 @@ Image::from_mat(const cv::Mat& frame)
         m_data.resize(m_h * m_w * m_c);
     }
 
-    int count = 0;
-    for (int k = 0; k < m_c; ++k) {
-        for (int j = 0; j < m_h; ++j) {
-            for (int i = 0; i < m_w; ++i) {
-                // int dst_index = i + m_w * j + m_w * m_h * k;
-                int src_index = k + m_c * i + m_c * m_w * j;
-                m_data[count++] = static_cast<float>(converted.data[src_index]) / 255.;
-            }
-        }
-    }
+    cv::Mat channels[3];
+    std::vector<cv::Mat> channels_vec;
+    cv::split(frame, channels);
+    channels_vec.push_back(channels[0].reshape(1, 1));
+    channels_vec.push_back(channels[1].reshape(1, 1));
+    channels_vec.push_back(channels[2].reshape(1, 1));
+
+    cv::Mat dst, dst_2;
+    cv::hconcat(channels_vec, dst);
+    dst.convertTo(dst_2, CV_32F);
+    dst_2 /= 255.;
+
+    // std::cout << "dst:" << static_cast<float>(dst_2.data[0]) << std::endl;
+    std::memcpy(m_data.get(), (float*)dst_2.data, sizeof(float) * dst.cols * dst.rows * dst.channels());
     // rgbgr_image(m_data.get());
 }
 
