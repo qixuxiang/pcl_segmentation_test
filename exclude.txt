@@ -1,6 +1,7 @@
 .git
 dconfig/dmotion
 dconfig/dvision
+dconfig/zjudancer.yml
 build*
 devel
 cmake-build-debug
