@@ -130,7 +130,7 @@ include_directories(
 #######################
 
 if (DARKNET_GPU)
-    cuda_add_library(darknetcxx-cuda STATIC
+    cuda_add_library(darknetcxx-cuda SHARED
             src/utils/cuda_utils.cu
             src/blas/blas.cu
             # Layers
@@ -152,7 +152,7 @@ endif(DARKNET_GPU)
 # lib darknetcxx #
 ##################
 
-add_library(darknetcxx STATIC
+add_library(darknetcxx SHARED
         # darknet.cpp
         src/types/image.cpp
         src/types/data.cpp
