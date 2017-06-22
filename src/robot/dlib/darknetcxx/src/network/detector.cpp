@@ -15,6 +15,7 @@
 #ifdef DARKNET_OPENCV
 #include <opencv2/opencv.hpp>
 #endif
+#include <ctime>
 #include <string>
 #include <vector>
 
@@ -166,11 +167,14 @@ bbox_detection(Network* net, Image* im, const std::vector<std::string>& label_li
 void
 obj_detection(Network* net, Image* im, const float& thresh, std::vector<RelateiveBBox>& ball_position)
 {
+// std::clock_t start;
+// start = std::clock();
 #ifdef DARKNET_GPU
     net->network_predict_gpu(im->data());
 #else
     net->network_predict(im->data());
 #endif
+    // std::cout << "Forward Time: " << (std::clock() - start) / (double)(CLOCKS_PER_SEC / 1000) << " ms" << std::endl;
 
     // get predicted boxes and their probs
     Detection* detection = dynamic_cast<Detection*>(net->get_layers().back());
@@ -178,11 +182,13 @@ obj_detection(Network* net, Image* im, const float& thresh, std::vector<Relateiv
     const int side = d_p["side"];
     const int n = d_p["n"];
     const int classes = d_p["classes"];
+
     // FIXME memory leak: boxes && probs
     box* boxes = reinterpret_cast<box*>(calloc(side * side * n, sizeof(box)));
     float** probs = new float*[side * side * n];
     for (int j = 0; j < side * side * n; ++j)
         probs[j] = new float[classes];
+
     detection->get_detection_boxes(1, 1, thresh, probs, boxes, 0);
 
     box tmp_box(0, 0, 0, 0);

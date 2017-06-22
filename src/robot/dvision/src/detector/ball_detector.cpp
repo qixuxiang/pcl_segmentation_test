@@ -70,23 +70,13 @@ BallDetector::GetBall(const cv::Mat& frame, cv::Mat& gui_img, Projection& m_proj
     cv::Mat frame_resized;
     cv::Size size(p.w, p.h);
 
-    ros::Time begin = ros::Time::now();
     cv::resize(frame, frame_resized, size);
-    ros::Duration end = ros::Time::now() - begin;
-    ROS_INFO("----------Ball Detector: resize image %f ms-----------", end.toNSec() / 1000000.0);
-
-    begin = ros::Time::now();
     raw_img_.from_mat(frame_resized);
-    end = ros::Time::now() - begin;
-    ROS_INFO("----------Ball Detector: Init image %f ms-----------", end.toNSec() / 1000000.0);
 
     std::vector<darknet::bbox> ball_position;
     std::vector<darknet::RelateiveBBox> ball_position_relative;
 
-    begin = ros::Time::now();
     darknet::obj_detection(net_, &raw_img_, parameters.ball.low_thresh, ball_position_relative);
-    end = ros::Time::now() - begin;
-    ROS_INFO("----------Ball Detector: detection %f ms-----------", end.toNSec() / 1000000.0);
 
     if (CvtRelativePosition(ball_position_relative, ball_position)) {
         float max_prob = 0.0;

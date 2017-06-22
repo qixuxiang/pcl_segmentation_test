@@ -145,10 +145,7 @@ DVision::tick()
          * Ball Detector *
          *****************/
 
-        ros::Time begin = ros::Time::now();
         m_ball.GetBall(frame.getBGR_raw(), m_gui_img, m_projection);
-        ros::Duration end = ros::Time::now() - begin;
-        ROS_INFO("----------Ball Detector: Total %f ms-----------", end.toNSec() / 1000000.0);
 
         /*******************
          * Post-Processing *
