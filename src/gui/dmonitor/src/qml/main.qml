@@ -167,7 +167,7 @@ ApplicationWindow {
                 running: true
                 repeat: true
                 onTriggered:  {
-                    if(!drawArea.isMonitor) {
+                    if(drawArea.isMonitor) {
                         parent.update()
                     }
                 }

@@ -1,4 +1,4 @@
-dbehaviour:
+dbehavior:
   robot_1:
     FINAL_ATK_DIS:       20
     # kick
