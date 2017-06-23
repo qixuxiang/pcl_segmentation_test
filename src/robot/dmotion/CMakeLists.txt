@@ -15,7 +15,9 @@ find_package(OpenCV 3 REQUIRED)
 
 add_message_files(
   FILES
-  ActionCmd.msg
+  HeadCommand.msg
+  BodyCommand.msg
+  ActionCommand.msg
   MotionInfo.msg
 )
 
@@ -40,6 +42,7 @@ include_directories(include ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} ${OpenC
 
 add_library(dmotionlib
   src/dmotion.cpp
+  src/BehaviorRecv.cpp
   src/transitHub.cpp
   src/RobotStatus.cpp
 

@@ -5,10 +5,11 @@ float32 vy
 float32 fieldAngle
 bool lower_board_started
 bool lower_board_connected
+
 geometry_msgs/Vector3 curPlat
 geometry_msgs/Vector3 deltaData
 geometry_msgs/Vector3 robotCtrl
-dmotion/ActionCmd action
+dmotion/ActionCommand action
 
 uint8 STABLE     = 0
 uint8 RIGHTDOWN  = 1

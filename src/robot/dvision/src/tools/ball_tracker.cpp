@@ -115,14 +115,14 @@ bool BalllTracker::Process(double in_ball_field_x, double in_ball_field_y,
 
     m_out_pitch = - m_out_pitch / scalePitch - biasPitch;
     m_out_yaw = - m_out_yaw / scaleYaw - biasYaw;
-    if (m_out_pitch >= 0 && m_out_pitch < M_PI / 2
-       && m_out_yaw >= -M_PI / 2 && m_out_yaw <= M_PI/2){
-         return true;
-    }
-    else{
-      return false;
-    }
-
+//    if (m_out_pitch >= 0 && m_out_pitch < M_PI / 2
+//       && m_out_yaw >= -M_PI / 2 && m_out_yaw <= M_PI/2){
+//         return true;
+//    }
+//    else{
+//      return false;
+//    }
+    return true;
 }
 
 double BalllTracker::Cal_theta_Asin_Bcos_C(double _a, double _b, double _c, double theta_raw) {

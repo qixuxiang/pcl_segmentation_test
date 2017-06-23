@@ -1,5 +1,5 @@
 #include "dmotion/GaitStateSupportLib/HumanRobot.hpp"
-#include "dmotion/ActionCmd.h"
+#include "dmotion/ActionCommand.h"
 #include "dmotion/GaitStateLib/GaitStateBase.hpp"
 #include "dmotion/GaitStateManager.hpp"
 #include "dmotion/GaitStateSupportLib/SplineThree.hpp"

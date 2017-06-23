@@ -9,7 +9,8 @@ ApplicationWindow {
     width: drawArea.width + guiImage.width + 10 * 3
     height: drawArea.height + infoArea.height +  10 * 3
     title: qsTr("DMonitor")
-    color: "#1B2B34"
+    color: "black"
+    //color: "#1B2B34"
 
     property string udpAddress: '127.0.0.1'
     property string borderColor: "red"
@@ -20,7 +21,8 @@ ApplicationWindow {
         y: 10
         height: field.height
         width: height * 1.618
-        color: "#1B2B34"
+        color: "black"
+       // color: "#1B2B34"
 
         signal selectRobot(int id)
 
@@ -30,7 +32,7 @@ ApplicationWindow {
         property bool isMonitor: false
 
         Timer {
-            interval: 1000 / 30
+            interval: 1000 / 20
             running: true
             repeat: true
             onTriggered: drawArea.updateView()
@@ -167,7 +169,7 @@ ApplicationWindow {
                 running: true
                 repeat: true
                 onTriggered:  {
-                    if(!drawArea.isMonitor) {
+                    if(drawArea.isMonitor) {
                         parent.update()
                     }
                 }
