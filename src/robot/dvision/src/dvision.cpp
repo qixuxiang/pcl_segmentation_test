@@ -19,7 +19,16 @@ DVision::DVision(ros::NodeHandle* n)
     m_goal.Init();
     m_line.Init();
     m_loc.Init();
-    m_ball_tracker.Init(parameters.camera.extrinsic_para, parameters.camera.fx, parameters.camera.fy, parameters.camera.undistCx, parameters.camera.undistCy);
+
+    ROS_INFO("%lf %lf", parameters.camera.centerInUndistX, parameters.camera.centerInUndistY);
+    m_ball_tracker.Init(parameters.camera.extrinsic_para,
+                        parameters.camera.fx,
+                        parameters.camera.fy,
+                        parameters.camera.undistCx,
+                        parameters.camera.undistCy,
+                        parameters.camera.centerInUndistX,
+                        parameters.camera.centerInUndistY
+    );
 
     // FIXME(MWX): switch
     Frame::initEncoder();
@@ -364,11 +373,9 @@ void DVision::trackBall() {
     // ball
     if (m_data.see_ball) {
         // track ball
-        ROS_INFO("ball field: %lf %lf, cur pitch: %lf cur yaw: %lf", m_data.ball_field.x, m_data.ball_field.y, m_pitch, m_yaw);
         if (m_ball_tracker.Process(m_data.ball_field.x, m_data.ball_field.y, Degree2Radian(m_pitch), Degree2Radian(m_yaw))) {
             m_data.ballTrack.pitch = Radian2Degree(m_ball_tracker.out_pitch());
             m_data.ballTrack.yaw = Radian2Degree(m_ball_tracker.out_yaw());
-            ROS_INFO_STREAM(m_data.ballTrack);
         }
     }
 }

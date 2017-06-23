@@ -24,6 +24,8 @@ struct CameraParameters
 
     double undistCx;
     double undistCy;
+    double centerInUndistX; // oringin center in undist
+    double centerInUndistY;
 
     int width;
     int height;
