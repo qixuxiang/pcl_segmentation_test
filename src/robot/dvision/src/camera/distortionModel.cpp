@@ -20,8 +20,6 @@ DistortionModel::init()
     vector<Point> center, resCenter;
     center.push_back(Point(W / 2, H / 2));
     undistort_slow(center, resCenter);
-    cout << "Undistort center: " << resCenter << endl;
-
     vector<Point> src, res;
 
     for (int y = 0; y < H; ++y)
@@ -79,6 +77,10 @@ DistortionModel::init()
             // m_distortionVector[undistIndex] = Point(x, y);
         }
     }
+
+    int centerIndex = (H / 2 * W) + W / 2;
+    parameters.camera.centerInUndistX = m_undistortionVector[centerIndex].x;
+    parameters.camera.centerInUndistY = m_undistortionVector[centerIndex].y;
 
     // init distortion vector, from undist point to dist point
     // for (int y = 0; y < parameters.camera.undistHeight; ++y) {

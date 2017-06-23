@@ -5,8 +5,7 @@
 #include "dconfig/dconstant.hpp"
 #include "dmotion/MotionData.hpp"
 
-using dmotion::ActionCmd;
-
+using namespace dmotion;
 dtransmit::DTransmit* transmit;
 
 GaitStateManager::GaitStateManager(ros::NodeHandle* nh)
@@ -28,26 +27,15 @@ GaitStateManager::GaitStateManager(ros::NodeHandle* nh)
 
     m_sub_reload_config = m_nh->subscribe("/humanoid/ReloadMotionConfig", 1, &GaitStateManager::reload_gaitdata, this);
     m_pub = m_nh->advertise<dmotion::MotionInfo>("/humanoid/MotionInfo", 1);
-
-    // register service
-    m_deltaServer = nh->advertiseService<dmotion::GetDelta::Request, dmotion::GetDelta::Response>("getDelta", boost::bind(&GaitStateManager::getDelta, this, _1, _2));
 }
 
-bool GaitStateManager::getDelta(dmotion::GetDelta::Request &req, dmotion::GetDelta::Response &res) {
-    auto delta = rstatus->checkDeltaDist();
-    res.delta.x = delta.m_x;
-    res.delta.y = delta.m_y;
-    res.delta.z = delta.m_angle;
-    m_delta = res.delta;
-    return true;
-}
 
 GaitStateManager::~GaitStateManager() = default;
 
 void
 GaitStateManager::tick()
 {
-    //ROS_INFO("GaitStateManager tick ..");
+    ROS_DEBUG("GaitStateManager tick ..");
     prior_gaitState = gaitState;
 
     if (prior_gaitState != goal_gaitState) {
@@ -75,6 +63,11 @@ GaitStateManager::tick()
         m_motion_info.lower_board_started = true;
         m_start_time = ros::Time::now();
     }
+
+    auto delta = rstatus->checkDeltaDist();
+    m_delta.x = delta.m_x;
+    m_delta.y = delta.m_y;
+    m_delta.z = delta.m_angle;
 
     // TODO(corenel) check lower_board_connected in dvision
     m_motion_info.timestamp = ros::Time::now();
@@ -124,6 +117,11 @@ GaitStateManager::reload_gaitdata(const std_msgs::String::ConstPtr& msg)
     setupbackdown->loadGaitFile();
 }
 
+void
+GaitStateManager::setCmd(dmotion::ActionCommand cmd) {
+    m_cmd = cmd;
+}
+
 /************************************************
  * plat ctrl
  * get plat request from behaviour blackboard
@@ -135,11 +133,10 @@ void
 GaitStateManager::platCtrl(double& targetYaw, double& targetPitch)
 {
     // this function get called 20*30 times ps
-    using dmotion::ActionCmd;
-    auto head = m_cmd.cmd_head; // row pitch yall
+    using dmotion::ActionCommand;
 
-    desPitch = head.y;
-    desYaw = head.z;
+    desPitch = m_cmd.headCmd.pitch;
+    desYaw = m_cmd.headCmd.yaw;
 
     desYaw = min(desYaw, MAX_PLAT_YAW);
     desYaw = max(desYaw, -MAX_PLAT_YAW);
@@ -147,9 +144,8 @@ GaitStateManager::platCtrl(double& targetYaw, double& targetPitch)
     desPitch = max(desPitch, MIN_PLAT_PITCH);
     desPitch = min(desPitch, MAX_PLAT_PITCH);
 
-    auto& speed = m_cmd.cmd_head_speed;
-    double pitchSpeed = speed.y;
-    double yawSpeed = speed.z;
+    double pitchSpeed = m_cmd.headCmd.pitchSpeed;
+    double yawSpeed = m_cmd.headCmd.yawSpeed;
 
     // set desYaw
     if (fabs(desYaw - targetYaw) < yawSpeed) {
@@ -181,9 +177,9 @@ GaitStateManager::platCtrl(double& targetYaw, double& targetPitch)
     // head protect
     auto angle = 15;
 
-    auto current_gait = m_cmd.gait_type;
+    auto current_gait = m_cmd.bodyCmd.gait_type;
 
-    if (current_gait == ActionCmd::STANDUP || current_gait == ActionCmd::KICK) {
+    if (current_gait == BodyCommand::STANDUP || current_gait == BodyCommand::KICKLEFT || current_gait == BodyCommand::KICKRIGHT) {
         angle = 10;
     }
 
@@ -205,9 +201,10 @@ GaitStateManager::platCtrl(double& targetYaw, double& targetPitch)
         //     }
     }
 
+    // TODO(MWX): FIXME!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // get delta data
-    m_motion_info.action.cmd_head.y = targetPitch;
-    m_motion_info.action.cmd_head.z = targetYaw;
+    m_motion_info.action.headCmd.pitch = targetPitch;
+    m_motion_info.action.headCmd.yaw = targetYaw;
     m_motion_info.deltaData = m_delta;
 
     m_motion_info.stable = static_cast<int>(rstatus->m_bStable);
@@ -230,33 +227,43 @@ GaitStateManager::platCtrl(double& targetYaw, double& targetPitch)
 }
 
 void
-GaitStateManager::checkNewCommand(const dmotion::ActionCmd& request)
+GaitStateManager::checkNewCommand(const dmotion::ActionCommand& request)
 {
     m_cmd = request;
-    switch (request.gait_type) {
-        case ActionCmd::WENXI:
+    switch (request.bodyCmd.gait_type) {
+        case BodyCommand::WENXI:
             goal_gaitState = walk;
-            goal_gaitState->m_gait_sx = request.cmd_vel.linear.x;
-            goal_gaitState->m_gait_sy = request.cmd_vel.linear.y;
-            goal_gaitState->m_gait_st = request.cmd_vel.angular.z;
+            goal_gaitState->m_gait_sx = request.bodyCmd.x;
+            goal_gaitState->m_gait_sy = request.bodyCmd.y;
+            goal_gaitState->m_gait_st = request.bodyCmd.t;
             break;
-        case ActionCmd::CROUCH:
+        case BodyCommand::CROUCH:
             goal_gaitState = crouch;
             break;
-        case ActionCmd::STANDUP:
+        case BodyCommand::STANDUP:
             goal_gaitState = standup;
             break;
-        case ActionCmd::KICK:
+        case BodyCommand::KICKLEFT:
             goal_gaitState = kick;
-            goal_gaitState->m_kick_side = request.kick_side;
+            // FIXME(MWX): kick side
             break;
-        case ActionCmd::GOALIE:
+        case BodyCommand::KICKRIGHT:
+            goal_gaitState = kick;
+            break;
+            // FIXME(MWX): Goalie side
+        case BodyCommand::GOALIELEFT:
             goal_gaitState = goalie;
             break;
-        case ActionCmd::SETUPFRONT:
+        case BodyCommand::GOALIEMID:
+            goal_gaitState = goalie;
+            break;
+        case BodyCommand::GOALIERIGHT:
+            goal_gaitState = goalie;
+            break;
+        case BodyCommand::SETUPFRONT:
             goal_gaitState = setupfrontdown;
             break;
-        case ActionCmd::SETUPBACK:
+        case BodyCommand::SETUPBACK:
             goal_gaitState = setupbackdown;
             break;
         default:

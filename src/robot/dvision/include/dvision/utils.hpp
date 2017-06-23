@@ -180,4 +180,11 @@ getOnGlobalCoordinate(const cv::Point3d& robot_pos, const cv::Point2d& in_point)
 
 cv::Point2d
 getOnRobotCoordinate(const cv::Point3d& robot_pos, const cv::Point2d& in_point);
+
+inline float
+getAngleBetweenVectors(const cv::Point2f& v1, const cv::Point2f& v2) {
+    float dot = v1.x * v2.x + v1.y * v2.y;
+    float det = v1.x * v2.y - v1.y * v2.x;
+    return Radian2Degree(atan2f(det, dot));
+}
 } // namespace dvision

@@ -43,7 +43,6 @@ void ViewRange::drawMyself(QPainter *painter)
 void ViewRange::setVisionInfo(dvision::VisionInfo info)
 {
     m_visionInfo = info;
-    qDebug() << "set vision info" << m_visionInfo.viewRange.size();
 }
 
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "dmotion/ActionCmd.h"
+#include "dmotion/ActionCommand.h"
 #include "dmotion/GaitStateSupportLib/HumanRobotInterface.hpp"
 #include "dmotion/MotionInfo.h"
 #include "dmotion/GetDelta.h"
@@ -23,10 +23,11 @@ class GaitStateManager
     explicit GaitStateManager(ros::NodeHandle* nh);
     ~GaitStateManager();
     void tick();
-    void checkNewCommand(const dmotion::ActionCmd& request);
+    void checkNewCommand(const dmotion::ActionCommand& request);
 
     void platCtrl(double& yaw, double& pitch);
     void reload_gaitdata(const std_msgs::String::ConstPtr&);
+    void setCmd(dmotion::ActionCommand cmd);
 
     GaitStateBase* gaitState;
     GaitStateBase* goal_gaitState;
@@ -54,7 +55,7 @@ class GaitStateManager
     GaitStateSetupFrontDown* setupfrontdown;
     GaitStateSetupBackDown* setupbackdown;
 
-    dmotion::ActionCmd m_cmd;
+    dmotion::ActionCommand m_cmd;
     double desYaw;
     double desPitch;
     ros::Time last_unstable_timestamp;

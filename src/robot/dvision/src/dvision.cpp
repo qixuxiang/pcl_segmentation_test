@@ -12,8 +12,6 @@ DVision::DVision(ros::NodeHandle* n)
 {
     parameters.init(n);
     m_projection.init(n);
-    CameraSettings s(n);
-    m_camera = new Camera(s);
 
     m_ball.Init();
     m_circle.Init();
@@ -21,7 +19,16 @@ DVision::DVision(ros::NodeHandle* n)
     m_goal.Init();
     m_line.Init();
     m_loc.Init();
-    // m_ball_tracker.Init(parameters.camera.extrinsic_para, parameters.camera.fx, parameters.camera.fy, parameters.camera.undistCx, parameters.camera.undistCy);
+
+    ROS_INFO("%lf %lf", parameters.camera.centerInUndistX, parameters.camera.centerInUndistY);
+    m_ball_tracker.Init(parameters.camera.extrinsic_para,
+                        parameters.camera.fx,
+                        parameters.camera.fy,
+                        parameters.camera.undistCx,
+                        parameters.camera.undistCy,
+                        parameters.camera.centerInUndistX,
+                        parameters.camera.centerInUndistY
+    );
 
     // FIXME(MWX): switch
     Frame::initEncoder();
@@ -34,13 +41,19 @@ DVision::DVision(ros::NodeHandle* n)
     m_sub_behaviour_info = m_nh->subscribe("/humanoid/BehaviourInfo", 1, &DVision::behaviourCallback, this);
     m_sub_reload_config = m_nh->subscribe("/humanoid/ReloadVisionConfig", 1, &DVision::reloadConfigCallback, this);
     m_pub = m_nh->advertise<VisionInfo>("/humanoid/VisionInfo", 1);
-
     m_deltaClient = m_nh->serviceClient<dmotion::GetDelta>("getDelta");
 
     m_transmitter = new dtransmit::DTransmit(parameters.udpBroadcastAddress);
     if (parameters.simulation) {
         ROS_INFO("Simulation mode!");
-        m_transmitter->addRosRecv<VisionInfo>(dconstant::network::monitorBroadcastAddressBase + parameters.robotId, [&](VisionInfo& msg) { m_data = msg; });
+        m_transmitter->addRosRecv<VisionInfo>(dconstant::network::monitorBroadcastAddressBase + parameters.robotId, [&](VisionInfo& msg) {
+            m_data = msg;
+            //ROS_INFO_STREAM(m_data.robot_pos);
+        });
+    } else {
+        CameraSettings s(n);
+        m_camera = new Camera(s);
+        ROS_INFO("Not simulation mode!");
     }
 
     m_transmitter->startService();
@@ -53,17 +66,19 @@ DVision::~DVision()
 void
 DVision::tick()
 {
+    auto begin = ros::Time::now();
     ROS_DEBUG("dvision tick");
+
     /**********
      * Update *
      **********/
 
     // update delta
-    // dmotion::GetDelta srv;
-    // if (m_deltaClient.call(srv)) {
-    //     auto d = srv.response.delta;
-    //     // TODO(yuthon): Here we got delta data.
-    // }
+//    dmotion::GetDelta srv;
+//    if(m_deltaClient.call(srv)) {
+//        auto d = srv.response.delta;
+//        // TODO(yuthon): Here we got delta data.
+//    }
 
     m_projection.updateExtrinsic(m_pitch, m_yaw);
 
@@ -155,27 +170,29 @@ DVision::tick()
 
         prepareVisionInfo(m_data);
         showDebugImg();
-
-    } else {
-        updateViewRange();
     }
+    updateViewRange();
+    trackBall();
 
     m_pub.publish(m_data);
     m_transmitter->sendRos(dconstant::network::robotBroadcastAddressBase + parameters.robotId, m_data);
 
     m_concurrent.spinOnce();
     m_concurrent.join();
+    auto end = ros::Time::now();
+    auto d = (end - begin).toSec();
+    ROS_DEBUG("dvision tick used %lf", d);
 }
 
 void
 DVision::motionCallback(const dmotion::MotionInfo::ConstPtr& motion_msg)
 {
     m_motion_info = *motion_msg;
-    // get pitch and yaw
-    m_pitch = static_cast<int>(m_motion_info.action.cmd_head.y);
-    m_yaw = static_cast<int>(m_motion_info.action.cmd_head.z);
-    // update delta data
+
     m_loc.CalcDeadReckoning(m_motion_info);
+    m_pitch = m_motion_info.action.headCmd.pitch;
+    m_yaw = m_motion_info.action.headCmd.yaw;
+//    ROS_INFO_STREAM(m_motion_info.action.headCmd);
 }
 
 void
@@ -244,21 +261,17 @@ DVision::prepareVisionInfo(VisionInfo& m_data)
     }
 
     // ball
-    // if (m_data.see_ball) {
-    //     m_data.ball_image.x = m_ball.ball_image().x;
-    //     m_data.ball_image.y = m_ball.ball_image().y;
-    //     m_data.ball_field.x = m_ball.ball_field().x;
-    //     m_data.ball_field.y = m_ball.ball_field().y;
-    //     cv::Point2f ball_global = getOnGlobalCoordinate(m_loc.location(), cv::Point2f(m_data.ball_field.x, m_data.ball_field.y));
-    //     m_data.ball_global.x = ball_global.x;
-    //     m_data.ball_global.y = ball_global.y;
-    //     // track ball
-    //     if (m_ball_tracker.Process(m_ball.ball_field().x, m_ball.ball_field().y, static_cast<double>(m_pitch), static_cast<double>(m_yaw))) {
-    //         m_data.cmd_head_ball_track.x = 0;
-    //         m_data.cmd_head_ball_track.y = Radian2Degree(m_ball_tracker.out_pitch());
-    //         m_data.cmd_head_ball_track.z = Radian2Degree(m_ball_tracker.out_yaw());
-    //     }
-    // }
+    if (m_data.see_ball) {
+        ROS_INFO("ball field: %lf %lf %lf", m_data.ball_field.x, m_data.ball_field.y, m_data.ball_field.z);
+
+        m_data.ball_image.x = m_ball.ball_image().x;
+        m_data.ball_image.y = m_ball.ball_image().y;
+        m_data.ball_field.x = m_ball.ball_field().x;
+        m_data.ball_field.y = m_ball.ball_field().y;
+        cv::Point2f ball_global = getOnGlobalCoordinate(m_data.robot_pos, cv::Point2f(m_data.ball_field.x, m_data.ball_field.y));
+        m_data.ball_global.x = ball_global.x;
+        m_data.ball_global.y = ball_global.y;
+    }
 }
 
 void
@@ -276,12 +289,26 @@ DVision::updateViewRange()
     m_projection.getOnRealCoordinate(cv::Point(0, parameters.camera.height - 1), lowerLeft);
     m_projection.getOnRealCoordinate(cv::Point(parameters.camera.width - 1, parameters.camera.height - 1), lowerRight);
 
-    LineSegment l1(upperLeft, lowerLeft);
-    LineSegment l2(upperRight, lowerRight);
-    cv::Point2d cross;
-    bool intersect = l1.Intersect(l2, cross);
-    if (intersect) {
+//    LineSegment l1(upperLeft, lowerLeft);
+//    LineSegment l2(upperRight, lowerRight);
+//    cv::Point2d cross;
+//    bool intersect = l1.Intersect(l2, cross);
+//    if(intersect) {
+//        upperLeft *= -100;
+//        upperRight *= -100;
+//    }
+
+    auto v1 = upperLeft - lowerLeft;
+    auto v2 = lowerRight - lowerLeft;
+    auto theta = getAngleBetweenVectors(v1, v2);
+    if(theta < 180 && theta > 0) {
         upperLeft *= -100;
+    }
+
+    v1 = upperRight - lowerRight;
+    v2 = - v2;
+    theta = getAngleBetweenVectors(v2, v1);
+    if(theta < 180 && theta > 0) {
         upperRight *= -100;
     }
 
@@ -345,6 +372,17 @@ DVision::showDebugImg()
         // int len;
         // auto buf = Frame::encode(m_gui_img, len);
         // m_transmitter->sendRaw(dconstant::network::robotGuiBase + parameters.robotId, buf.get(), len);
+    }
+}
+
+void DVision::trackBall() {
+    // ball
+    if (m_data.see_ball) {
+        // track ball
+        if (m_ball_tracker.Process(m_data.ball_field.x, m_data.ball_field.y, Degree2Radian(m_pitch), Degree2Radian(m_yaw))) {
+            m_data.ballTrack.pitch = Radian2Degree(m_ball_tracker.out_pitch());
+            m_data.ballTrack.yaw = Radian2Degree(m_ball_tracker.out_yaw());
+        }
     }
 }
 } // namespace dvision

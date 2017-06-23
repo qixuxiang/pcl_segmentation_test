@@ -9,6 +9,7 @@ find_package(catkin REQUIRED
   COMPONENTS roscpp
   geometry_msgs
   message_generation
+  dmotion
   dprocess
   dtransmit
   dconfig
@@ -33,6 +34,7 @@ add_message_files(
 generate_messages(
   DEPENDENCIES
   geometry_msgs
+  dmotion
 )
 
 catkin_package(
@@ -109,15 +111,15 @@ target_link_libraries(capture dvisionlib)
 #add_executable(videowriter test/test_videowriter.cpp)
 #target_link_libraries(videowriter dvisionlib ${Opencv_LIBS})
 
-add_executable(test_frame test/test_frame.cpp)
-target_link_libraries(test_frame dvisionlib ${OpenCV_LIBS})
-
-add_executable(test_frameSend test/test_frameSend.cpp)
-target_link_libraries(test_frameSend dvisionlib ${OpenCV_LIBS})
-
-add_executable(test_frameRecv test/test_frameRecv.cpp)
-target_link_libraries(test_frameRecv dvisionlib ${OpenCV_LIBS})
-## TEST
+#add_executable(test_frame test/test_frame.cpp)
+#target_link_libraries(test_frame dvisionlib ${OpenCV_LIBS})
+#
+#add_executable(test_frameSend test/test_frameSend.cpp)
+#target_link_libraries(test_frameSend dvisionlib ${OpenCV_LIBS})
+#
+#add_executable(test_frameRecv test/test_frameRecv.cpp)
+#target_link_libraries(test_frameRecv dvisionlib ${OpenCV_LIBS})
+### TEST
 catkin_add_gtest(test_cameraDummy test/test_cameraDummy.cpp)
 target_link_libraries(test_cameraDummy dvisionlib)
 target_link_libraries(test_cameraDummy ${catkin_LIBRARIES})

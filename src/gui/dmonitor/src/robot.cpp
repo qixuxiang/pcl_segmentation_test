@@ -60,6 +60,9 @@ void Robot::simModeUpdate()
         auto newReal = dvision::getOnGlobalCoordinate(realPos(), Point2d(dx, dy));
         auto realPos = m_field->getOnImageCoordiante(newReal);
         m_heading += dt;
+        if(m_heading > 360) {
+            m_heading -= 360;
+        }
 
         setX(realPos.x() - m_triangleBBoxWidth / scale / 2);
         setY(realPos.y() - m_triangleBBoxHeight / scale / 2);
@@ -67,8 +70,7 @@ void Robot::simModeUpdate()
         // update vision info according to xy
         m_simVisionInfo.robot_pos.x = newReal.x;
         m_simVisionInfo.robot_pos.y = newReal.y;
-
-        // !? see ball
+        m_simVisionInfo.robot_pos.z = m_heading / 180.0 * M_PI;
 
         // todo ........................................................................... this is fucking ..
         auto realBall = m_field->getOnRealCoordinate(m_simBall->x() + m_simBall->width() / 2, m_simBall->y() + m_simBall->height() / 2);
@@ -169,7 +171,8 @@ void Robot::drawCircle(QPainter* painter) {
 void Robot::onRecv(dvision::VisionInfo &msg)
 {
     m_monVisionInfo = msg;
-    m_heading = msg.robot_pos.z * 180.0 / M_PI;
+    if(m_isMonitor)
+        m_heading = msg.robot_pos.z;
     m_realPos = QPointF(msg.robot_pos.x, msg.robot_pos.y);
     m_lastRecvTime = QTime::currentTime();
     m_viewRange->setVisionInfo(msg);
@@ -181,6 +184,7 @@ void Robot::onRecv(dvision::VisionInfo &msg)
 void Robot::onRecvMotion(dmotion::MotionInfo& msg) {
     m_motionInfo = msg;
     m_lastRecvTime = QTime::currentTime();
+    //qDebug() << msg.deltaData.x << msg.deltaData.y << msg.deltaData.z;
 }
 
 
@@ -301,7 +305,6 @@ void Robot::onRecvMotion(dmotion::MotionInfo& msg) {
 void Robot::reset() {
     setX(m_field->width() / 2 - 1 / m_field->getScale() * m_triangleBBoxWidth / 2);
     setY(m_field->height() / 2 - 1 / m_field->getScale() * m_triangleBBoxHeight / 2);
-    m_heading = 0;
 }
 bool Robot::isOnline() {
     QTime now = QTime::currentTime();
