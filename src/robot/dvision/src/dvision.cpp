@@ -175,7 +175,7 @@ DVision::motionCallback(const dmotion::MotionInfo::ConstPtr& motion_msg)
     m_motion_info = *motion_msg;
     m_pitch = m_motion_info.action.headCmd.pitch;
     m_yaw = m_motion_info.action.headCmd.yaw;
-    ROS_INFO_STREAM(m_motion_info.action.headCmd);
+//    ROS_INFO_STREAM(m_motion_info.action.headCmd);
 }
 
 void
@@ -287,7 +287,6 @@ void DVision::updateViewRange() {
     if(theta < 180 && theta > 0) {
         upperLeft *= -100;
     }
-    ROS_INFO("v1 v2 theta: %f", theta);
 
     v1 = upperRight - lowerRight;
     v2 = - v2;
@@ -295,7 +294,6 @@ void DVision::updateViewRange() {
     if(theta < 180 && theta > 0) {
         upperRight *= -100;
     }
-    ROS_INFO("theta: %f", theta);
 
 
     upperLeft = getOnGlobalCoordinate(m_data.robot_pos, upperLeft);
