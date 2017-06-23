@@ -8,13 +8,13 @@
           cwd="node"
           args=""/>
 
-    <node pkg="dconfig"
+    <!-- <node pkg="dconfig"
           name="config_watchdog_node"
           type="config_watchdog.py"
           output="screen"
           respawn="false"
           args=""
-          cwd="node"/>
+          cwd="node"/> -->
 
     <!-- <rosparam command="load" file="$(find dconfig)/dmotion/motion.yml"/>
     <rosparam command="load" file="$(find dconfig)/dmotion/motor.yml"/>

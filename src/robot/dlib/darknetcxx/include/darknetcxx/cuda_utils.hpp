@@ -68,6 +68,7 @@ void
 cuda_pull_array(T* d_array, T* h_array, size_t n)
 {
     size_t size = sizeof(T) * n;
+    // std::cout << "::size::" << size << std::endl;
     checkCudaErrors(cudaMemcpy(h_array, d_array, size, cudaMemcpyDeviceToHost));
 }
 

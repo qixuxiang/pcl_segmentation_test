@@ -1,4 +1,11 @@
 <launch>
+    <node pkg="dconfig"
+          name="config_watchdog_node"
+          type="config_watchdog.py"
+          output="screen"
+          respawn="false"
+          args=""
+          cwd="node"/>
     <rosparam command="load" file="$(find dconfig)/dvision/misc.yml"/>
     <rosparam command="load" file="$(find dconfig)/dvision/camera.yml"/>
     <rosparam command="load" file="$(find dconfig)/dvision/localization.yml"/>

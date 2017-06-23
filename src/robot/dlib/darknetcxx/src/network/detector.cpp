@@ -15,7 +15,9 @@
 #ifdef DARKNET_OPENCV
 #include <opencv2/opencv.hpp>
 #endif
+#include <ctime>
 #include <string>
+#include <sys/time.h>
 #include <vector>
 
 namespace darknet {
@@ -178,11 +180,13 @@ obj_detection(Network* net, Image* im, const float& thresh, std::vector<Relateiv
     const int side = d_p["side"];
     const int n = d_p["n"];
     const int classes = d_p["classes"];
+
     // FIXME memory leak: boxes && probs
     box* boxes = reinterpret_cast<box*>(calloc(side * side * n, sizeof(box)));
     float** probs = new float*[side * side * n];
     for (int j = 0; j < side * side * n; ++j)
         probs[j] = new float[classes];
+
     detection->get_detection_boxes(1, 1, thresh, probs, boxes, 0);
 
     box tmp_box(0, 0, 0, 0);

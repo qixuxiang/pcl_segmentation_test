@@ -109,6 +109,9 @@ class Localization
     void UpdateVertexIdx();
     bool AddObservation(cv::Point2d observation, const double& x_fasher, const double& y_fasher, const LandmarkType& type);
 
+    // update delta data
+    void CalcDeadReckoning(const dmotion::MotionInfo& motion_info);
+
     // getter
     cv::Point3d location();
     cv::Point2d last_delta_data();
@@ -117,6 +120,7 @@ class Localization
     void location(const cv::Point2d& loc);
 
   private:
+    // field model
     double A_;
     double B_;
     double E_;
@@ -133,15 +137,16 @@ class Localization
     double H2_;
     double D2_;
     double I2_;
+    // location
     cv::Point2d location_;
     cv::Point2d location_kalman_;
     KalmanFilterC kalmanI_;
-
+    // projection
     Projection* camera_projections_;
-
+    // delta data from motion info
     ros::Time last_motion_info_time_;
     cv::Point3d last_delta_data_;
-
+    // G2O solver
     g2o::BlockSolverX::LinearSolverType* linear_solver_;
     g2o::BlockSolverX* block_solver_;
     g2o::OptimizationAlgorithmLevenberg* opt_algo_;
@@ -153,6 +158,5 @@ class Localization
 
     double GetUpdateCoef(const double& coef, const cv::Point2f& point);
     double GetUpdateCoef(const double& coef, LineSegment line);
-    void CalcDeadReckoning(const dmotion::MotionInfo& motion_info);
 };
 } // namespace dvision

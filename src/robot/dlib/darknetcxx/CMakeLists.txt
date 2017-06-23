@@ -21,6 +21,12 @@ option(DARKNET_GPROF "Using GPROF" OFF)
 option(DARKNET_NO_DISPLAY, "No display" OFF)
 option(DARKNET_MALLOCATED, "No m_allocated" OFF)
 
+SET (ZJUDANCER_GPU $ENV{ZJUDANCER_GPU})
+if (ZJUDANCER_GPU EQUAL 1)
+  SET(DARKNET_GPU ON)
+  MESSAGE("USING GPU FOR DARKNETCXX.")
+endif()
+
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
@@ -57,7 +63,6 @@ endif ()
 if (DARKNET_GPU)
 find_package(CUDA REQUIRED)
 message("CUDA Version: ${CUDA_VERSION}")
-
 SET(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-O3;-std=c++11)
 
 if(DARKNET_TX1)
@@ -79,6 +84,35 @@ endif(DARKNET_OPENCV)
 
 # include_directories(./)
 
+#############
+# for flags #
+#############
+
+if (DARKNET_OPENCV)
+    add_definitions(-DDARKNET_OPENCV)
+endif(DARKNET_OPENCV)
+
+if (DARKNET_GPU)
+    add_definitions(-DDARKNET_GPU)
+endif(DARKNET_GPU)
+
+if (DARKNET_MALLOCATED)
+    add_definitions(-DDARKNET_MALLOCATED)
+endif(DARKNET_MALLOCATED)
+
+if (DARKNET_TX1)
+    add_definitions(-DDARKNET_TX1)
+endif(DARKNET_TX1)
+
+if (DARKNET_GPROF)
+    add_definitions(-DDARKNET_GPROF)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pg")
+endif(DARKNET_GPROF)
+
+if (DARKNET_NO_DISPLAY)
+    add_definitions(-DDARKNET_NO_DISPLAY)
+endif(DARKNET_NO_DISPLAY)
+
 ###########
 ## Build ##
 ###########
@@ -96,24 +130,29 @@ include_directories(
 #######################
 
 if (DARKNET_GPU)
-cuda_add_library(darknetcxx-cuda STATIC
-        src/utils/cuda_utils.cu
-        src/blas/blas.cu
-        # Layers
-        src/layer/activation/activations.cu
-        src/layer/convolutional/convolutional.cu
-        src/layer/maxpool/maxpool.cu
-        )
+    cuda_add_library(darknetcxx-cuda SHARED
+            src/utils/cuda_utils.cu
+            src/blas/blas.cu
+            # Layers
+            src/layer/activation/activations.cu
+            src/layer/convolutional/convolutional.cu
+            src/layer/maxpool/maxpool.cu
+            )
 
-target_include_directories(darknetcxx-cuda PUBLIC ${CUDA_INCLUDE_DIRS})
-target_link_libraries(darknetcxx-cuda "-L/usr/local/cuda/lib64 -lcuda -lcudart -lcublas -lcurand -lcudnn")
+    target_include_directories(darknetcxx-cuda PRIVATE ${CUDA_INCLUDE_DIRS})
+    target_link_libraries(darknetcxx-cuda "-L/usr/local/cuda/lib64 -lcuda -lcudart -lcublas -lcurand -lcudnn")
+    target_compile_options(darknetcxx-cuda PRIVATE -fPIC)
+    target_compile_definitions(darknetcxx-cuda PRIVATE -DARKNET_GPU)
+    target_compile_definitions(darknetcxx-cuda PRIVATE -DDARKNET_OPENCV)
+    target_compile_definitions(darknetcxx-cuda PRIVATE -DARKNET_TX1)
+    target_compile_definitions(darknetcxx-cuda PRIVATE -DARKNET_NO_DISPLAY)
 endif(DARKNET_GPU)
 
 ##################
 # lib darknetcxx #
 ##################
 
-add_library(darknetcxx STATIC
+add_library(darknetcxx SHARED
         # darknet.cpp
         src/types/image.cpp
         src/types/data.cpp
@@ -140,55 +179,34 @@ add_library(darknetcxx STATIC
         src/layer/local/local.cpp
         )
 
-if (DARKNET_OPENCV)
-    target_link_libraries(darknetcxx ${OpenCV_LIBS})
-    target_include_directories(darknetcxx PUBLIC ${OpenCV_INCLUDE_DIRS})
-endif(DARKNET_OPENCV)
-
 set_target_properties(darknetcxx PROPERTIES
 COMPILE_FLAGS "-std=c++11 -Wall -Wshadow -Wnon-virtual-dtor -pedantic -fPIC")
-
-if (DARKNET_GPU)
-target_link_libraries(darknetcxx darknetcxx-cuda)
-target_include_directories(darknetcxx PUBLIC ${CUDA_INCLUDE_DIRS})
-endif(DARKNET_GPU)
-
 
 #############
 # for flags #
 #############
 
 if (DARKNET_OPENCV)
+    target_link_libraries(darknetcxx ${OpenCV_LIBS})
+    target_include_directories(darknetcxx PUBLIC ${OpenCV_INCLUDE_DIRS})
     target_compile_definitions(darknetcxx PUBLIC -DDARKNET_OPENCV)
 endif(DARKNET_OPENCV)
 
-if (DARKNET_MALLOCATED)
-  # add_definitions(-DDARKNET_MALLOCATED)
-  target_compile_definitions(darknetcxx PUBLIC -DDARKNET_MALLOCATED)
-  # message("ALLOCATED!")
-endif(DARKNET_MALLOCATED)
-
 if (DARKNET_GPU)
-    # add_definitions(-DDARKNET_GPU)
+    target_link_libraries(darknetcxx darknetcxx-cuda)
+    target_include_directories(darknetcxx PUBLIC ${CUDA_INCLUDE_DIRS})
     target_compile_definitions(darknetcxx PUBLIC -DARKNET_GPU)
-    target_compile_definitions(darknetcxx-cuda PUBLIC -DARKNET_GPU)
-    target_compile_definitions(darknetcxx-cuda PUBLIC -DDARKNET_OPENCV)
-    target_compile_definitions(darknetcxx-cuda PUBLIC -DDARKNET_MALLOCATED)
-    target_compile_definitions(darknetcxx-cuda PUBLIC -DARKNET_TX1)
-    target_compile_definitions(darknetcxx-cuda PUBLIC -DARKNET_NO_DISPLAY)
 endif(DARKNET_GPU)
 
+if (DARKNET_MALLOCATED)
+    target_compile_definitions(darknetcxx PUBLIC -DDARKNET_MALLOCATED)
+endif(DARKNET_MALLOCATED)
+
 if (DARKNET_TX1)
-    # add_definitions(-DDARKNET_TX1)
     target_compile_definitions(darknetcxx PUBLIC -DARKNET_TX1)
 endif(DARKNET_TX1)
 
-if (DARKNET_GPROF)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pg")
-endif(DARKNET_GPROF)
-
 if (DARKNET_NO_DISPLAY)
-    # add_definitions(-DDARKNET_NO_DISPLAY)
     target_compile_definitions(darknetcxx PUBLIC -DARKNET_NO_DISPLAY)
 endif(DARKNET_NO_DISPLAY)
 

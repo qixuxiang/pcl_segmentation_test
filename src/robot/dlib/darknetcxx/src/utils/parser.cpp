@@ -114,6 +114,14 @@ parse_layers(const std::vector<section>& sections, Network* net)
 
         if (lt == LayerType::CONVOLUTIONAL) {
             l = &parse_conv(sec.options, p);
+#ifdef DARKNET_GPU
+            size_t workspace_size = dynamic_cast<Convolutional*>(l)->workspace_size_gpu();
+#else
+            size_t workspace_size = dynamic_cast<Convolutional*>(l)->workspace_size();
+#endif
+            if (workspace_size > net->m_max_workspace_size) {
+                net->m_max_workspace_size = workspace_size;
+            }
         } else if (lt == LayerType::MAXPOOL) {
             l = &parse_maxpool(sec.options, p);
         } else if (lt == LayerType::REGION) {

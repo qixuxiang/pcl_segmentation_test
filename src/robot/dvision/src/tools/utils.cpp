@@ -581,7 +581,8 @@ getOnGlobalCoordinate(const cv::Point3d& robot_pos, const cv::Point2d& in_point)
 }
 
 cv::Point2d
-getOnRobotCoordinate(const cv::Point3d& robot_pos, const cv::Point2d& in_point) {
+getOnRobotCoordinate(const cv::Point3d& robot_pos, const cv::Point2d& in_point)
+{
     cv::Point2d out_point = in_point;
     out_point.x -= robot_pos.x;
     out_point.y -= robot_pos.y;

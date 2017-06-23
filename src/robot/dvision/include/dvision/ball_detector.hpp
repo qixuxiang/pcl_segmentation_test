@@ -41,6 +41,7 @@ class BallDetector : public IDetector
   private:
     darknet::Network* net_;
     std::vector<std::string> label_list_;
+    darknet::Image raw_img_;
     cv::Point ball_image_;
     cv::Point ball_image_top_;
     cv::Point ball_image_bottom_;

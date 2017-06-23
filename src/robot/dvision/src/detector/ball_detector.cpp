@@ -16,6 +16,7 @@
 namespace dvision {
 BallDetector::BallDetector()
   : net_(NULL)
+  , raw_img_(448, 448, 3, false)
 {
 }
 
@@ -65,14 +66,18 @@ BallDetector::GetBall(const cv::Mat& frame, cv::Mat& gui_img, Projection& m_proj
 {
     // ROS_DEBUG("BallDetector Tick");
     bool see_ball;
-    darknet::Image raw_img(frame);
     darknet::params p = net_->get_params();
-    ROS_DEBUG("darknet resize image to %d x %d x %d", p.h, p.w, p.c);
-    raw_img.resize_neo(p.h, p.w, p.c);
+    cv::Mat frame_resized;
+    cv::Size size(p.w, p.h);
+
+    cv::resize(frame, frame_resized, size);
+    raw_img_.from_mat(frame_resized);
 
     std::vector<darknet::bbox> ball_position;
     std::vector<darknet::RelateiveBBox> ball_position_relative;
-    darknet::obj_detection(net_, &raw_img, parameters.ball.low_thresh, ball_position_relative);
+
+    darknet::obj_detection(net_, &raw_img_, parameters.ball.low_thresh, ball_position_relative);
+
     if (CvtRelativePosition(ball_position_relative, ball_position)) {
         float max_prob = 0.0;
         for (auto bbox : ball_position) {
@@ -89,7 +94,7 @@ BallDetector::GetBall(const cv::Mat& frame, cv::Mat& gui_img, Projection& m_proj
         m_projection.getOnRealCoordinate(ball_image_, ball_field_);
     }
 
-    if (parameters.monitor.update_gui_img && parameters.ball.showResult) {
+    if (parameters.monitor.update_gui_img && parameters.ball.showResult && see_ball) {
         cv::rectangle(gui_img, ball_image_top_, ball_image_bottom_, cv::Scalar(0, 255, 0), 2);
     }
 
