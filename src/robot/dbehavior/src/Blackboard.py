@@ -22,6 +22,8 @@ class Blackboard(object):
     def resetCmd(self):
         self.actionCmd = ActionCommand()
         self.actionCmd.bodyCmd = crouch()
+        self.behaviorInfo = BehaviorInfo()
+        self.behaviorInfo.save_image = False
 
     def updateMotionInfo(self, msg):
         self.motionInfo = msg

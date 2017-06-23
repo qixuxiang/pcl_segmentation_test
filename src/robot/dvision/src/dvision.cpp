@@ -38,7 +38,7 @@ DVision::DVision(ros::NodeHandle* n)
         //     ROS_INFO("concurrent");
     });
     m_sub_motion_info = m_nh->subscribe("/humanoid/MotionInfo", 1, &DVision::motionCallback, this);
-    m_sub_behaviour_info = m_nh->subscribe("/humanoid/BehaviourInfo", 1, &DVision::behaviourCallback, this);
+    m_sub_behaviour_info = m_nh->subscribe("/humanoid/BehaviorInfo", 1, &DVision::behaviourCallback, this);
     m_sub_reload_config = m_nh->subscribe("/humanoid/ReloadVisionConfig", 1, &DVision::reloadConfigCallback, this);
     m_pub = m_nh->advertise<VisionInfo>("/humanoid/VisionInfo", 1);
     m_deltaClient = m_nh->serviceClient<dmotion::GetDelta>("getDelta");

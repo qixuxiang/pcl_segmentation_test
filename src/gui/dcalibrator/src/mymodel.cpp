@@ -92,7 +92,7 @@ dvision::Frame MyModel::getFrame() const
 }
 
 
-QPoint MyModel::getPlatAngle(int index)
+QPointF MyModel::getPlatAngle(int index)
 {
     // extremly ugly
     QString filename = m_picname.at(index);
@@ -102,10 +102,10 @@ QPoint MyModel::getPlatAngle(int index)
     auto list = filename.split(' ');
     auto s = list[0].split('_');
 
-    auto pitch = s[1].toInt();
-    auto yaw = s[3].toInt();
+    auto pitch = s[1].toDouble();
+    auto yaw = s[3].toDouble();
 
-    return QPoint(pitch, yaw);
+    return QPointF(pitch, yaw);
 }
 
 void MyModel::onCurrentIndexChanged(QModelIndex current)

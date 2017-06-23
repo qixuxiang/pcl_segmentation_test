@@ -29,7 +29,7 @@ public:
 
     void setCurrentIndex(int);
 
-    QPoint getPlatAngle(int index);
+    QPointF getPlatAngle(int index);
 
 public slots:
     void onCurrentIndexChanged(QModelIndex current);
