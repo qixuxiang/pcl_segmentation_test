@@ -163,7 +163,6 @@ DVision::tick()
         // m_ball.GetBall(frame.getBGR_raw(), m_data, m_projection);
         prepareVisionInfo(m_data);
         showDebugImg();
-    } else {
     }
     updateViewRange();
     trackBall();

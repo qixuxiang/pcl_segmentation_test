@@ -10,13 +10,12 @@ class DMotion : public DProcess<DMotion>
     explicit DMotion(ros::NodeHandle* n);
     virtual ~DMotion();
     void tick() override;
+    void setCmd(ActionCommand cmd);
 
   private:
     void prepareShutdown() override;
     ros::NodeHandle* m_nh;
     GaitStateManager m_manager;
     ActionCommand m_cmd;
-    ros::Subscriber m_sub;
-    void callback(const ActionCommand::ConstPtr& msg);
 };
 }
