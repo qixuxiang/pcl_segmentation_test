@@ -520,6 +520,8 @@ HumanRobot::doTxTask(int* motionData)
 
     int cameraData[2];
     m_manager->platCtrl(curYaw, curPitch);
+    //printf("zf 18: %d 19: %d\n", m_motor_zf[18], m_motor_zf[19]);
+
     cameraData[0] = static_cast<int>((curPitch + RobotPara::diffV) * m_motor_k[18] * M_PI / 180 * m_motor_zf[18]);
     cameraData[1] = static_cast<int>((curYaw + RobotPara::diffH) * m_motor_k[19] * M_PI / 180 * m_motor_zf[19]);
 

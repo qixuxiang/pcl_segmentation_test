@@ -1,13 +1,13 @@
-dbehaviour:
+dbehavior:
   constant:
     HALF_TIME:                       600
     BALL_DROP_CYCLE:                 3
     LOST_BALL_DELAY:                 1000000  # 1 sec
     MAX_VIEW_DIST:                   500
     UNKNOWN:                         9999
-    MAX_PLAT_YAW:                    90
-    MAX_PLAT_PITCH:                  70
-    MIN_PLAT_PITCH:                  0
+    maxYaw:                    90
+    maxPitch:                  70
+    minPitch:                  0
     # game controller state
     STATE_INITIAL:                   0
     STATE_READY:                     1

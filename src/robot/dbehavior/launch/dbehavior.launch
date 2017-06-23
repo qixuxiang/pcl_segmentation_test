@@ -9,6 +9,5 @@
     cwd="node"
     args=""
     />
-  <include file="$(find dconfig)/dconfig.launch"/>
   <param name="/dbehavior/skill" value="$(arg skill)"/>
 </launch>

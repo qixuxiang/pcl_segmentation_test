@@ -17,6 +17,7 @@ class Task(object):
         self.bb = getbb()
         self.init()
 
+
     def init(self):
         """
         This funciton is by default called after Task object initialised.
@@ -70,8 +71,14 @@ class Action(Task):
     def addChild(self, task):
         raise Exception('Actions are leaf node, must not have child')
 
+    def do(self, cmd):
+        self.bb.actionCmd.bodyCmd = cmd
+
     def walk(self, x, y, t):
         self.bb.actionCmd.bodyCmd = walk(x, y, t)
+
+    def crouch(self):
+        self.bb.actionCmd.bodyCmd = crouch()
 
     def lookAt(self, pitch, yaw):
         self.bb.actionCmd.headCmd = head(pitch, yaw)
