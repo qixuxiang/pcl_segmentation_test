@@ -122,6 +122,7 @@ class Network
      **********/
 
     void set_network_batch(const int batch);
+    size_t m_max_workspace_size;
 
   private:
     /**************

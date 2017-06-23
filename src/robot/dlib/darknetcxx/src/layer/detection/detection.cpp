@@ -3,6 +3,8 @@
 #include <cstring>
 #include <iostream>
 #include <map>
+#include <sys/time.h>
+
 namespace darknet {
 
 Detection::Detection(int batch,
@@ -234,30 +236,42 @@ Detection::backward(State& state)
 void
 Detection::forward_gpu(State& state)
 {
+
+    // if (!state.train) {
+    //     copy_ongpu(m_batch * m_input_size, state.input, m_output_gpu.get());
+    // }
     if (!state.train) {
-        copy_ongpu(m_batch * m_input_size, state.input, m_output_gpu.get());
+        struct timeval t0, t1;
+        long elapsed;
+        gettimeofday(&t0, 0);
+        cuda_pull_array(state.input, m_output.get(), m_batch * m_output_size);
+        gettimeofday(&t1, 0);
+        elapsed = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
+        std::cout << "cuda_pull_array time: " << elapsed / 1000.0 << " ms" << std::endl;
+
+        return;
+    } else {
+        float* in_cpu = new float[m_batch * m_input_size];
+        float* truth_cpu = 0;
+        if (state.truth) {
+            int num_truth = m_batch * m_side * m_side * (1 + m_coords + m_classes);
+            truth_cpu = new float[num_truth];
+            cuda_pull_array(state.truth, truth_cpu, num_truth);
+        }
+        cuda_pull_array(state.input, in_cpu, m_batch * m_input_size);
+        State cpu_state;
+        cpu_state.train = state.train;
+        cpu_state.truth = truth_cpu;
+        cpu_state.input = in_cpu;
+
+        forward(cpu_state);
+        cuda_push_array(m_output_gpu.get(), m_output.get(), m_batch * m_output_size);
+        cuda_push_array(m_delta_gpu.get(), m_delta.get(), m_batch * m_input_size);
+
+        delete[] cpu_state.input;
+        if (cpu_state.truth)
+            delete[] cpu_state.truth;
     }
-
-    float* in_cpu = new float[m_batch * m_input_size];
-    float* truth_cpu = 0;
-    if (state.truth) {
-        int num_truth = m_batch * m_side * m_side * (1 + m_coords + m_classes);
-        truth_cpu = new float[num_truth];
-        cuda_pull_array(state.truth, truth_cpu, num_truth);
-    }
-    cuda_pull_array(state.input, in_cpu, m_batch * m_input_size);
-    State cpu_state;
-    cpu_state.train = state.train;
-    cpu_state.truth = truth_cpu;
-    cpu_state.input = in_cpu;
-
-    forward(cpu_state);
-    cuda_push_array(m_output_gpu.get(), m_output.get(), m_batch * m_output_size);
-    cuda_push_array(m_delta_gpu.get(), m_delta.get(), m_batch * m_input_size);
-
-    delete[] cpu_state.input;
-    if (cpu_state.truth)
-        delete[] cpu_state.truth;
 }
 
 void
