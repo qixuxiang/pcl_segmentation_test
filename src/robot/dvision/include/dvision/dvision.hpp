@@ -39,6 +39,7 @@ class DVision : public dprocess::DProcess<DVision>
     ros::Subscriber m_sub_behaviour_info;
     ros::Subscriber m_sub_reload_config;
     ros::Publisher m_pub;
+
     Camera* m_camera;
     Projection m_projection;
     dprocess::DConcurrent m_concurrent;
@@ -59,10 +60,10 @@ class DVision : public dprocess::DProcess<DVision>
     cv::Mat m_field_binary, m_goal_binary, m_line_binary;
     // added by yyj
     BalllTracker m_ball_tracker;
-    int m_center_pitch;
-    int m_center_yaw;
-    int m_pitch = 0;
-    int m_yaw = 0;
+    double m_center_pitch;
+    double m_center_yaw;
+    double m_pitch = 0;
+    double m_yaw = 0;
 
     VisionInfo m_data;
     dmotion::MotionInfo m_motion_info;
@@ -72,6 +73,7 @@ class DVision : public dprocess::DProcess<DVision>
     void reloadConfigCallback(const std_msgs::String::ConstPtr&);
     void prepareVisionInfo(VisionInfo& m_data);
     void showDebugImg();
+    void trackBall();
     void updateViewRange();
 };
 } // namespace dvision

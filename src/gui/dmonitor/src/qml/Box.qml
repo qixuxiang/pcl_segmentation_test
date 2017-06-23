@@ -4,11 +4,13 @@ import QtQuick.Controls 1.4
 
 Rectangle {
     id: box
-    border.width: 3
-    border.color: "#EC5f67"
+    border.width: 1
+    //border.color: "#EC5f67"
+    border.color: "white"
     height: 30
     width: 30 * 1.67
-    color: "#1B2B34"
+    //color: "#1B2B34"
+    color: "black"
     property alias text: textArea.text
 
     Text {

@@ -155,8 +155,9 @@ DVision::tick()
         prepareVisionInfo(m_data);
         showDebugImg();
     } else {
-        updateViewRange();
     }
+    updateViewRange();
+    trackBall();
 
     m_pub.publish(m_data);
     m_transmitter->sendRos(dconstant::network::robotBroadcastAddressBase + parameters.robotId, m_data);
@@ -172,8 +173,9 @@ void
 DVision::motionCallback(const dmotion::MotionInfo::ConstPtr& motion_msg)
 {
     m_motion_info = *motion_msg;
-    m_pitch = static_cast<int>(m_motion_info.action.headCmd.pitch);
-    m_yaw = static_cast<int>(m_motion_info.action.headCmd.yaw);
+    m_pitch = m_motion_info.action.headCmd.pitch;
+    m_yaw = m_motion_info.action.headCmd.yaw;
+    ROS_INFO_STREAM(m_motion_info.action.headCmd);
 }
 
 void
@@ -242,22 +244,17 @@ DVision::prepareVisionInfo(VisionInfo& m_data)
     }
 
     // ball
-     if (m_data.see_ball) {
-         m_data.ball_image.x = m_ball.ball_image().x;
-         m_data.ball_image.y = m_ball.ball_image().y;
-         m_data.ball_field.x = m_ball.ball_field().x;
-         m_data.ball_field.y = m_ball.ball_field().y;
-         cv::Point2f ball_global = getOnGlobalCoordinate(m_loc.location(), cv::Point2f(m_data.ball_field.x, m_data.ball_field.y));
-         m_data.ball_global.x = ball_global.x;
-         m_data.ball_global.y = ball_global.y;
-         // track ball
-         if (m_ball_tracker.Process(m_ball.ball_field().x, m_ball.ball_field().y, static_cast<double>(m_pitch), static_cast<double>(m_yaw))) {
-             m_data.cmd_head_ball_track.x = 0;
-             m_data.cmd_head_ball_track.y = Radian2Degree(m_ball_tracker.out_pitch());
-             m_data.cmd_head_ball_track.z = Radian2Degree(m_ball_tracker.out_yaw());
-         }
-     }
+    if (m_data.see_ball) {
+        ROS_INFO("ball field: %lf %lf %lf", m_data.ball_field.x, m_data.ball_field.y, m_data.ball_field.z);
 
+        m_data.ball_image.x = m_ball.ball_image().x;
+        m_data.ball_image.y = m_ball.ball_image().y;
+        m_data.ball_field.x = m_ball.ball_field().x;
+        m_data.ball_field.y = m_ball.ball_field().y;
+        cv::Point2f ball_global = getOnGlobalCoordinate(m_data.robot_pos, cv::Point2f(m_data.ball_field.x, m_data.ball_field.y));
+        m_data.ball_global.x = ball_global.x;
+        m_data.ball_global.y = ball_global.y;
+    }
 }
 
 
@@ -275,14 +272,30 @@ void DVision::updateViewRange() {
     m_projection.getOnRealCoordinate(cv::Point(0, parameters.camera.height - 1), lowerLeft);
     m_projection.getOnRealCoordinate(cv::Point(parameters.camera.width - 1, parameters.camera.height - 1), lowerRight);
 
-    LineSegment l1(upperLeft, lowerLeft);
-    LineSegment l2(upperRight, lowerRight);
-    cv::Point2d cross;
-    bool intersect = l1.Intersect(l2, cross);
-    if(intersect) {
+//    LineSegment l1(upperLeft, lowerLeft);
+//    LineSegment l2(upperRight, lowerRight);
+//    cv::Point2d cross;
+//    bool intersect = l1.Intersect(l2, cross);
+//    if(intersect) {
+//        upperLeft *= -100;
+//        upperRight *= -100;
+//    }
+
+    auto v1 = upperLeft - lowerLeft;
+    auto v2 = lowerRight - lowerLeft;
+    auto theta = getAngleBetweenVectors(v1, v2);
+    if(theta < 180 && theta > 0) {
         upperLeft *= -100;
+    }
+    ROS_INFO("v1 v2 theta: %f", theta);
+
+    v1 = upperRight - lowerRight;
+    v2 = - v2;
+    theta = getAngleBetweenVectors(v2, v1);
+    if(theta < 180 && theta > 0) {
         upperRight *= -100;
     }
+    ROS_INFO("theta: %f", theta);
 
 
     upperLeft = getOnGlobalCoordinate(m_data.robot_pos, upperLeft);
@@ -346,6 +359,19 @@ DVision::showDebugImg()
         int len;
         auto buf = Frame::encode(m_gui_img, len);
         m_transmitter->sendRaw(dconstant::network::robotGuiBase + parameters.robotId, buf.get(), len);
+    }
+}
+
+void DVision::trackBall() {
+    // ball
+    if (m_data.see_ball) {
+        // track ball
+        ROS_INFO("ball field: %lf %lf, cur pitch: %lf cur yaw: %lf", m_data.ball_field.x, m_data.ball_field.y, m_pitch, m_yaw);
+        if (m_ball_tracker.Process(m_data.ball_field.x, m_data.ball_field.y, Degree2Radian(m_pitch), Degree2Radian(m_yaw))) {
+            m_data.ballTrack.pitch = Radian2Degree(m_ball_tracker.out_pitch());
+            m_data.ballTrack.yaw = Radian2Degree(m_ball_tracker.out_yaw());
+            ROS_INFO_STREAM(m_data.ballTrack);
+        }
     }
 }
 } // namespace dvision

@@ -9,6 +9,7 @@ find_package(catkin REQUIRED
   COMPONENTS roscpp
   geometry_msgs
   message_generation
+  dmotion
   dprocess
   dtransmit
   dconfig
@@ -33,6 +34,7 @@ add_message_files(
 generate_messages(
   DEPENDENCIES
   geometry_msgs
+  dmotion
 )
 
 catkin_package(

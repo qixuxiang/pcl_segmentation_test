@@ -9,7 +9,7 @@ class Blackboard(object):
     def __init__(self):
         # sub
         self.motionInfo = MotionInfo()
-        self.visionInfo = VisionInfo
+        self.visionInfo = VisionInfo()
 
         # pub
         self.actionCmd = ActionCommand()

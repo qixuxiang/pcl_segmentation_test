@@ -73,6 +73,9 @@ class Action(Task):
     def walk(self, x, y, t):
         self.bb.actionCmd.bodyCmd = walk(x, y, t)
 
+    def lookAt(self, pitch, yaw):
+        self.bb.actionCmd.headCmd = head(pitch, yaw)
+
     def kickLeft(self):
         self.bb.actionCmd.bodyCmd = kickRight()
 

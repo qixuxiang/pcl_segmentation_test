@@ -72,8 +72,6 @@ void Robot::simModeUpdate()
         m_simVisionInfo.robot_pos.y = newReal.y;
         m_simVisionInfo.robot_pos.z = m_heading / 180.0 * M_PI;
 
-        // !? see ball
-
         // todo ........................................................................... this is fucking ..
         auto realBall = m_field->getOnRealCoordinate(m_simBall->x() + m_simBall->width() / 2, m_simBall->y() + m_simBall->height() / 2);
         m_simVisionInfo.ball_global.x = realBall.x();
@@ -173,7 +171,8 @@ void Robot::drawCircle(QPainter* painter) {
 void Robot::onRecv(dvision::VisionInfo &msg)
 {
     m_monVisionInfo = msg;
-    m_heading = msg.robot_pos.z;
+    if(m_isMonitor)
+        m_heading = msg.robot_pos.z;
     m_realPos = QPointF(msg.robot_pos.x, msg.robot_pos.y);
     m_lastRecvTime = QTime::currentTime();
     m_viewRange->setVisionInfo(msg);
@@ -185,6 +184,7 @@ void Robot::onRecv(dvision::VisionInfo &msg)
 void Robot::onRecvMotion(dmotion::MotionInfo& msg) {
     m_motionInfo = msg;
     m_lastRecvTime = QTime::currentTime();
+    //qDebug() << msg.deltaData.x << msg.deltaData.y << msg.deltaData.z;
 }
 
 

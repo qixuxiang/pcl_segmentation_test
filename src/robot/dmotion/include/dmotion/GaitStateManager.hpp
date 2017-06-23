@@ -27,6 +27,7 @@ class GaitStateManager
 
     void platCtrl(double& yaw, double& pitch);
     void reload_gaitdata(const std_msgs::String::ConstPtr&);
+    void setCmd(dmotion::ActionCommand cmd);
 
     GaitStateBase* gaitState;
     GaitStateBase* goal_gaitState;

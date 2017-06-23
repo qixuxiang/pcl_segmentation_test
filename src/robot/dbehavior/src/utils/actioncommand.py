@@ -4,7 +4,7 @@ from dmotion.msg import HeadCommand
 from dmotion.msg import ActionCommand
 
 
-def head(pitch = 0, yaw = 0, pitchSpeed = 0, yawSpeed = 0):
+def head(pitch = 0, yaw = 0, pitchSpeed = 2, yawSpeed = 2):
     """
     HeadCommand defined as
     ===

@@ -25,6 +25,7 @@ void
 DMotion::callback(const ActionCommand::ConstPtr& msg)
 {
     m_cmd = *msg;
+    m_manager.setCmd(m_cmd);
 }
 
 void

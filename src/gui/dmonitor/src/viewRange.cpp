@@ -23,7 +23,7 @@ void ViewRange::drawMyself(QPainter *painter)
     QPointF c(m_visionInfo.viewRange[2].x, m_visionInfo.viewRange[2].y);
     QPointF d(m_visionInfo.viewRange[3].x, m_visionInfo.viewRange[3].y);
 
-//    qDebug() << a << b << c << d;
+    qDebug() << a << b << c << d;
 
     auto aa = m_field->getOnImageCoordiante(a);
     auto bb = m_field->getOnImageCoordiante(b);

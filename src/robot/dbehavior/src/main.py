@@ -9,7 +9,7 @@ from Blackboard import getbb
 def getSkill():
     bb = getbb()
     skill = bb.parameters.skill
-    behaivorPackages = ["roles", "skills", "demo", "headskill"]
+    behaivorPackages = ["roles", "skills", "demo", "headskills"]
     foundSkill = False
     skillDir = os.getcwd()
     skillClass = None

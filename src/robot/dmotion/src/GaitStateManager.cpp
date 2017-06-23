@@ -117,6 +117,11 @@ GaitStateManager::reload_gaitdata(const std_msgs::String::ConstPtr& msg)
     setupbackdown->loadGaitFile();
 }
 
+void
+GaitStateManager::setCmd(dmotion::ActionCommand cmd) {
+    m_cmd = cmd;
+}
+
 /************************************************
  * plat ctrl
  * get plat request from behaviour blackboard
