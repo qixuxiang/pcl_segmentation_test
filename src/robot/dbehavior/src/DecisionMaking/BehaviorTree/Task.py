@@ -117,8 +117,8 @@ class Action(Task):
     def crouch(self):
         self.bb.actionCmd.bodyCmd = crouch()
 
-    def lookAt(self, pitch = 0, yaw = 0):
-        self.bb.actionCmd.headCmd = head(pitch, yaw)
+    def lookAt(self, pitch = 0, yaw = 0, pitchSpeed = 1, yawSpeed = 1):
+        self.bb.actionCmd.headCmd = head(pitch, yaw, pitchSpeed, yawSpeed)
 
     def kickLeft(self):
         self.bb.actionCmd.bodyCmd = kickRight()

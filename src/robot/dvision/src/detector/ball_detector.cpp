@@ -79,6 +79,7 @@ BallDetector::Update()
         ball_field_kalman_.x = kal_res.x;
         ball_field_kalman_.y = kal_res.y;
     }
+    return true;
 }
 
 bool

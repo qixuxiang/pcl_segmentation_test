@@ -194,7 +194,7 @@ DVision::motionCallback(const dmotion::MotionInfo::ConstPtr& motion_msg)
     m_loc.CalcDeadReckoning(m_motion_info);
     m_pitch = m_motion_info.action.headCmd.pitch;
     m_yaw = m_motion_info.action.headCmd.yaw;
-    //    ROS_INFO_STREAM(m_motion_info.action.headCmd);
+    ROS_INFO_STREAM(m_motion_info.action.headCmd);
 }
 
 void
@@ -264,7 +264,6 @@ DVision::prepareVisionInfo(VisionInfo& m_data)
 
     // ball
     if (m_data.see_ball) {
-        ROS_INFO("ball field: %lf %lf %lf", m_data.ball_field.x, m_data.ball_field.y, m_data.ball_field.z);
         m_ball.Update();
         m_data.ball_image.x = m_ball.ball_image().x;
         m_data.ball_image.y = m_ball.ball_image().y;
@@ -273,6 +272,8 @@ DVision::prepareVisionInfo(VisionInfo& m_data)
         cv::Point2f ball_global = getOnGlobalCoordinate(m_data.robot_pos, cv::Point2f(m_data.ball_field.x, m_data.ball_field.y));
         m_data.ball_global.x = ball_global.x;
         m_data.ball_global.y = ball_global.y;
+
+        //ROS_INFO("ball field: %lf %lf %lf", m_data.ball_field.x, m_data.ball_field.y, m_data.ball_field.z);
     }
 }
 
