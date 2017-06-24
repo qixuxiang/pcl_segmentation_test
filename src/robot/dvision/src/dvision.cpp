@@ -201,7 +201,7 @@ DVision::motionCallback(const dmotion::MotionInfo::ConstPtr& motion_msg)
 }
 
 void
-DVision::behaviourCallback(const dbehavior::BehaviourInfo::ConstPtr& behaviour_msg)
+DVision::behaviourCallback(const dbehavior::BehaviorInfo::ConstPtr& behaviour_msg)
 {
     m_behaviour_info = *behaviour_msg;
     if (m_behaviour_info.save_image) {
