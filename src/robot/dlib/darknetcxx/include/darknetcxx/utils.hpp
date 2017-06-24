@@ -72,19 +72,18 @@ class Ptr : NonCopyable
       : m_size(0)
       , m_ptr(nullptr, deleter())
     {
-        std::cout << "Ptr_cpu ctor" << std::endl;
+        // std::cout << "Ptr_cpu ctor" << std::endl;
     }
 
     explicit Ptr(size_t size)
       : m_size(size)
       , m_ptr(new T[size], deleter())
     {
-        std::cout << "Ptr_cpu ctor" << std::endl;
 #ifdef DARKNET_MALLOCATED
         m_allocated += sizeof(T) * size / 1000000.;
-// fprintf(stderr, "CPU init %lu bytes, all %lf MB\n", sizeof(T) * size,
-//         m_allocated);
+// fprintf(stderr, "CPU init %lu bytes, all %lf MB\n", sizeof(T) * size, m_allocated);
 #endif
+        // std::cout << "Ptr_cpu ctor" << std::endl;
     }
 
     void resize(size_t size)
@@ -100,7 +99,7 @@ class Ptr : NonCopyable
             delete[] p;
         m_size = size;
         m_ptr.reset(new T[size]);
-        std::cout << "Ptr cpu resized to " << size << std::endl;
+        // std::cout << "Ptr cpu resized to " << size << std::endl;
     }
 
     T* get()

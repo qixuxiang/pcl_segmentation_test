@@ -17,6 +17,12 @@ namespace dvision {
 BallDetector::BallDetector()
   : net_(NULL)
   , raw_img_(448, 448, 3, false)
+  , ball_image_(0, 0)
+  , ball_image_top_(0, 0)
+  , ball_image_bottom_(0, 0)
+  , ball_field_(0.0, 0.0)
+  , ball_field_kalman_(0.0, 0.0)
+  , kalmanI_(ball_field_kalman_)
 {
 }
 
@@ -24,30 +30,33 @@ bool
 BallDetector::Init()
 {
     // parse label list
-    std::cout << parameters.ball.label_file << std::endl;
-    if (!std::ifstream(parameters.ball.label_file)) {
-        ROS_ERROR("darknet label file doesn't exist in %s!", parameters.ball.label_file.c_str());
+    std::string label_file_path = parameters.ball.home_folder + "/" + parameters.ball.label_file;
+    if (!std::ifstream(label_file_path)) {
+        ROS_ERROR("darknet label file doesn't exist in %s!", label_file_path.c_str());
         return false;
     }
-    label_list_ = darknet::get_labels(parameters.ball.label_file);
+    label_list_ = darknet::get_labels(label_file_path);
 
     // parse net cfg and setup network
-    if (!std::ifstream(parameters.ball.net_cfg)) {
-        ROS_ERROR("darknet network cfg doesn't exist in %s!", parameters.ball.net_cfg.c_str());
+    std::string net_cfg_path = parameters.ball.home_folder + "/" + parameters.ball.net_cfg;
+
+    if (!std::ifstream(net_cfg_path)) {
+        ROS_ERROR("darknet network cfg doesn't exist in %s!", net_cfg_path.c_str());
         return false;
     }
 
     // setup network
-    net_ = &(darknet::parse_network_cfg(parameters.ball.net_cfg));
+    net_ = &(darknet::parse_network_cfg(net_cfg_path));
     darknet::params p = net_->get_params();
     ROS_INFO("network setup: num_layers = %d, batch = %d\n", net_->num_layers(), p.batch);
 
     // load pretrained weights
-    if (!std::ifstream(parameters.ball.weight_file)) {
-        ROS_ERROR("darknet weigth file doesn't exist in %s!", parameters.ball.weight_file.c_str());
+    std::string weight_file_path = parameters.ball.home_folder + "/" + parameters.ball.weight_file;
+    if (!std::ifstream(weight_file_path)) {
+        ROS_ERROR("darknet weigth file doesn't exist in %s!", weight_file_path.c_str());
         return false;
     }
-    darknet::load_weights(net_, parameters.ball.weight_file);
+    darknet::load_weights(net_, weight_file_path);
 
     // set batch to 1 for network inference
     net_->set_network_batch(1);
@@ -62,7 +71,18 @@ BallDetector::~BallDetector()
 }
 
 bool
-BallDetector::GetBall(const cv::Mat& frame, cv::Mat& gui_img, Projection& m_projection)
+BallDetector::Update()
+{
+    if (parameters.ball.useKalman) {
+        kalmanI_.GetPrediction();
+        cv::Point2d kal_res = kalmanI_.Update(cv::Point2d(ball_field_.x, ball_field_.y));
+        ball_field_kalman_.x = kal_res.x;
+        ball_field_kalman_.y = kal_res.y;
+    }
+}
+
+bool
+BallDetector::GetBall(const cv::Mat& frame, cv::Mat& gui_img, Projection& projection)
 {
     // ROS_DEBUG("BallDetector Tick");
     bool see_ball;
@@ -94,7 +114,7 @@ BallDetector::GetBall(const cv::Mat& frame, cv::Mat& gui_img, Projection& m_proj
                 max_prob = bbox.m_prob;
             }
         }
-        m_projection.getOnRealCoordinate(ball_image_, ball_field_);
+        projection.getOnRealCoordinate(ball_image_, ball_field_);
     }
 
     if (parameters.monitor.update_gui_img && parameters.ball.showResult && see_ball) {
@@ -124,6 +144,22 @@ BallDetector::CvtRelativePosition(std::vector<darknet::RelateiveBBox>& ball_posi
         ball_position_cvt.emplace_back(rbbox.m_label, rbbox.m_prob, left, top, right, bottom);
     }
     return true;
+}
+
+cv::Point
+BallDetector::ball_image()
+{
+    return ball_image_;
+}
+
+cv::Point2f
+BallDetector::ball_field()
+{
+    if (parameters.ball.useKalman) {
+        return ball_field_kalman_;
+    } else {
+        return ball_field_;
+    }
 }
 
 } // namespace dvision
