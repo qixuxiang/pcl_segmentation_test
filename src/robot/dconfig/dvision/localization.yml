@@ -2,6 +2,7 @@ dvision:
   ball_detector:
     enable:                     true
     showResult:                 true
+    useKalman:                  true
     label_file:                 '/home/mwx/.darknet/data/rob.names'
     net_cfg:                    '/home/mwx/.darknet/cfg/tiny-yolo-v1-rob.cfg'
     weight_file:                '/home/mwx/.darknet/model/tiny-yolo.weights'

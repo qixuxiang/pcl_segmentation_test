@@ -41,6 +41,7 @@ struct BallDetectorParameters
 {
     bool enable;
     bool showResult;
+    bool useKalman;
     std::string label_file;
     std::string net_cfg;
     std::string weight_file;

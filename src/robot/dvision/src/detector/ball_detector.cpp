@@ -17,6 +17,12 @@ namespace dvision {
 BallDetector::BallDetector()
   : net_(NULL)
   , raw_img_(448, 448, 3, false)
+  , ball_image_(0, 0)
+  , ball_image_top_(0, 0)
+  , ball_image_bottom_(0, 0)
+  , ball_field_(0.0, 0.0)
+  , ball_field_kalman_(0.0, 0.0)
+  , kalmanI_(ball_field_kalman_)
 {
 }
 
@@ -62,7 +68,18 @@ BallDetector::~BallDetector()
 }
 
 bool
-BallDetector::GetBall(const cv::Mat& frame, cv::Mat& gui_img, Projection& m_projection)
+BallDetector::Update()
+{
+    if (parameters.ball.useKalman) {
+        kalmanI_.GetPrediction();
+        cv::Point2d kal_res = kalmanI_.Update(cv::Point2d(ball_field_.x, ball_field_.y));
+        ball_field_kalman_.x = kal_res.x;
+        ball_field_kalman_.y = kal_res.y;
+    }
+}
+
+bool
+BallDetector::GetBall(const cv::Mat& frame, cv::Mat& gui_img, Projection& projection)
 {
     // ROS_DEBUG("BallDetector Tick");
     bool see_ball;
@@ -94,7 +111,7 @@ BallDetector::GetBall(const cv::Mat& frame, cv::Mat& gui_img, Projection& m_proj
                 max_prob = bbox.m_prob;
             }
         }
-        m_projection.getOnRealCoordinate(ball_image_, ball_field_);
+        projection.getOnRealCoordinate(ball_image_, ball_field_);
     }
 
     if (parameters.monitor.update_gui_img && parameters.ball.showResult && see_ball) {
@@ -124,6 +141,22 @@ BallDetector::CvtRelativePosition(std::vector<darknet::RelateiveBBox>& ball_posi
         ball_position_cvt.emplace_back(rbbox.m_label, rbbox.m_prob, left, top, right, bottom);
     }
     return true;
+}
+
+cv::Point
+BallDetector::ball_image()
+{
+    return ball_image_;
+}
+
+cv::Point2f
+BallDetector::ball_field()
+{
+    if (parameters.ball.useKalman) {
+        return ball_field_kalman_;
+    } else {
+        return ball_field_;
+    }
 }
 
 } // namespace dvision

@@ -13,6 +13,7 @@
 #include "darknetcxx/detector.hpp"
 #include "dvision/VisionInfo.h"
 #include "dvision/idetector.hpp"
+#include "dvision/kalman.hpp"
 #include "dvision/projection.hpp"
 #include <ros/ros.h>
 #include <string>
@@ -26,17 +27,12 @@ class BallDetector : public IDetector
     explicit BallDetector();
     ~BallDetector();
     bool Init();
+    bool Update();
 
-    bool GetBall(const cv::Mat& frame, cv::Mat& gui_img, Projection& m_projection);
+    bool GetBall(const cv::Mat& frame, cv::Mat& gui_img, Projection& projection);
     bool CvtRelativePosition(std::vector<darknet::RelateiveBBox>& ball_position, std::vector<darknet::bbox>& ball_position_cvt);
-    inline cv::Point ball_image()
-    {
-        return ball_image_;
-    }
-    inline cv::Point2f ball_field()
-    {
-        return ball_field_;
-    }
+    cv::Point ball_image();
+    cv::Point2f ball_field();
 
   private:
     darknet::Network* net_;
@@ -46,5 +42,8 @@ class BallDetector : public IDetector
     cv::Point ball_image_top_;
     cv::Point ball_image_bottom_;
     cv::Point2f ball_field_;
+    cv::Point2f ball_field_kalman_;
+
+    KalmanFilterC kalmanI_;
 };
 } // namespace dvision
