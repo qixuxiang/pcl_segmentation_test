@@ -32,6 +32,7 @@ Localization::Localization()
   , kalmanI_(location_kalman_)
   , last_motion_info_time_(0)
   , last_delta_data_(0, 0, 0)
+  , accumulated_delta_data_(0, 0)
   , camera_projections_(NULL)
   , current_vertex_id_(0)
   , previous_vertex_id_(0)
@@ -513,7 +514,7 @@ Localization::UpdateVertexIdx()
         g2o::EdgeSE2* e = new g2o::EdgeSE2;
         e->vertices()[0] = optimizer.vertex(previous_vertex_id_);
         e->vertices()[1] = optimizer.vertex(current_vertex_id_);
-        cv::Point2d dead_reck = last_delta_data();
+        cv::Point2d dead_reck = accumulated_delta_data();
         e->setMeasurement(g2o::SE2(dead_reck.x, dead_reck.y, 0));
         Eigen::Matrix3d information;
         information.fill(0.);
@@ -614,12 +615,12 @@ Localization::location(const cv::Point2d& loc)
 }
 
 cv::Point2d
-Localization::last_delta_data()
+Localization::accumulated_delta_data()
 {
     // Not the first iteration
     if (previous_vertex_id_ > 0) {
-        cv::Point2d res(last_delta_data_.x, last_delta_data_.y);
-        last_delta_data_ = cv::Point3d(0, 0, 0);
+        cv::Point2d res(accumulated_delta_data_.x, accumulated_delta_data_.y);
+        accumulated_delta_data_ = cv::Point2d(0, 0);
         return res;
     } else {
         return cv::Point2d(0, 0);
@@ -658,8 +659,12 @@ Localization::CalcDeadReckoning(const dmotion::MotionInfo& motion_info)
 {
     cv::Point3d curr_delta_data(motion_info.deltaData.x, motion_info.deltaData.y, motion_info.deltaData.z);
     if (last_motion_info_time_ < motion_info.timestamp) {
-        location_.x += motion_info.deltaData.x;
-        location_.y += motion_info.deltaData.y;
+        cv::Point2d diff_2D(curr_delta_data.x, curr_delta_data.y);
+        cv::Point2d diff_absolute = RotateAroundPoint(diff_2D, -(camera_projections_->GetHeading() - curr_delta_data.z));
+        location_.x += diff_absolute.x;
+        location_.y += diff_absolute.y;
+        accumulated_delta_data_.x += diff_absolute.x;
+        accumulated_delta_data_.y += diff_absolute.y;
     }
     last_delta_data_ = curr_delta_data;
     last_motion_info_time_ = motion_info.timestamp;

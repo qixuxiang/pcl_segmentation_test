@@ -114,7 +114,7 @@ class Localization
 
     // getter
     cv::Point3d location();
-    cv::Point2d last_delta_data();
+    cv::Point2d accumulated_delta_data();
 
     // setter
     void location(const cv::Point2d& loc);
@@ -146,6 +146,7 @@ class Localization
     // delta data from motion info
     ros::Time last_motion_info_time_;
     cv::Point3d last_delta_data_;
+    cv::Point2d accumulated_delta_data_;
     // G2O solver
     g2o::BlockSolverX::LinearSolverType* linear_solver_;
     g2o::BlockSolverX* block_solver_;

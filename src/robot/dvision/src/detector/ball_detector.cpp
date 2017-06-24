@@ -82,7 +82,10 @@ BallDetector::GetBall(const cv::Mat& frame, cv::Mat& gui_img, Projection& m_proj
         float max_prob = 0.0;
         for (auto bbox : ball_position) {
             ROS_DEBUG("find %5d - %5f - (%d, %d) && (%d, %d)", bbox.m_label, bbox.m_prob, bbox.m_left, bbox.m_top, bbox.m_right, bbox.m_bottom);
-            if (bbox.m_label == 0 && bbox.m_prob > max_prob) {
+            bool label_ok = bbox.m_label == 0;
+            bool prob_ok = bbox.m_prob > max_prob;
+            bool size_ok = std::abs(bbox.m_left - bbox.m_right) < parameters.camera.width * 0.5 && std::abs(bbox.m_top - bbox.m_bottom) < parameters.camera.height * 0.5;
+            if (label_ok && prob_ok && size_ok) {
                 see_ball = true;
                 ball_image_.x = (bbox.m_left + bbox.m_right) / 2.0;
                 ball_image_.y = (bbox.m_top + bbox.m_bottom) / 2.0;

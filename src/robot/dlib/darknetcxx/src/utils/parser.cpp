@@ -141,6 +141,12 @@ parse_layers(const std::vector<section>& sections, Network* net)
         p.c = op["out_c"];
         p.inputs = op["out_h"] * op["out_w"] * op["out_c"];
     }
+// Resize max workspace for state
+#ifdef DARKNET_GPU
+    net->m_state.workspace_gpu.resize(net->m_max_workspace_size);
+#else
+    net->m_state.workspace.resize(net->m_max_workspace_size);
+#endif
 }
 
 Convolutional&

@@ -27,8 +27,7 @@ DVision::DVision(ros::NodeHandle* n)
                         parameters.camera.undistCx,
                         parameters.camera.undistCy,
                         parameters.camera.centerInUndistX,
-                        parameters.camera.centerInUndistY
-    );
+                        parameters.camera.centerInUndistY);
 
     // FIXME(MWX): switch
     Frame::initEncoder();
@@ -52,7 +51,7 @@ DVision::DVision(ros::NodeHandle* n)
         ROS_INFO("Simulation mode!");
         m_transmitter->addRosRecv<VisionInfo>(dconstant::network::monitorBroadcastAddressBase + parameters.robotId, [&](VisionInfo& msg) {
             m_data = msg;
-            //ROS_INFO_STREAM(m_data.robot_pos);
+            // ROS_INFO_STREAM(m_data.robot_pos);
         });
     } else {
         CameraSettings s(n);
@@ -78,11 +77,11 @@ DVision::tick()
      **********/
 
     // update delta
-//    dmotion::GetDelta srv;
-//    if(m_deltaClient.call(srv)) {
-//        auto d = srv.response.delta;
-//        // TODO(yuthon): Here we got delta data.
-//    }
+    //    dmotion::GetDelta srv;
+    //    if(m_deltaClient.call(srv)) {
+    //        auto d = srv.response.delta;
+    //        // TODO(yuthon): Here we got delta data.
+    //    }
 
     m_projection.updateExtrinsic(m_pitch, m_yaw);
 
@@ -164,7 +163,6 @@ DVision::tick()
          * Ball Detector *
          *****************/
         ros::Time begin = ros::Time::now();
-
         m_data.see_ball = m_ball.GetBall(frame.getBGR_raw(), m_gui_img, m_projection);
         ros::Duration end = ros::Time::now() - begin;
         std::cout << "------------Ball: " << end.toNSec() / 1000000.0 << "ms-----------" << std::endl;
@@ -197,7 +195,7 @@ DVision::motionCallback(const dmotion::MotionInfo::ConstPtr& motion_msg)
     m_loc.CalcDeadReckoning(m_motion_info);
     m_pitch = m_motion_info.action.headCmd.pitch;
     m_yaw = m_motion_info.action.headCmd.yaw;
-//    ROS_INFO_STREAM(m_motion_info.action.headCmd);
+    //    ROS_INFO_STREAM(m_motion_info.action.headCmd);
 }
 
 void
@@ -294,26 +292,26 @@ DVision::updateViewRange()
     m_projection.getOnRealCoordinate(cv::Point(0, parameters.camera.height - 1), lowerLeft);
     m_projection.getOnRealCoordinate(cv::Point(parameters.camera.width - 1, parameters.camera.height - 1), lowerRight);
 
-//    LineSegment l1(upperLeft, lowerLeft);
-//    LineSegment l2(upperRight, lowerRight);
-//    cv::Point2d cross;
-//    bool intersect = l1.Intersect(l2, cross);
-//    if(intersect) {
-//        upperLeft *= -100;
-//        upperRight *= -100;
-//    }
+    //    LineSegment l1(upperLeft, lowerLeft);
+    //    LineSegment l2(upperRight, lowerRight);
+    //    cv::Point2d cross;
+    //    bool intersect = l1.Intersect(l2, cross);
+    //    if(intersect) {
+    //        upperLeft *= -100;
+    //        upperRight *= -100;
+    //    }
 
     auto v1 = upperLeft - lowerLeft;
     auto v2 = lowerRight - lowerLeft;
     auto theta = getAngleBetweenVectors(v1, v2);
-    if(theta < 180 && theta > 0) {
+    if (theta < 180 && theta > 0) {
         upperLeft *= -100;
     }
 
     v1 = upperRight - lowerRight;
-    v2 = - v2;
+    v2 = -v2;
     theta = getAngleBetweenVectors(v2, v1);
-    if(theta < 180 && theta > 0) {
+    if (theta < 180 && theta > 0) {
         upperRight *= -100;
     }
 
@@ -371,16 +369,18 @@ DVision::showDebugImg()
     }
 
     if (parameters.monitor.update_gui_img) {
-//        cv::namedWindow("gui", CV_WINDOW_NORMAL);
-//        cv::imshow("gui", m_gui_img);
-//        cv::waitKey(1);
-         int len;
-         auto buf = Frame::encode(m_gui_img, len);
-         m_transmitter->sendRaw(dconstant::network::robotGuiBase + parameters.robotId, buf.get(), len);
+        // cv::namedWindow("gui", CV_WINDOW_NORMAL);
+        // cv::imshow("gui", m_gui_img);
+        // cv::waitKey(1);
+        int len;
+        auto buf = Frame::encode(m_gui_img, len);
+        m_transmitter->sendRaw(dconstant::network::robotGuiBase + parameters.robotId, buf.get(), len);
     }
 }
 
-void DVision::trackBall() {
+void
+DVision::trackBall()
+{
     // ball
     if (m_data.see_ball) {
         // track ball

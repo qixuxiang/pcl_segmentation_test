@@ -126,19 +126,19 @@ Network::~Network()
  *********/
 
 void
-Network::forward_network(State* state)
+Network::forward_network()
 {
-    // state->workspace = workspace;
+    // m_state.workspace = workspace;
     Layer* l;
     for (int i = 0; i < num_layers(); i++) {
         l = m_layers[i];
         // printf("%s\n", get_layer_name(l->type()).c_str());
-        state->index = i;
-        if (l->type() == LayerType::CONVOLUTIONAL) {
-            state->workspace.resize(dynamic_cast<Convolutional*>(l)->workspace_size());
-        }
-        l->forward(*state);
-        state->input = l->output().get();
+        m_state.index = i;
+        // if (l->type() == LayerType::CONVOLUTIONAL) {
+        //     m_state.workspace.resize(dynamic_cast<Convolutional*>(l)->workspace_size());
+        // }
+        l->forward(m_state);
+        m_state.input = l->output().get();
     }
     // Ptr<float>& result = l->output();
     // for (size_t i = 0; i < result.size(); ++i) {
@@ -149,24 +149,24 @@ Network::forward_network(State* state)
 Ptr<float>&
 Network::network_predict(Ptr<float>& input)
 {
-    State statecpu;
-    statecpu.index = 0;
-    statecpu.train = false;
-    statecpu.input = input.get();
+    // State statecpu;
+    m_state.index = 0;
+    m_state.train = false;
+    m_state.input = input.get();
 
-    forward_network(&statecpu);
+    forward_network();
     return get_network_output();
 }
 
 #ifdef DARKNET_GPU
 void
-Network::forward_network_gpu(State* state)
+Network::forward_network_gpu()
 {
-    // state->workspace = workspace;
-    //struct timeval t0, t1;
-    //long elapsed;
+    // m_state.workspace = workspace;
+    // struct timeval t0, t1;
+    // long elapsed;
     // gettimeofday(&t0, 0);
-    state->workspace_gpu.resize(m_max_workspace_size);
+    // m_state.workspace_gpu.resize(m_max_workspace_size);
     // gettimeofday(&t1, 0);
     // elapsed = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
     // std::cout << "resize workspace time: " << elapsed / 1000.0 << " ms" << std::endl;
@@ -176,25 +176,25 @@ Network::forward_network_gpu(State* state)
 
     for (int i = 0; i < num_layers(); i++) {
         l = m_layers[i];
-        state->index = i;
+        m_state.index = i;
 
         // if (l->type() == LayerType::CONVOLUTIONAL) {
-        //     state->workspace_gpu.resize(dynamic_cast<Convolutional*>(l)->workspace_size_gpu());
+        //     m_state->workspace_gpu.resize(dynamic_cast<Convolutional*>(l)->workspace_size_gpu());
         // }
-        //gettimeofday(&t0, 0);
-        l->forward_gpu(*state);
-        //gettimeofday(&t1, 0);
-        //elapsed = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
-        //std::cout << "\t[" << i << "]" << get_layer_name(l->type()) << "forward gpu time: " << elapsed / 1000.0 << " ms" << std::endl;
+        // gettimeofday(&t0, 0);
+        l->forward_gpu(m_state);
+        // gettimeofday(&t1, 0);
+        // elapsed = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
+        // std::cout << "\t[" << i << "]" << get_layer_name(l->type()) << "forward gpu time: " << elapsed / 1000.0 << " ms" << std::endl;
 
-        //gettimeofday(&t0, 0);
-        state->input = l->output_gpu().get();
-        //gettimeofday(&t1, 0);
-        //elapsed = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
-        //std::cout << "\t[" << i << "]" << get_layer_name(l->type()) << "get output time: " << elapsed / 1000.0 << " ms" << std::endl;
+        // gettimeofday(&t0, 0);
+        m_state.input = l->output_gpu().get();
+        // gettimeofday(&t1, 0);
+        // elapsed = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
+        // std::cout << "\t[" << i << "]" << get_layer_name(l->type()) << "get output time: " << elapsed / 1000.0 << " ms" << std::endl;
 
         // log_layer_output(l->output().get(), l->output().size(), i);
-        // TODO(corenel) add state.delta and state.delta_gpu
+        // TODO(corenel) add m_state.delta and m_state.delta_gpu
         // printf("%lu\n", l->output_gpu().size());
     }
     // printf("%lu\n", l->output_gpu().size());
@@ -209,23 +209,25 @@ Network::forward_network_gpu(State* state)
 Ptr_gpu<float>&
 Network::network_predict_gpu(Ptr<float>& input)
 {
-    State stategpu;
-    stategpu.index = 0;
-    stategpu.train = false;
+    // State stategpu;
+    m_state.index = 0;
+    m_state.train = false;
 
-    Ptr_gpu<float> tmp_input(input.size());
+    if (m_tmp_input.size() != input.size()) {
+        m_tmp_input.resize(input.size());
+    }
 
-    tmp_input.copy(input.get());
+    m_tmp_input.copy(input.get());
 
-    stategpu.input = tmp_input.get();
+    m_state.input = m_tmp_input.get();
 
-    //struct timeval t0, t1;
-    //long elapsed;
-    //gettimeofday(&t0, 0);
-    forward_network_gpu(&stategpu);
-    //gettimeofday(&t1, 0);
-    //elapsed = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
-    //std::cout << "network forward gpu time: " << elapsed / 1000.0 << " ms" << std::endl;
+    // struct timeval t0, t1;
+    // long elapsed;
+    // gettimeofday(&t0, 0);
+    forward_network_gpu();
+    // gettimeofday(&t1, 0);
+    // elapsed = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
+    // std::cout << "network forward gpu time: " << elapsed / 1000.0 << " ms" << std::endl;
 
     return get_network_output_gpu();
 }
