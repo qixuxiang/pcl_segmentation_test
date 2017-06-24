@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(dmonitor)
 
-#SET(ZJUDANCER_GUI $ENV{ZJUDANCER_GUI})
-#message("${ZJUDANCER_GUI}")
-#if (ZJUDANCER_GUI EQUAL 0)
+SET(ZJUDANCER_GUI $ENV{ZJUDANCER_GUI})
+message("${ZJUDANCER_GUI}")
+if (ZJUDANCER_GUI EQUAL 0)
 add_definitions(-std=c++11 -Wall -g  -Wextra -Wfloat-equal -Wno-unused-result) #-Weffc++ -pedantic
 
 find_package(catkin REQUIRED
@@ -70,4 +70,4 @@ target_link_libraries(dmonitor
     Qt5::Core
     Qt5::Widgets)
 
-#endif()
+endif()

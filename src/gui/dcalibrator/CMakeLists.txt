@@ -3,7 +3,7 @@ project(dcalibrator)
 #LIST(APPEND CMAKE_MODULE_PATH ${dvision_SOURCE_DIR}/cmake_modules)
 
 SET(ZJUDANCER_GUI $ENV{ZJUDANCER_GUI})
-#if (ZJUDANCER_GUI EQUAL 1)
+if (ZJUDANCER_GUI EQUAL 1)
   add_definitions(-std=c++11 -Wall  -Wextra -Wfloat-equal -Wno-unused-result) #-Weffc++ -pedantic
 
   find_package(catkin REQUIRED
@@ -49,4 +49,4 @@ SET(ZJUDANCER_GUI $ENV{ZJUDANCER_GUI})
       ${catkin_LIBRARIES}
       ${OpenCV_LIBS}
       Qt5::Core Qt5::Widgets)
-#endif()
+endif()
