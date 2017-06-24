@@ -52,6 +52,6 @@ private:
     double m_scale = 1;
 
     // color
-    QColor m_grassGreen = QColor(0, 0, 0);
+    QColor m_grassGreen = QColor(109, 178, 255);
 };
 }

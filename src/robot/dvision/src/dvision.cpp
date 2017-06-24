@@ -384,7 +384,7 @@ void DVision::trackBall() {
     // ball
     if (m_data.see_ball) {
         // track ball
-        if (m_ball_tracker.Process(m_data.ball_field.x, m_data.ball_field.y, Degree2Radian(m_pitch), Degree2Radian(m_yaw))) {
+        if (m_ball_tracker.Process(m_data.ball_field.x, m_data.ball_field.y)) {
             m_data.ballTrack.pitch = Radian2Degree(m_ball_tracker.out_pitch());
             m_data.ballTrack.yaw = Radian2Degree(m_ball_tracker.out_yaw());
         }

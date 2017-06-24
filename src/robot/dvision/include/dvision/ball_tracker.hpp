@@ -18,9 +18,10 @@ class BalllTracker
     //Init(std::vector<double> extrinsic_para, double fx, double fy, double cx, double cy, double undist_pos_x = parameters.camera.undistCx / 2, double undist_pos_y = parameters.camera.undistCy / 2);
     Init(std::vector<double> extrinsic_para, double fx, double fy, double cx, double cy, double undist_pos_x, double undist_pos_y);
 
-    //球在场地上的位置
+    //球在场地上相对机器人的位置
     //当前的pitch,yaw的值
-    bool Process(double in_ball_field_x, double in_ball_field_y, double in_pitch, double in_yaw);
+    // bool Process(double in_ball_field_x, double in_ball_field_y, double in_pitch, double in_yaw);
+    bool Process(double in_ball_field_x, double in_ball_field_y);
 
     double Cal_theta_Asin_Bcos_C(double _a, double _b, double _c, double theta_raw);
     inline double out_pitch()
