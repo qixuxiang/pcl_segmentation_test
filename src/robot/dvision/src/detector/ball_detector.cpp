@@ -94,7 +94,8 @@ BallDetector::GetBall(const cv::Mat& frame, cv::Mat& gui_img, Projection& m_proj
                 max_prob = bbox.m_prob;
             }
         }
-        m_projection.getOnRealCoordinate(ball_image_, ball_field_);
+        // TODO(MWX): 7.5 is ball diamater/2 as constant
+        m_projection.getOnRealCoordinate(ball_image_, ball_field_, 7.5);
     }
 
     if (parameters.monitor.update_gui_img && parameters.ball.showResult && see_ball) {

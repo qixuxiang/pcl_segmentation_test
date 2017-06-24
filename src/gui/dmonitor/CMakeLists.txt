@@ -3,7 +3,7 @@ project(dmonitor)
 
 SET(ZJUDANCER_GUI $ENV{ZJUDANCER_GUI})
 message("${ZJUDANCER_GUI}")
-if (ZJUDANCER_GUI EQUAL 0)
+if (ZJUDANCER_GUI EQUAL 1)
 add_definitions(-std=c++11 -Wall -g  -Wextra -Wfloat-equal -Wno-unused-result) #-Weffc++ -pedantic
 
 find_package(catkin REQUIRED

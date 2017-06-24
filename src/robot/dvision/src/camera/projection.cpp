@@ -36,10 +36,10 @@ Projection::getOnImageCoordinate(const Point2f& point, Point& resPoint)
 }
 
 bool
-Projection::getOnRealCoordinate(const Point& point, Point2f& resPoint)
+Projection::getOnRealCoordinate(const Point& point, Point2f& resPoint, float z_real)
 {
     Point undist_point = m_dist.undistort(point.x, point.y);
-    resPoint = m_ipm.inverseProject(undist_point.x, undist_point.y);
+    resPoint = m_ipm.inverseProject(undist_point.x, undist_point.y, z_real);
     return true;
 }
 
@@ -56,11 +56,11 @@ Projection::getOnImageCoordinate(const vector<Point2f>& points, vector<Point>& r
 }
 
 bool
-Projection::getOnRealCoordinate(const vector<Point>& points, vector<Point2f>& resPoints)
+Projection::getOnRealCoordinate(const vector<Point>& points, vector<Point2f>& resPoints, float z_real)
 {
     resPoints.resize(points.size());
     for (uint32_t i = 0; i < points.size(); ++i) {
-        getOnRealCoordinate(points[i], resPoints[i]);
+        getOnRealCoordinate(points[i], resPoints[i], z_real);
     }
     return true;
 }
@@ -86,16 +86,16 @@ Projection::getOnImageCoordinate(const std::vector<LineSegment>& lines, std::vec
 }
 
 bool
-Projection::getOnRealCoordinate(const std::vector<LineSegment>& lines, std::vector<LineSegment>& res_lines)
+Projection::getOnRealCoordinate(const std::vector<LineSegment>& lines, std::vector<LineSegment>& res_lines, float z_real)
 {
     res_lines.resize(lines.size());
     Point2f tmp;
     for (uint32_t i = 0; i < lines.size(); ++i) {
-        getOnRealCoordinate(lines[i].P1, tmp);
+        getOnRealCoordinate(lines[i].P1, tmp, z_real);
         res_lines[i].P1.x = tmp.x;
         res_lines[i].P1.y = tmp.y;
 
-        getOnRealCoordinate(lines[i].P2, tmp);
+        getOnRealCoordinate(lines[i].P2, tmp, z_real);
         res_lines[i].P2.x = tmp.x;
         res_lines[i].P2.y = tmp.y;
 
