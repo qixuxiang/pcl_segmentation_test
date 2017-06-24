@@ -63,7 +63,29 @@ get_policy(const std::string& s);
 
 class Layer;
 
-class State;
+/*******************************************************************************
+ * State *
+ ******************************************************************************/
+
+class State
+{
+  public: // !? RAII
+    State();
+    float* truth = nullptr;
+    float* input = nullptr;
+    float* delta = nullptr; // TODO(mwx36mwx) OWNER??
+#ifdef DARKNET_GPU
+    float* delta_gpu = nullptr;
+#endif
+
+    //  float* workspace = nullptr;
+    Ptr<float> workspace;
+#ifdef DARKNET_GPU
+    Ptr_gpu<float> workspace_gpu;
+#endif
+    bool train = false;
+    int index;
+};
 
 /*******************************************************************************
  * Network *
@@ -90,9 +112,9 @@ class Network
      * Train *
      *********/
 
-    void forward_network(State* state);
+    void forward_network();
 #ifdef DARKNET_GPU
-    void forward_network_gpu(State* state);
+    void forward_network_gpu();
 #endif
     // void backward_network(State& state);
     // void update_network();
@@ -123,6 +145,7 @@ class Network
 
     void set_network_batch(const int batch);
     size_t m_max_workspace_size;
+    State m_state;
 
   private:
     /**************
@@ -171,30 +194,9 @@ class Network
     float m_hue;        // hue adjest
 
     int m_gpu_index; // GPU id
-};
-
-/*******************************************************************************
- * State *
- ******************************************************************************/
-
-class State
-{
-  public: // !? RAII
-    State();
-    float* truth = nullptr;
-    float* input = nullptr;
-    float* delta = nullptr; // TODO(mwx36mwx) OWNER??
 #ifdef DARKNET_GPU
-    float* delta_gpu = nullptr;
+    Ptr_gpu<float> m_tmp_input;
 #endif
-
-    //  float* workspace = nullptr;
-    Ptr<float> workspace;
-#ifdef DARKNET_GPU
-    Ptr_gpu<float> workspace_gpu;
-#endif
-    bool train = false;
-    int index;
 };
 
 } // namespace darknet
