@@ -72,7 +72,6 @@ class Ptr : NonCopyable
       : m_size(0)
       , m_ptr(nullptr, deleter())
     {
-        // std::cout << "Ptr_cpu ctor" << std::endl;
     }
 
     explicit Ptr(size_t size)
@@ -99,7 +98,7 @@ class Ptr : NonCopyable
             delete[] p;
         m_size = size;
         m_ptr.reset(new T[size]);
-        // std::cout << "Ptr cpu resized to " << size << std::endl;
+        // std::cout << "ptr cpu resized to " << size << std::endl;
     }
 
     T* get()

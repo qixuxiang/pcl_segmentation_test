@@ -14,7 +14,7 @@ class DMotion : public DProcess<DMotion>
 
   private:
     void prepareShutdown() override;
-    ros::NodeHandle* m_nh;
+    //ros::NodeHandle* m_nh;
     GaitStateManager m_manager;
     ActionCommand m_cmd;
 };

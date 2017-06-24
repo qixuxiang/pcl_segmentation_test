@@ -11,8 +11,8 @@ class CameraDummy
 {
 public:
   CameraDummy(std::string imageFolder)
-  :imageCnt(0),
-   imagesNum(0)
+  : imagesNum(0),
+    imageCnt(0)
   {
       init(imageFolder);
   }

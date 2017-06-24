@@ -4,7 +4,6 @@ namespace dmotion {
 static const int MOTION_FREQ = 10;
 DMotion::DMotion(ros::NodeHandle* nh)
   : DProcess(MOTION_FREQ, true)
-  , m_nh(nh)
   , m_manager(nh)
 {
 }

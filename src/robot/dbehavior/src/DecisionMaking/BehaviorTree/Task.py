@@ -112,7 +112,7 @@ class Action(Task):
         self.bb.actionCmd.bodyCmd = cmd
 
     def walk(self, forward = 0, left = 0, turn = 0):
-        self.bb.actionCmd.bodyCmd = walk(x, y, t)
+        self.bb.actionCmd.bodyCmd = walk(forward, left, turn)
 
     def crouch(self):
         self.bb.actionCmd.bodyCmd = crouch()

@@ -81,7 +81,7 @@ Frame::decode(void* buffer) {
     sensor_msgs::ImagePtr out(new sensor_msgs::Image);
 
 //    ros::Time t1 = ros::Time::now();
-    int len = m_decoder->decode(size, &static_cast<uint8_t*>(buffer)[4], out);
+    m_decoder->decode(size, &static_cast<uint8_t*>(buffer)[4], out);
 //    ros::Time t2 = ros::Time::now();
 //    ROS_INFO("Image decoding: size: %d, time: %lf", size, (t2 - t1).toSec());
 

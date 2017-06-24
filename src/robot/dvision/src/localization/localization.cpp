@@ -30,10 +30,11 @@ Localization::Localization()
   : location_(-142, 0)
   , location_kalman_(location_)
   , kalmanI_(location_kalman_)
+  , camera_projections_(NULL)
   , last_motion_info_time_(0)
   , last_delta_data_(0, 0, 0)
   , accumulated_delta_data_(0, 0)
-  , camera_projections_(NULL)
+
   , current_vertex_id_(0)
   , previous_vertex_id_(0)
   , landmark_count_(0)
@@ -198,7 +199,7 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
                         ltype = LeftL;
                     } else {
                         this_type = VerRight;
-                        estimated_y = -B2_ + abs(mid.y);
+                        estimated_y = -B2_ + std::abs(mid.y);
                         ltype = RightL;
                     }
                     // 给图加边，注意其估计值只有estimateY
@@ -231,7 +232,7 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
                         // 同理
                     } else {
                         this_type = VerRightNear;
-                        estimated_y = -B2_ + abs(mid.y);
+                        estimated_y = -B2_ + std::abs(mid.y);
                         ltype = RightL;
                     }
                     AddObservation(cv::Point2d(0, estimated_y), 0, MAX_FASHER * GetUpdateCoef(UPDATENORMAL, line_seg), ltype);
@@ -274,7 +275,7 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
                         estimated_x = A2_ - mid.x;
                     } else {
                         typel = BackL;
-                        estimated_x = -A2_ + abs(mid.x);
+                        estimated_x = -A2_ + std::abs(mid.x);
                     }
 
                     double low_PC = GetUpdateCoef((goal_position_real_rotated.size() == 2 ? UPDATESTRONG : UPDATENORMAL), line_seg);
@@ -321,7 +322,7 @@ Localization::Calculate(std::vector<LineSegment>& clustered_lines,
     //                     estimatedX = A2_ - mid.x;
     //                     typel = FrontL;
     //                 } else {
-    //                     estimatedX = -A2_ + abs(mid.x);
+    //                     estimatedX = -A2_ + std::abs(mid.x);
     //                     typel = BackL;
     //                 }
     //                 double lowPC = GetUpdateCoef(UPDATEWEAK, hJ_Is_Goal_Line ? hJ.line_transformed_ : hI.line_transformed_);

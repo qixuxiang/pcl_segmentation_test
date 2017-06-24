@@ -128,7 +128,7 @@ class Ptr_gpu : NonCopyable
 #ifdef DARKNET_MALLOCATED
         m_allocated -= sizeof(T) * m_size / 1000000.;
         m_allocated += sizeof(T) * size / 1000000.;
-        printf("GPU resized from %lu to %lu bytes, all %lf MB\n", sizeof(T) * m_size, sizeof(T) * size, m_allocated);
+        //printf("GPU resized from %lu to %lu bytes, all %lf MB\n", sizeof(T) * m_size, sizeof(T) * size, m_allocated);
 #endif
         // std::cout << "Ptr gpu resized to " << size << std::endl;
         if (m_ptr.get() != nullptr) {

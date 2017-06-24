@@ -26,11 +26,11 @@ target_link_libraries(dtransmit ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
 
 # Testing
-add_executable(test_dtransmit test/test_dtransmit.cpp)
-target_link_libraries(test_dtransmit dtransmit)
+#add_executable(test_dtransmit test/test_dtransmit.cpp)
+#target_link_libraries(test_dtransmit dtransmit)
 
-add_executable(test_recv test/test_recv.cpp)
-target_link_libraries(test_recv dtransmit)
+#add_executable(test_recv test/test_recv.cpp)
+#target_link_libraries(test_recv dtransmit)
 
-add_executable(test_send test/test_send.cpp)
-target_link_libraries(test_send dtransmit)
+#add_executable(test_send test/test_send.cpp)
+#target_link_libraries(test_send dtransmit)

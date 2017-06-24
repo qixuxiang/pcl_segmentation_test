@@ -85,7 +85,7 @@ bool
 BallDetector::GetBall(const cv::Mat& frame, cv::Mat& gui_img, Projection& projection)
 {
     // ROS_DEBUG("BallDetector Tick");
-    bool see_ball;
+    bool see_ball = false;
     darknet::params p = net_->get_params();
     cv::Mat frame_resized;
     cv::Size size(p.w, p.h);
@@ -114,7 +114,8 @@ BallDetector::GetBall(const cv::Mat& frame, cv::Mat& gui_img, Projection& projec
                 max_prob = bbox.m_prob;
             }
         }
-        projection.getOnRealCoordinate(ball_image_, ball_field_);
+        // TODO(MWX): 7.5 is ball diamater/2 as constant
+        projection.getOnRealCoordinate(ball_image_, ball_field_, 7.5);
     }
 
     if (parameters.monitor.update_gui_img && parameters.ball.showResult && see_ball) {

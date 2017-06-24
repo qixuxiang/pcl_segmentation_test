@@ -3,6 +3,7 @@
 
 #include "dvision/dvision.hpp"
 #include "dconfig/dconstant.hpp"
+#include <iostream>
 
 namespace dvision {
 static const int VISION_FREQ = 30;
@@ -12,7 +13,6 @@ DVision::DVision(ros::NodeHandle* n)
 {
     parameters.init(n);
     m_projection.init(n);
-
     m_ball.Init();
     m_circle.Init();
     m_field.Init();
@@ -47,8 +47,9 @@ DVision::DVision(ros::NodeHandle* n)
     } else {
         m_transmitter = new dtransmit::DTransmit(parameters.udpBroadcastAddress);
     }
+
     if (parameters.simulation) {
-        ROS_INFO("Simulation mode!");
+        ROS_INFO("Simulation mode  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>!");
         m_transmitter->addRosRecv<VisionInfo>(dconstant::network::monitorBroadcastAddressBase + parameters.robotId, [&](VisionInfo& msg) {
             m_data = msg;
             // ROS_INFO_STREAM(m_data.robot_pos);
@@ -56,7 +57,7 @@ DVision::DVision(ros::NodeHandle* n)
     } else {
         CameraSettings s(n);
         m_camera = new Camera(s);
-        ROS_INFO("Not simulation mode!");
+        ROS_INFO("Not simulation mode >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>!");
     }
 
     m_transmitter->startService();
@@ -84,14 +85,13 @@ DVision::tick()
     //    }
 
     m_projection.updateExtrinsic(m_pitch, m_yaw);
+    if (!m_loc.Update(m_projection)) {
+        // ROS_ERROR("Cannot update localization!");
+    }
 
     if (!parameters.simulation) {
         auto frame = m_camera->capture();
         m_data = VisionInfo();
-
-        if (!m_loc.Update(m_projection)) {
-            // ROS_ERROR("Cannot update localization!");
-        }
 
         // get image in BGR and HSV color space
         m_gui_img = frame.getBGR_raw();
@@ -172,8 +172,8 @@ DVision::tick()
          *******************/
 
         prepareVisionInfo(m_data);
-        showDebugImg();
     }
+    showDebugImg();
     updateViewRange();
     trackBall();
 
@@ -191,7 +191,6 @@ void
 DVision::motionCallback(const dmotion::MotionInfo::ConstPtr& motion_msg)
 {
     m_motion_info = *motion_msg;
-
     m_loc.CalcDeadReckoning(m_motion_info);
     m_pitch = m_motion_info.action.headCmd.pitch;
     m_yaw = m_motion_info.action.headCmd.yaw;

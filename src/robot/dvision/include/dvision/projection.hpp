@@ -46,15 +46,15 @@ class Projection
     }
 
     bool getOnImageCoordinate(const std::vector<cv::Point2f>& points, std::vector<cv::Point>& res_points);
-    bool getOnRealCoordinate(const std::vector<cv::Point>& points, std::vector<cv::Point2f>& res_points);
+    bool getOnRealCoordinate(const std::vector<cv::Point>& points, std::vector<cv::Point2f>& res_points, float z_real = 0);
 
     // lines
     bool getOnImageCoordinate(const std::vector<LineSegment>& lines, std::vector<LineSegment>& res_lines);
-    bool getOnRealCoordinate(const std::vector<LineSegment>& lines, std::vector<LineSegment>& res_lines);
+    bool getOnRealCoordinate(const std::vector<LineSegment>& lines, std::vector<LineSegment>& res_lines, float z_real = 0);
 
     // single point
     bool getOnImageCoordinate(const cv::Point2f& point, cv::Point& res_point);
-    bool getOnRealCoordinate(const cv::Point& point, cv::Point2f& res_point);
+    bool getOnRealCoordinate(const cv::Point& point, cv::Point2f& res_point, float z_real = 0);
 
     // rotate
     std::vector<cv::Point2f> RotateTowardHeading(const std::vector<cv::Point2f>& in);
