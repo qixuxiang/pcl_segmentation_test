@@ -19,7 +19,7 @@ Camera::Camera(std::string device)
 }
 
 Camera::Camera(CameraSettings c)
-  : m_setting(c), m_device(c.device)
+  : m_device(c.device), m_setting(c)
 {
     init();
     resetControl();

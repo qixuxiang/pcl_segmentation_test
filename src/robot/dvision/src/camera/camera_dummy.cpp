@@ -24,7 +24,8 @@ bool CameraDummy::init(std::string imageFolder) {
       perror ("");
       return EXIT_FAILURE;
   }
-    ROS_INFO("----------imagesNum------------%d",imagesNum);
+  ROS_INFO("----------imagesNum------------%d",imagesNum);
+  return true;
 }
 
 Frame

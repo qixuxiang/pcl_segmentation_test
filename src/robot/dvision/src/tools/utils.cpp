@@ -414,8 +414,8 @@ dist3D_Segment_to_Segment(const LineSegment& S1, const LineSegment& S2)
         }
     }
     // finally do the division to get sc and tc
-    sc = (abs(sN) < SMALL_NUM ? 0.0 : sN / sD);
-    tc = (abs(tN) < SMALL_NUM ? 0.0 : tN / tD);
+    sc = (std::abs(sN) < SMALL_NUM ? 0.0 : sN / sD);
+    tc = (std::abs(tN) < SMALL_NUM ? 0.0 : tN / tD);
 
     // get the difference of the two closest points
     // =  S1(sc) - S2(tc)

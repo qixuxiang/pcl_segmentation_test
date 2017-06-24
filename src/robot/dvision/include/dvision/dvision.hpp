@@ -60,8 +60,8 @@ class DVision : public dprocess::DProcess<DVision>
     cv::Mat m_field_binary, m_goal_binary, m_line_binary;
     // added by yyj
     BalllTracker m_ball_tracker;
-    double m_center_pitch;
-    double m_center_yaw;
+    //double m_center_pitch;
+    //double m_center_yaw;
     double m_pitch = 0;
     double m_yaw = 0;
 

@@ -112,6 +112,5 @@ class Frame
     // h264 encoding
     static ros_h264_streamer::H264Decoder* m_decoder;
     static ros_h264_streamer::H264Encoder* m_encoder;
-    bool encoderInited = false;
 };
 } // namespace dvision

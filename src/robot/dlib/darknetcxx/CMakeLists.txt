@@ -126,11 +126,11 @@ include_directories(
 )
 
 #######################
-# lib darknetcxx-cuda #
+# lib darknetcxx_cuda #
 #######################
 
 if (DARKNET_GPU)
-    cuda_add_library(darknetcxx-cuda SHARED
+    cuda_add_library(darknetcxx_cuda SHARED
             src/utils/cuda_utils.cu
             src/blas/blas.cu
             # Layers
@@ -139,13 +139,13 @@ if (DARKNET_GPU)
             src/layer/maxpool/maxpool.cu
             )
 
-    target_include_directories(darknetcxx-cuda PRIVATE ${CUDA_INCLUDE_DIRS})
-    target_link_libraries(darknetcxx-cuda "-L/usr/local/cuda/lib64 -lcuda -lcudart -lcublas -lcurand -lcudnn")
-    target_compile_options(darknetcxx-cuda PRIVATE -fPIC)
-    target_compile_definitions(darknetcxx-cuda PRIVATE -DARKNET_GPU)
-    target_compile_definitions(darknetcxx-cuda PRIVATE -DDARKNET_OPENCV)
-    target_compile_definitions(darknetcxx-cuda PRIVATE -DARKNET_TX1)
-    target_compile_definitions(darknetcxx-cuda PRIVATE -DARKNET_NO_DISPLAY)
+    target_include_directories(darknetcxx_cuda PRIVATE ${CUDA_INCLUDE_DIRS})
+    target_link_libraries(darknetcxx_cuda "-L/usr/local/cuda/lib64 -lcuda -lcudart -lcublas -lcurand -lcudnn")
+    target_compile_options(darknetcxx_cuda PRIVATE -fPIC)
+    target_compile_definitions(darknetcxx_cuda PRIVATE -DARKNET_GPU)
+    target_compile_definitions(darknetcxx_cuda PRIVATE -DDARKNET_OPENCV)
+    target_compile_definitions(darknetcxx_cuda PRIVATE -DARKNET_TX1)
+    target_compile_definitions(darknetcxx_cuda PRIVATE -DARKNET_NO_DISPLAY)
 endif(DARKNET_GPU)
 
 ##################
@@ -193,7 +193,7 @@ if (DARKNET_OPENCV)
 endif(DARKNET_OPENCV)
 
 if (DARKNET_GPU)
-    target_link_libraries(darknetcxx darknetcxx-cuda)
+    target_link_libraries(darknetcxx darknetcxx_cuda)
     target_include_directories(darknetcxx PUBLIC ${CUDA_INCLUDE_DIRS})
     target_compile_definitions(darknetcxx PUBLIC -DARKNET_GPU)
 endif(DARKNET_GPU)

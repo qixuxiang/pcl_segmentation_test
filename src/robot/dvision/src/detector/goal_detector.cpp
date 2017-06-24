@@ -154,11 +154,11 @@ GoalDetector::GetPosts(cv::Mat& canny_img,
 
                     // 平移，将球门柱左边缘线或右边缘线向中间平移
                     if (left_OK) {
-                        int amount = abs(left_avg / vote_for_double_left) / 2.;
+                        int amount = std::abs(left_avg / vote_for_double_left) / 2.;
                         tmp_line_changed.P1.x -= amount;
                         tmp_line_changed.P2.x -= amount;
                     } else if (right_OK) {
-                        int amount = abs(right_avg / vote_for_double_right) / 2.;
+                        int amount = std::abs(right_avg / vote_for_double_right) / 2.;
                         tmp_line_changed.P1.x += amount;
                         tmp_line_changed.P2.x += amount;
                     }

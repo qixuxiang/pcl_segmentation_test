@@ -65,7 +65,7 @@ bool
 BallDetector::GetBall(const cv::Mat& frame, cv::Mat& gui_img, Projection& m_projection)
 {
     // ROS_DEBUG("BallDetector Tick");
-    bool see_ball;
+    bool see_ball = false;
     darknet::params p = net_->get_params();
     cv::Mat frame_resized;
     cv::Size size(p.w, p.h);

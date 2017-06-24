@@ -12,7 +12,6 @@ DVision::DVision(ros::NodeHandle* n)
 {
     parameters.init(n);
     m_projection.init(n);
-
     m_ball.Init();
     m_circle.Init();
     m_field.Init();
@@ -84,14 +83,13 @@ DVision::tick()
     //    }
 
     m_projection.updateExtrinsic(m_pitch, m_yaw);
+    if (!m_loc.Update(m_projection)) {
+        // ROS_ERROR("Cannot update localization!");
+    }
 
     if (!parameters.simulation) {
         auto frame = m_camera->capture();
         m_data = VisionInfo();
-
-        if (!m_loc.Update(m_projection)) {
-            // ROS_ERROR("Cannot update localization!");
-        }
 
         // get image in BGR and HSV color space
         m_gui_img = frame.getBGR_raw();
@@ -191,7 +189,6 @@ void
 DVision::motionCallback(const dmotion::MotionInfo::ConstPtr& motion_msg)
 {
     m_motion_info = *motion_msg;
-
     m_loc.CalcDeadReckoning(m_motion_info);
     m_pitch = m_motion_info.action.headCmd.pitch;
     m_yaw = m_motion_info.action.headCmd.yaw;
