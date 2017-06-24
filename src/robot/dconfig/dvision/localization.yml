@@ -3,9 +3,9 @@ dvision:
     enable:                     true
     showResult:                 true
     useKalman:                  true
-    label_file:                 '/home/mwx/.darknet/data/rob.names'
-    net_cfg:                    '/home/mwx/.darknet/cfg/tiny-yolo-v1-rob.cfg'
-    weight_file:                '/home/mwx/.darknet/model/tiny-yolo.weights'
+    label_file:                 '.darknet/data/rob.names'
+    net_cfg:                    '.darknet/cfg/tiny-yolo-v1-rob.cfg'
+    weight_file:                '.darknet/model/tiny-yolo.weights'
     low_thresh:                 0.1 # low thresh value for probability
     high_thresh:                1.0 # high thresh value for probability
   circle_detector:

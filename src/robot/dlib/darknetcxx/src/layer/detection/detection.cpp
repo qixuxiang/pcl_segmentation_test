@@ -3,7 +3,7 @@
 #include <cstring>
 #include <iostream>
 #include <map>
-#include <sys/time.h>
+// #include <sys/time.h>
 
 namespace darknet {
 
@@ -241,14 +241,13 @@ Detection::forward_gpu(State& state)
     //     copy_ongpu(m_batch * m_input_size, state.input, m_output_gpu.get());
     // }
     if (!state.train) {
-        struct timeval t0, t1;
-        long elapsed;
-        gettimeofday(&t0, 0);
+        // struct timeval t0, t1;
+        // long elapsed;
+        // gettimeofday(&t0, 0);
         cuda_pull_array(state.input, m_output.get(), m_batch * m_output_size);
-        gettimeofday(&t1, 0);
-        elapsed = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
-        std::cout << "cuda_pull_array time: " << elapsed / 1000.0 << " ms" << std::endl;
-
+        // gettimeofday(&t1, 0);
+        // elapsed = (t1.tv_sec - t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
+        // std::cout << "cuda_pull_array time: " << elapsed / 1000.0 << " ms" << std::endl;
         return;
     } else {
         float* in_cpu = new float[m_batch * m_input_size];

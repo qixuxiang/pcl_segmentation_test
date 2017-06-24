@@ -51,6 +51,7 @@ Parameters::update()
     GPARAM("/dvision/ball_detector/enable", parameters.ball.enable);
     GPARAM("/dvision/ball_detector/showResult", parameters.ball.showResult);
     GPARAM("/dvision/ball_detector/useKalman", parameters.ball.useKalman);
+    GPARAM("/dvision/ball_detector/home_folder", parameters.ball.home_folder);
     GPARAM("/dvision/ball_detector/label_file", parameters.ball.label_file);
     GPARAM("/dvision/ball_detector/net_cfg", parameters.ball.net_cfg);
     GPARAM("/dvision/ball_detector/weight_file", parameters.ball.weight_file);

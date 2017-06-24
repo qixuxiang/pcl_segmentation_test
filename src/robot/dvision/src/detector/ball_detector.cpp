@@ -30,30 +30,33 @@ bool
 BallDetector::Init()
 {
     // parse label list
-    std::cout << parameters.ball.label_file << std::endl;
-    if (!std::ifstream(parameters.ball.label_file)) {
-        ROS_ERROR("darknet label file doesn't exist in %s!", parameters.ball.label_file.c_str());
+    std::string label_file_path = parameters.ball.home_folder + "/" + parameters.ball.label_file;
+    if (!std::ifstream(label_file_path)) {
+        ROS_ERROR("darknet label file doesn't exist in %s!", label_file_path.c_str());
         return false;
     }
-    label_list_ = darknet::get_labels(parameters.ball.label_file);
+    label_list_ = darknet::get_labels(label_file_path);
 
     // parse net cfg and setup network
-    if (!std::ifstream(parameters.ball.net_cfg)) {
-        ROS_ERROR("darknet network cfg doesn't exist in %s!", parameters.ball.net_cfg.c_str());
+    std::string net_cfg_path = parameters.ball.home_folder + "/" + parameters.ball.net_cfg;
+
+    if (!std::ifstream(net_cfg_path)) {
+        ROS_ERROR("darknet network cfg doesn't exist in %s!", net_cfg_path.c_str());
         return false;
     }
 
     // setup network
-    net_ = &(darknet::parse_network_cfg(parameters.ball.net_cfg));
+    net_ = &(darknet::parse_network_cfg(net_cfg_path));
     darknet::params p = net_->get_params();
     ROS_INFO("network setup: num_layers = %d, batch = %d\n", net_->num_layers(), p.batch);
 
     // load pretrained weights
-    if (!std::ifstream(parameters.ball.weight_file)) {
-        ROS_ERROR("darknet weigth file doesn't exist in %s!", parameters.ball.weight_file.c_str());
+    std::string weight_file_path = parameters.ball.home_folder + "/" + parameters.ball.weight_file;
+    if (!std::ifstream(weight_file_path)) {
+        ROS_ERROR("darknet weigth file doesn't exist in %s!", weight_file_path.c_str());
         return false;
     }
-    darknet::load_weights(net_, parameters.ball.weight_file);
+    darknet::load_weights(net_, weight_file_path);
 
     // set batch to 1 for network inference
     net_->set_network_batch(1);
