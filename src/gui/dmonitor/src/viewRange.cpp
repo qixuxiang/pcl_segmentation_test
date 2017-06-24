@@ -34,6 +34,11 @@ void ViewRange::drawMyself(QPainter *painter)
         aa, bb, cc, dd
     };
 
+    painter->drawText(aa, QString("a"));
+    painter->drawText(bb, QString("b"));
+    painter->drawText(cc, QString("c"));
+    painter->drawText(dd, QString("d"));
+
     QPen pen(QColor(Qt::yellow), 0);
     painter->setPen(pen);
     painter->setBrush(QBrush());
