@@ -51,8 +51,8 @@ private:
     QVector<QPoint> m_realPoints;
     QApplication* m_app;
 
-    int m_pitch = -9999;
-    int m_yaw = -9999;
+    double m_pitch = -9999;
+    double m_yaw = -9999;
 };
 
 #endif // MAINWINDOW_H

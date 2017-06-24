@@ -29,7 +29,7 @@ ApplicationWindow {
         property var robots: []
         property var balls: []
         property alias field: field
-        property bool isMonitor: false
+        property bool isMonitor: true
 
         Timer {
             interval: 1000 / 20

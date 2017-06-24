@@ -1,4 +1,4 @@
 ZJUDancer:
-    Simulation: true
+    Simulation: false
     MotionSimdelay: 10000
     udpBroadcastAddress: "192.168.255.255"

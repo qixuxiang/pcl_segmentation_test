@@ -2,10 +2,12 @@
   <node
     pkg="dbehavior"
     name="demomain_node"
-    type="demomain.py"
+    type="main.py"
     output="screen"
     respawn="false"
     cwd="node"
     args=""
     />
+
+<param name="/dbehavior/skill" value="DemoMain"/>
 </launch>

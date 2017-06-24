@@ -38,12 +38,16 @@ DVision::DVision(ros::NodeHandle* n)
         //     ROS_INFO("concurrent");
     });
     m_sub_motion_info = m_nh->subscribe("/humanoid/MotionInfo", 1, &DVision::motionCallback, this);
-    m_sub_behaviour_info = m_nh->subscribe("/humanoid/BehaviourInfo", 1, &DVision::behaviourCallback, this);
+    m_sub_behaviour_info = m_nh->subscribe("/humanoid/BehaviorInfo", 1, &DVision::behaviourCallback, this);
     m_sub_reload_config = m_nh->subscribe("/humanoid/ReloadVisionConfig", 1, &DVision::reloadConfigCallback, this);
     m_pub = m_nh->advertise<VisionInfo>("/humanoid/VisionInfo", 1);
     m_deltaClient = m_nh->serviceClient<dmotion::GetDelta>("getDelta");
 
-    m_transmitter = new dtransmit::DTransmit(parameters.udpBroadcastAddress);
+    if(parameters.simulation) {
+        m_transmitter = new dtransmit::DTransmit("127.0.0.1");
+    } else {
+        m_transmitter = new dtransmit::DTransmit(parameters.udpBroadcastAddress);
+    }
     if (parameters.simulation) {
         ROS_INFO("Simulation mode!");
         m_transmitter->addRosRecv<VisionInfo>(dconstant::network::monitorBroadcastAddressBase + parameters.robotId, [&](VisionInfo& msg) {
@@ -160,7 +164,8 @@ DVision::tick()
          * Ball Detector *
          *****************/
         ros::Time begin = ros::Time::now();
-        m_ball.GetBall(frame.getBGR_raw(), m_gui_img, m_projection);
+
+        m_data.see_ball = m_ball.GetBall(frame.getBGR_raw(), m_gui_img, m_projection);
         ros::Duration end = ros::Time::now() - begin;
         std::cout << "------------Ball: " << end.toNSec() / 1000000.0 << "ms-----------" << std::endl;
 
@@ -196,7 +201,7 @@ DVision::motionCallback(const dmotion::MotionInfo::ConstPtr& motion_msg)
 }
 
 void
-DVision::behaviourCallback(const dbehavior::BehaviourInfo::ConstPtr& behaviour_msg)
+DVision::behaviourCallback(const dbehavior::BehaviorInfo::ConstPtr& behaviour_msg)
 {
     m_behaviour_info = *behaviour_msg;
     if (m_behaviour_info.save_image) {
@@ -366,12 +371,12 @@ DVision::showDebugImg()
     }
 
     if (parameters.monitor.update_gui_img) {
-        cv::namedWindow("gui", CV_WINDOW_NORMAL);
-        cv::imshow("gui", m_gui_img);
-        cv::waitKey(1);
-        // int len;
-        // auto buf = Frame::encode(m_gui_img, len);
-        // m_transmitter->sendRaw(dconstant::network::robotGuiBase + parameters.robotId, buf.get(), len);
+//        cv::namedWindow("gui", CV_WINDOW_NORMAL);
+//        cv::imshow("gui", m_gui_img);
+//        cv::waitKey(1);
+         int len;
+         auto buf = Frame::encode(m_gui_img, len);
+         m_transmitter->sendRaw(dconstant::network::robotGuiBase + parameters.robotId, buf.get(), len);
     }
 }
 

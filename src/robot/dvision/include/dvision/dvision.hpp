@@ -2,7 +2,7 @@
 //     Author: Wenxing Mei <mwx36mwx@gmail.com>
 
 #pragma once
-#include "dbehavior/BehaviourInfo.h"
+#include "dbehavior/BehaviorInfo.h"
 #include "dmotion/ActionCommand.h"
 #include "dmotion/MotionInfo.h"
 #include "dmotion/GetDelta.h"
@@ -67,9 +67,9 @@ class DVision : public dprocess::DProcess<DVision>
 
     VisionInfo m_data;
     dmotion::MotionInfo m_motion_info;
-    dbehavior::BehaviourInfo m_behaviour_info;
+    dbehavior::BehaviorInfo m_behaviour_info;
     void motionCallback(const dmotion::MotionInfo::ConstPtr& msg);
-    void behaviourCallback(const dbehavior::BehaviourInfo::ConstPtr& msg);
+    void behaviourCallback(const dbehavior::BehaviorInfo::ConstPtr& msg);
     void reloadConfigCallback(const std_msgs::String::ConstPtr&);
     void prepareVisionInfo(VisionInfo& m_data);
     void showDebugImg();

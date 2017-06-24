@@ -36,6 +36,7 @@ void
 GaitStateManager::tick()
 {
     ROS_DEBUG("GaitStateManager tick ..");
+    checkNewCommand(m_cmd);
     prior_gaitState = gaitState;
 
     if (prior_gaitState != goal_gaitState) {
@@ -64,6 +65,7 @@ GaitStateManager::tick()
         m_start_time = ros::Time::now();
     }
 
+    // FIXME(MWX): handle delta, not async!!!!!!!!!!!
     auto delta = rstatus->checkDeltaDist();
     m_delta.x = delta.m_x;
     m_delta.y = delta.m_y;
@@ -79,7 +81,6 @@ void
 GaitStateManager::init()
 {
     ROS_INFO("GaitState Manager INIT");
-
     rstatus = new RobotStatus(m_nh);
     if(!m_simulation) {
         port = new transitHub(m_nh, rstatus);

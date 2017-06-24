@@ -19,7 +19,7 @@ build*
 .tags
 
 # vim stuff
-*.swp
+*.sw*
 *.autosave
 *.pyc
 *log

@@ -11,8 +11,10 @@
   <build_depend>geometry_msgs</build_depend>
   <build_depend>dprocess</build_depend>
   <build_depend>ros_h264_streamer</build_depend>
-  <run_depend>dprocess</run_depend>
   <build_depend>darknetcxx</build_depend>
+  <build_depend>dbehavior</build_depend>
+
+  <run_depend>dprocess</run_depend>
   <run_depend>darknetcxx</run_depend>
   <run_depend>message_runtime</run_depend>
   <run_depend>geometry_msgs</run_depend>

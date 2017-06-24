@@ -12,6 +12,7 @@ find_package(catkin REQUIRED
   dmotion
   dprocess
   dtransmit
+  dbehavior
   dconfig
   ros_h264_streamer
   cv_bridge
