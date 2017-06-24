@@ -159,7 +159,7 @@ DVision::tick()
          * Ball Detector *
          *****************/
         ros::Time begin = ros::Time::now();
-        m_ball.GetBall(frame.getBGR_raw(), m_gui_img, m_projection);
+        m_data.see_ball = m_ball.GetBall(frame.getBGR_raw(), m_gui_img, m_projection);
         ros::Duration end = ros::Time::now() - begin;
         std::cout << "------------Ball: " << end.toNSec() / 1000000.0 << "ms-----------" << std::endl;
 
@@ -365,12 +365,12 @@ DVision::showDebugImg()
     }
 
     if (parameters.monitor.update_gui_img) {
-        cv::namedWindow("gui", CV_WINDOW_NORMAL);
-        cv::imshow("gui", m_gui_img);
-        cv::waitKey(1);
-        // int len;
-        // auto buf = Frame::encode(m_gui_img, len);
-        // m_transmitter->sendRaw(dconstant::network::robotGuiBase + parameters.robotId, buf.get(), len);
+        // cv::namedWindow("gui", CV_WINDOW_NORMAL);
+        // cv::imshow("gui", m_gui_img);
+        // cv::waitKey(1);
+        int len;
+        auto buf = Frame::encode(m_gui_img, len);
+        m_transmitter->sendRaw(dconstant::network::robotGuiBase + parameters.robotId, buf.get(), len);
     }
 }
 
