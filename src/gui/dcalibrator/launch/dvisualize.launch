@@ -1,7 +1,7 @@
 <launch>
-    <node pkg="dvisualize"
-          name="dvisualize"
-          type="dvisualize"
+    <node pkg="dcalibrator"
+          name="dcalibrator"
+          type="dcalibrator"
           output="screen"
           respawn="false"
           required="true"

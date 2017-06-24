@@ -38,6 +38,7 @@ def main():
     rate = rospy.Rate(50)
     bb = getbb()
     while not rospy.is_shutdown():
+        bb.resetCmd()
         skillInstance.tick()
         bb.publish()
         rate.sleep()

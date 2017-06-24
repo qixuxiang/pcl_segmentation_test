@@ -1,4 +1,5 @@
 import rospy
+import time
 
 class Timer(object):
     def __init__(self, timeTarget = 0):
@@ -25,3 +26,6 @@ class Timer(object):
         @rtype: bool
         """
         return self.elapsed() >= self.timeTarget
+
+    def sleep(self, duration):
+        time.sleep(duration)

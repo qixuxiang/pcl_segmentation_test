@@ -13,7 +13,7 @@ dvision:
 
   monitor:
     update_gui_img: true
-    update_loc_img: true
+    update_loc_img: false
     update_canny_img: false
     update_field_binary: false
     update_goal_binary: false

@@ -6,12 +6,14 @@
 #include "ui_undist.h"
 #include "dvision/frame.hpp"
 #include "dvision/projection.hpp"
+#include "dvision/parameters.hpp"
 
 using namespace dvision;
 Undist::Undist(QWidget *parent) : QDialog(parent), ui(new Ui::Undist) {
     ui->setupUi(this);
 
     ros::NodeHandle nh;
+    parameters.init(&nh);
     m_projection.init(&nh);
 }
 

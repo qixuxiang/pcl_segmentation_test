@@ -42,7 +42,11 @@ DVision::DVision(ros::NodeHandle* n)
     m_pub = m_nh->advertise<VisionInfo>("/humanoid/VisionInfo", 1);
     m_deltaClient = m_nh->serviceClient<dmotion::GetDelta>("getDelta");
 
-    m_transmitter = new dtransmit::DTransmit(parameters.udpBroadcastAddress);
+    if(parameters.simulation) {
+        m_transmitter = new dtransmit::DTransmit("127.0.0.1");
+    } else {
+        m_transmitter = new dtransmit::DTransmit(parameters.udpBroadcastAddress);
+    }
     if (parameters.simulation) {
         ROS_INFO("Simulation mode!");
         m_transmitter->addRosRecv<VisionInfo>(dconstant::network::monitorBroadcastAddressBase + parameters.robotId, [&](VisionInfo& msg) {
@@ -380,7 +384,7 @@ DVision::trackBall()
     // ball
     if (m_data.see_ball) {
         // track ball
-        if (m_ball_tracker.Process(m_data.ball_field.x, m_data.ball_field.y, Degree2Radian(m_pitch), Degree2Radian(m_yaw))) {
+        if (m_ball_tracker.Process(m_data.ball_field.x, m_data.ball_field.y)) {
             m_data.ballTrack.pitch = Radian2Degree(m_ball_tracker.out_pitch());
             m_data.ballTrack.yaw = Radian2Degree(m_ball_tracker.out_yaw());
         }

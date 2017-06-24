@@ -35,6 +35,7 @@ void GuiImage::init() {
 
 void GuiImage::drawMyself(QPainter *painter)
 {
+//    qDebug() << "gui draw";
 //    painter->setPen(QPen(Qt::black, 10));
 //    painter->drawPoint(0, 0);
     painter->drawPixmap(0, 0, width(), height(), m_image);
