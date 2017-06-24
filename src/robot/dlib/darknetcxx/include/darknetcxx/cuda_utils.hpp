@@ -109,11 +109,13 @@ class Ptr_gpu : NonCopyable
       : m_size(0)
       , m_ptr(nullptr, deleter())
     {
+        std::cout << "Ptr_gpu ctor" << std::endl;
     }
     Ptr_gpu(int size)
       : m_size(size)
       , m_ptr(cuda_make_array<T>(nullptr, size), deleter())
     {
+        std::cout << "Ptr_gpu ctor" << std::endl;
     }
 
     T* get()
@@ -128,6 +130,7 @@ class Ptr_gpu : NonCopyable
         m_allocated += sizeof(T) * size / 1000000.;
         printf("GPU resized from %lu to %lu bytes, all %lf MB\n", sizeof(T) * m_size, sizeof(T) * size, m_allocated);
 #endif
+        std::cout << "Ptr gpu resized to " << size << std::endl;
         if (m_ptr.get() != nullptr) {
             cuda_free(m_ptr.release());
         }
