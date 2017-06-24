@@ -42,7 +42,7 @@ DVision::DVision(ros::NodeHandle* n)
     m_pub = m_nh->advertise<VisionInfo>("/humanoid/VisionInfo", 1);
     m_deltaClient = m_nh->serviceClient<dmotion::GetDelta>("getDelta");
 
-    if(parameters.simulation) {
+    if (parameters.simulation) {
         m_transmitter = new dtransmit::DTransmit("127.0.0.1");
     } else {
         m_transmitter = new dtransmit::DTransmit(parameters.udpBroadcastAddress);
@@ -266,7 +266,7 @@ DVision::prepareVisionInfo(VisionInfo& m_data)
     // ball
     if (m_data.see_ball) {
         ROS_INFO("ball field: %lf %lf %lf", m_data.ball_field.x, m_data.ball_field.y, m_data.ball_field.z);
-
+        m_ball.Update();
         m_data.ball_image.x = m_ball.ball_image().x;
         m_data.ball_image.y = m_ball.ball_image().y;
         m_data.ball_field.x = m_ball.ball_field().x;

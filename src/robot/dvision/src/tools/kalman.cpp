@@ -23,7 +23,21 @@ KalmanFilterC::KalmanFilterC(const cv::Point2f& pt)
     kalman_->statePre.at<float>(3) = 0;
     kalman_->statePre.at<float>(4) = 0;
     kalman_->statePre.at<float>(5) = 0;
+    // transitionMatrix
+    // 1, 0, 1, 0, 0.5, 0,
+    // 0, 1, 0, 1, 0  , 0.5,
+    // 0, 0, 1, 0, 1  , 0,
+    // 0, 0, 0, 1, 0  , 1,
+    // 0, 0, 0, 0, 1  , 0,
+    // 0, 0, 0, 0, 0  , 1
     kalman_->transitionMatrix = (cv::Mat_<float>(6, 6) << 1, 0, 1, 0, 0.5, 0, 0, 1, 0, 1, 0, 0.5, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1);
+    // measurementMatrix
+    // 1,   0,
+    // 1,   0,
+    // 0.5, 0,
+    // 0,   1,
+    // 0,   1,
+    // 0,   0.5
     kalman_->measurementMatrix = (cv::Mat_<float>(2, 6) << 1, 0, 1, 0, 0.5, 0, 0, 1, 0, 1, 0, 0.5);
     cv::setIdentity(kalman_->measurementMatrix);
     cv::setIdentity(kalman_->processNoiseCov, cv::Scalar::all(1e-4));
@@ -56,3 +70,4 @@ KalmanFilterC::Update(const cv::Point2f& p)
 }
 
 } // namespace dvision
+t
