@@ -10,7 +10,8 @@ main(int argc, char** argv)
     ros::init(argc, argv, "capture");
     ros::NodeHandle nh;
 
-    dvision::Camera c;
+    dvision::CameraSettings s(&nh);
+    dvision::Camera c(s);
 
     std::cout << "press c to capture" << std::endl;
     while (ros::ok()) {

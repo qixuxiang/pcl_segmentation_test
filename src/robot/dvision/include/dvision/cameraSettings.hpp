@@ -35,6 +35,7 @@ struct CameraSettings
     do {                                                                                                                                                                                               \
         if (!nh->getParam("/dvision/camera/" #x, x)) {                                                                                                                                                 \
             ROS_FATAL("CameraSettings get pararm error");                                                                                                                                              \
+            throw std::runtime_error("Camera settings get param error!");                                                                                                                              \
         }                                                                                                                                                                                              \
     } while (0)
 
@@ -57,6 +58,8 @@ struct CameraSettings
         GPARAM(exposure_absolute);
         GPARAM(focus_auto);
         GPARAM(focus_absolute);
+
+        ROS_INFO("Camera settings, width: %d height: %d", width, height);
     }
 #undef GPARAM
 

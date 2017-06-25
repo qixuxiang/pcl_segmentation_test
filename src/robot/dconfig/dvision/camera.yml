@@ -6,15 +6,15 @@ dvision:
     frameRate:             30
     brightness:            0
     contrast:              32
-    saturation:            64
+    saturation:            90
     hue:                   0
     sharpness:             0
     gain:                  0
-    gamma:                 100
+    gamma:                 72
     whitebalance_auto:     1
     whitebalance_absolute: 4500
-    exposure_auto:         1
-    exposure_absolute:     150
+    exposure_auto:         0
+    exposure_absolute:     180
     focus_auto:            1
     focus_absolute:        0
 

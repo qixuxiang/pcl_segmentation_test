@@ -22,7 +22,7 @@ Camera::Camera(CameraSettings c)
   : m_device(c.device), m_setting(c)
 {
     init();
-    resetControl();
+    //resetControl();
 }
 
 Camera::~Camera()
@@ -37,11 +37,11 @@ Camera::init()
         openDevice();
         sleep(1);
         initFmt();
-        setFrameRate(1, 30);
+        setFrameRate(1, m_setting.frameRate);
         initMmap();
         startIO();
         doIO();
-        //setCameraControl();
+        setCameraControl();
     } catch (std::exception& e) {
         ROS_ERROR("Init camera error: %s", e.what());
         sleep(1);

@@ -14,7 +14,8 @@ TEST(distortionModel, main)
     DistortionModel dist;
     dist.init();
 
-    dvision::Camera c;
+    CameraSettings s(&nh);
+    dvision::Camera c(s);
     while (ros::ok()) {
         auto frame = c.capture();
         frame.show();
