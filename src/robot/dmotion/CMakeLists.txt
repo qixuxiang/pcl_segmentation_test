@@ -11,7 +11,7 @@ find_package(catkin REQUIRED
                dprocess)
 
 find_package(Boost REQUIRED COMPONENTS system)
-find_package(OpenCV 3 REQUIRED)
+#find_package(OpenCV 3 REQUIRED)
 
 add_message_files(
   FILES

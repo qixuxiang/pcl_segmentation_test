@@ -1,6 +1,0 @@
-[data]
-classes=3
-train=/home/m/data/ROBdevkit/train.txt
-valid=/home/m/data/ROBdevkit/2017_test.txt
-names=data/rob.names
-backup=/home/m/workspace/backup/
